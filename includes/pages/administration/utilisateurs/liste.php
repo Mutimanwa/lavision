@@ -34,8 +34,8 @@ $nombre_utilisateurs_en_attente = count(admin_get_utilisateur_par_statut(STATUS_
             </div>
 
             <div class="dropdown">
-                <a href="<?= url('administration/utilisateurs/ajout'); ?>" class="btn btn-falcon-default dropdown-toggle" type="button" id="addUserDropdown"
-                   >
+                <a href="<?= url('administration/utilisateurs/ajout'); ?>"
+                    class="btn btn-falcon-default dropdown-toggle" type="button" id="addUserDropdown">
                     <i class="fas fa-plus me-2"></i>Nouvel utilisateur
                 </a>
                 <!-- <ul class="dropdown-menu" aria-labelledby="addUserDropdown">
@@ -216,7 +216,8 @@ $nombre_utilisateurs_en_attente = count(admin_get_utilisateur_par_statut(STATUS_
 
                             <!-- date en format Jour moi annee -->
                             <td class="align-middle text-center py-2">
-                                <?= format_date($utilisateur['date_creation'], "d/m/Y"); ?></td>
+                                <?= format_date($utilisateur['date_creation'], "d/m/Y"); ?>
+                            </td>
                             <td class="align-middle text-center">
 
                                 <div class="dropdown font-sans-serif position-static">
@@ -228,17 +229,22 @@ $nombre_utilisateurs_en_attente = count(admin_get_utilisateur_par_statut(STATUS_
                                     <div class="dropdown-menu dropdown-menu-end border py-0"
                                         aria-labelledby="customer-dropdown-0" style="">
                                         <div class="py-2">
-                                       
+
                                             <a href="<?= url('administration/utilisateurs/view', ['uuid' => $utilisateur['uuid']]) ?>"
                                                 class="dropdown-item">
                                                 <span class="fas fa-eye"></span> Voir plus
                                             </a>
 
-                                       
+
                                             <a href="<?= url('administration/utilisateurs/ajout', ['uuid' => $utilisateur['uuid']]) ?>"
                                                 class="dropdown-item">
                                                 <span class="fas fa-edit"></span> Modifier
                                             </a>
+                                            <div class="dropdown-divider"></div>
+                                            <button class="dropdown-item text-danger" data-id="<?= $utilisateur['user_id'] ?>" data-bs-toggle="modal"
+                                                data-bs-target="#DeleteUser">
+                                                <span class="fas fa-trash "></span> Supprimer
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -267,6 +273,28 @@ $nombre_utilisateurs_en_attente = count(admin_get_utilisateur_par_statut(STATUS_
     </div>
 </div>
 
+<!-- modal de suppression -->
+<div class="modal fade" id="DeleteUser" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header  justify-content-between">
+                <h5 class="modal-title">Supprimer un utilisateur</h5>
+                <button class="btn p-1" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="fas fa-times fs-9"></span>
+                </button>
+            </div>
+            <div class="modal-body text-danger">
+                <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-falcon-secondary" type="button" data-bs-dismiss="modal">Annuler</button>
+                <button class="btn btn-falcon-danger" type="button" id="updateProfileBtn">
+                    <span class="fas fa-trash me-1"></span> Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Bootstrap & jQuery JS -->
 <script src="<?= LIBS_URL ?>jquery/jquery.min.js"></script>
 

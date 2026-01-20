@@ -1,0 +1,6 @@
+[2026-01-16 21:18:44] system: Connexion DB établie {"host":"localhost","base":"gestion_academique_ecole"}
+[2026-01-16 21:18:44] system: Module database chargé {"version":"1.0.0"}
+[2026-01-16 21:18:44] system: Module auth chargé {"version":"1.0.0"}
+[2026-01-16 21:18:51] system: Connexion DB établie {"host":"localhost","base":"gestion_academique_ecole"}
+[2026-01-16 21:18:51] system: Module database chargé {"version":"1.0.0"}
+[2026-01-16 21:18:51] system: Module auth chargé {"version":"1.0.0"}

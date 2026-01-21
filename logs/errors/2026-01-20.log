@@ -1,3 +1,0 @@
-[2026-01-20 13:24:49] ERROR - IP: 127.0.0.1 - User: 1 - Message: Classe non trouvée: DashboardController
-[2026-01-20 13:24:49] ERROR - IP: 127.0.0.1 - User: 1 - Message: Erreur dans handleRequest(): Contrôleur 'DashboardController' non trouvé - Context: {"type":"ROUTING_ERROR"}
-[2026-01-20 13:30:32] ERROR - IP: 127.0.0.1 - User: 1 - Message: Exception non capturée: logAction(): Argument #3 ($context) must be of type array, int given, called in C:\xampp\htdocs\lavision\app\src\Controllers\BaseController.php on line 406 in C:\xampp\htdocs\lavision\app\src\Services\functions.php on line 650 - Context: {"type":"EXCEPTION","file":"C:\\xampp\\htdocs\\lavision\\app\\src\\Services\\functions.php","line":650}

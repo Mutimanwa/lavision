@@ -96,7 +96,7 @@ function afficher_options_academiques(): void
 function traiter_modification_options(): void
 {
     // Vérification des permissions
-    if (!a_permission('academique_gerer')) {
+    if (!hasPermission('academique_gerer')) {
         afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
         return;
     }
@@ -203,7 +203,7 @@ function afficher_gestion_classes(): void
 function afficher_formulaire_ajout_classe(): void
 {
     // Vérification des permissions
-    if (!a_permission('academique_gerer')) {
+    if (!hasPermission('academique_gerer')) {
         afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
         return;
     }
@@ -233,7 +233,7 @@ function afficher_formulaire_ajout_classe(): void
 function traiter_ajout_classe(): void
 {
     // Vérification des permissions
-    if (!a_permission('academique_gerer')) {
+    if (!hasPermission('academique_gerer')) {
         afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
         return;
     }
@@ -343,7 +343,7 @@ function afficher_gestion_matieres(): void
 function afficher_formulaire_ajout_matiere(): void
 {
     // Vérification des permissions
-    if (!a_permission('academique_gerer')) {
+    if (!hasPermission('academique_gerer')) {
         afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
         return;
     }
@@ -367,7 +367,7 @@ function afficher_formulaire_ajout_matiere(): void
 function traiter_ajout_matiere(): void
 {
     // Vérification des permissions
-    if (!a_permission('academique_gerer')) {
+    if (!hasPermission('academique_gerer')) {
         afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
         return;
     }

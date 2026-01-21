@@ -103,6 +103,9 @@ $routes = [
     'documentation/getting-started' => 'documentation/getting-started.php',
     'documentation/faq' => 'documentation/faq.php',
 
+    // page d'authentification
+    // 'auth/login' => 'auth/login.php',
+
     // Pages d'erreur
     '404' => 'errors/404.php',
     '403' => 'errors/403.php',

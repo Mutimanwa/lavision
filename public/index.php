@@ -4,7 +4,6 @@
  * Gère le routage et l'initialisation du système
  * Programmation procédurale pour cohérence
  * Version: 2.0.0 - Refactorisé pour scalabilité
- * Date: 20 janvier 2026
  */
 
 // =============================================
@@ -72,8 +71,8 @@ if (!isset($_SESSION['csrf_token'])) {
 $page_actuelle = get_current_page();
 
 // Vérification de l'authentification
-$pages_publiques = ['login', 'register', 'forgot_password', 'reset_password', 'logout'];
-$pages_auth = ['login', 'register', 'forgot_password', 'reset_password', 'logout'];
+$pages_publiques = ['login', 'register', 'forgot-password', 'reset-password', 'logout'];
+$pages_auth = ['login', 'register', 'forgot-password', 'reset-password', 'logout'];
 $pages_erreur = ['404', '403', '500'];
 
 if (!in_array($page_actuelle, $pages_publiques) && !est_connecte()) {
@@ -85,6 +84,67 @@ if (!in_array($page_actuelle, $pages_publiques) && !est_connecte()) {
 // =============================================
 // CHARGEMENT DES CONTRÔLEURS SELON LA PAGE
 // =============================================
+
+// Contrôleurs d'authentification
+if (in_array($page_actuelle, ['login', 'logout', 'forgot-password', 'reset-password', 'lock-screen'])) {
+    require_once CONTROLLERS_PATH . '/AuthController.php';
+
+    switch ($page_actuelle) {
+        case 'login':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                auth_processLogin();
+            } else {
+                auth_login();
+            }
+            break;
+        case 'logout':
+            auth_logout();
+            break;
+        case 'forgot-password':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                auth_processForgotPassword();
+            } else {
+                auth_forgotPassword();
+            }
+            break;
+        case 'reset-password':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                auth_processResetPassword();
+            } else {
+                auth_resetPassword();
+            }
+            break;
+        case 'lock-screen':
+            auth_lockScreen();
+            break;
+    }
+    exit;
+}
+
+// Contrôleur du dashboard
+if ($page_actuelle === 'dashboard') {
+    require_once CONTROLLERS_PATH . '/DashboardController.php';
+    dashboard_index();
+    exit;
+}
+
+// Contrôleurs d'erreur
+if (in_array($page_actuelle, ['404', '403', '500'])) {
+    require_once CONTROLLERS_PATH . '/ErrorController.php';
+
+    switch ($page_actuelle) {
+        case '404':
+            error_notFound();
+            break;
+        case '403':
+            error_forbidden();
+            break;
+        case '500':
+            error_serverError();
+            break;
+    }
+    exit;
+}
 
 // Contrôleurs pour les élèves
 if (strpos($page_actuelle, 'eleves') === 0) {
@@ -231,37 +291,26 @@ elseif (strpos($page_actuelle, 'rapports') === 0) {
 
 // Contrôleurs pour l'administration
 elseif (strpos($page_actuelle, 'administration') === 0) {
-    require_once CONTROLLERS_PATH . '/AdministrationController.php';
+    require_once CONTROLLERS_PATH . '/AdminController.php';
 
     switch ($page_actuelle) {
         case 'administration/utilisateurs':
-            afficher_gestion_utilisateurs();
-            break;
-        case 'administration/utilisateurs/ajout':
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                traiter_ajout_utilisateur();
-            } else {
-                afficher_formulaire_ajout_utilisateur();
-            }
-            break;
-        case 'administration/utilisateurs/modifier':
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                traiter_modification_utilisateur();
-            } else {
-                afficher_formulaire_modification_utilisateur();
-            }
-            break;
-        case 'administration/utilisateurs/detail':
-            afficher_details_utilisateur();
-            break;
-        case 'administration/annee-scolaire':
-            afficher_gestion_annee_scolaire();
+            admin_utilisateurs();
             break;
         case 'administration/parametres':
-            afficher_parametres_systeme();
+            admin_parametres();
+            break;
+        case 'administration/annee-scolaire':
+            admin_anneeScolaire();
+            break;
+        case 'administration/logs':
+            admin_logs();
             break;
         case 'administration/backup':
-            afficher_gestion_backup();
+            admin_backup();
+            break;
+        case 'administration/restore':
+            admin_restore();
             break;
         default:
             load_page($page_actuelle);

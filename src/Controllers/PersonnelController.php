@@ -110,7 +110,7 @@ function afficher_formulaire_professeur($professeur_id = null)
         $professeur = get_professeur_by_id($professeur_id);
         if (!$professeur) {
             set_flash_message('danger', 'Professeur non trouvé.');
-            redirect(BASE_URL . 'personnel/professeurs');
+            redirect('personnel/professeurs');
             return;
         }
     }
@@ -120,7 +120,7 @@ function afficher_formulaire_professeur($professeur_id = null)
         $resultat = traiter_formulaire_professeur($professeur_id);
         if ($resultat['succes']) {
             set_flash_message('success', $resultat['message']);
-            redirect(BASE_URL . 'personnel/professeurs');
+            redirect('personnel/professeurs');
             return;
         } else {
             $erreurs = $resultat['erreurs'];
@@ -241,7 +241,7 @@ function supprimer_professeur($professeur_id)
         set_flash_message('danger', 'Erreur lors de la suppression du professeur.');
     }
 
-    redirect(BASE_URL . 'personnel/professeurs');
+    redirect('personnel/professeurs');
 }
 
 // =============================================
@@ -307,7 +307,7 @@ function afficher_formulaire_administrateur($admin_id = null)
         $resultat = traiter_formulaire_administrateur($admin_id);
         if ($resultat['succes']) {
             set_flash_message('success', $resultat['message']);
-            redirect(BASE_URL . 'personnel/administrateurs');
+            redirect('personnel/administrateurs');
             return;
         } else {
             $erreurs = $resultat['erreurs'];

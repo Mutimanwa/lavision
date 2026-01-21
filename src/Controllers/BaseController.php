@@ -403,7 +403,7 @@ class BaseController {
         $user_ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
 
-        logAction($action, $details, $user_id, $user_ip, $user_agent, $module);
+        logAction($action, $details,["user_id" => $user_id , "Addresse ip" =>  $user_ip , "User agent" => $user_agent , "Module" =>  $module]);
     }
 
     /**

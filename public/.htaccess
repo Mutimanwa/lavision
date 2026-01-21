@@ -1,19 +1,7 @@
-Options -Indexes
 RewriteEngine On
-RewriteBase /public/
+RewriteBase /lavision/app/public/
 
-# Rediriger tout vers index.php
+# Rediriger toutes les requêtes vers index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
-
-# Sécurité
-Header set X-Content-Type-Options "nosniff"
-Header set X-Frame-Options "SAMEORIGIN"
-Header set X-XSS-Protection "1; mode=block"
-
-# Empêcher l'accès aux fichiers sensibles
-<FilesMatch "\.(env|log|ini|sql|git|svn|md|config)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
+RewriteRule ^(.*)$ index.php?page=$1 [QSA,L]

@@ -21,82 +21,80 @@ $modules = [
     'dashboard' => [
         'icon' => 'fas fa-tachometer-alt',
         'title' => 'Tableau de bord',
-        'url' => BASE_URL . '/dashboard',
+        'url' => BASE_URL . '?page=dashboard',
         'roles' => ['admin', 'professeur', 'eleve', 'parent'],
         'permissions' => []
     ],
     'eleves' => [
         'icon' => 'fas fa-user-graduate',
         'title' => 'Élèves',
-        'url' => BASE_URL . '/eleves',
+        'url' => BASE_URL . '?page=eleves',
         'roles' => ['admin', 'professeur'],
         'permissions' => ['eleves.view'],
         'submenu' => [
-            'liste' => ['title' => 'Liste des élèves', 'url' => BASE_URL . '/eleves/liste', 'permissions' => ['eleves.view']],
-            'admission' => ['title' => 'Admission', 'url' => BASE_URL . '/eleves/admission', 'permissions' => ['eleves.create']],
-            'parents' => ['title' => 'Parents', 'url' => BASE_URL . '/eleves/parents', 'permissions' => ['eleves.view']]
+            'liste' => ['title' => 'Liste des élèves', 'url' => BASE_URL . '?page=eleves', 'permissions' => ['eleves.view']],
+            'admission' => ['title' => 'Admission', 'url' => BASE_URL . '?page=eleves/admission', 'permissions' => ['eleves.create']],
+            'parents' => ['title' => 'Parents', 'url' => BASE_URL . '?page=eleves/parents', 'permissions' => ['eleves.view']]
         ]
     ],
     'academique' => [
         'icon' => 'fas fa-graduation-cap',
         'title' => 'Académique',
-        'url' => BASE_URL . '/academique',
+        'url' => BASE_URL . '?page=academique/options',
         'roles' => ['admin', 'professeur'],
         'permissions' => ['academique.view'],
         'submenu' => [
-            'classes' => ['title' => 'Classes', 'url' => BASE_URL . '/academique/classes', 'permissions' => ['academique.view']],
-            'matieres' => ['title' => 'Matières', 'url' => BASE_URL . '/academique/matieres', 'permissions' => ['academique.view']],
-            'horaires' => ['title' => 'Emploi du temps', 'url' => BASE_URL . '/academique/horaires', 'permissions' => ['academique.view']],
-            'options' => ['title' => 'Options', 'url' => BASE_URL . '/academique/options', 'permissions' => ['academique.manage']]
+            'classes' => ['title' => 'Classes', 'url' => BASE_URL . '?page=academique/classes', 'permissions' => ['academique.view']],
+            'matieres' => ['title' => 'Matières', 'url' => BASE_URL . '?page=academique/matieres', 'permissions' => ['academique.view']],
+            'horaires' => ['title' => 'Emploi du temps', 'url' => BASE_URL . '?page=academique/horaires', 'permissions' => ['academique.view']],
+            'options' => ['title' => 'Options', 'url' => BASE_URL . '?page=academique/options', 'permissions' => ['academique.manage']]
         ]
     ],
     'personnel' => [
         'icon' => 'fas fa-users',
         'title' => 'Personnel',
-        'url' => BASE_URL . '/personnel',
+        'url' => BASE_URL . '?page=personnel/professeurs',
         'roles' => ['admin'],
         'permissions' => ['personnel.view'],
         'submenu' => [
-            'professeurs' => ['title' => 'Professeurs', 'url' => BASE_URL . '/personnel/professeurs', 'permissions' => ['personnel.view']],
-            'utilisateurs' => ['title' => 'Utilisateurs', 'url' => BASE_URL . '/administration/utilisateurs', 'permissions' => ['admin.users']]
+            'professeurs' => ['title' => 'Professeurs', 'url' => BASE_URL . '?page=personnel/professeurs', 'permissions' => ['personnel.view']],
+            'utilisateurs' => ['title' => 'Utilisateurs', 'url' => BASE_URL . '?page=administration/utilisateurs', 'permissions' => ['admin.users']]
         ]
     ],
     'finance' => [
         'icon' => 'fas fa-money-bill-wave',
         'title' => 'Finance',
-        'url' => BASE_URL . '/finance',
+        'url' => BASE_URL . '?page=finance/paiements',
         'roles' => ['admin'],
         'permissions' => ['finance.view'],
         'submenu' => [
-            'paiements' => ['title' => 'Paiements', 'url' => BASE_URL . '/finance/paiements', 'permissions' => ['finance.view']]
+            'paiements' => ['title' => 'Paiements', 'url' => BASE_URL . '?page=finance/paiements', 'permissions' => ['finance.view']]
         ]
     ],
     'rapports' => [
         'icon' => 'fas fa-chart-bar',
         'title' => 'Rapports',
-        'url' => BASE_URL . '/rapports',
+        'url' => BASE_URL . '?page=rapports/academique',
         'roles' => ['admin', 'professeur'],
         'permissions' => ['rapports.view'],
         'submenu' => [
-            'tableau_bord' => ['title' => 'Tableau de bord', 'url' => BASE_URL . '/rapports/tableau_bord', 'permissions' => ['rapports.view']],
-            'general' => ['title' => 'Rapport général', 'url' => BASE_URL . '/rapports/general', 'permissions' => ['rapports.view']],
-            'eleves' => ['title' => 'Rapport élèves', 'url' => BASE_URL . '/rapports/eleves', 'permissions' => ['rapports.view']],
-            'academique' => ['title' => 'Rapport académique', 'url' => BASE_URL . '/rapports/academique', 'permissions' => ['rapports.view']],
-            'financier' => ['title' => 'Rapport financier', 'url' => BASE_URL . '/rapports/financier', 'permissions' => ['rapports.view']],
-            'securite' => ['title' => 'Rapport sécurité', 'url' => BASE_URL . '/rapports/securite', 'permissions' => ['rapports.view']]
+            'academique' => ['title' => 'Rapport académique', 'url' => BASE_URL . '?page=rapports/academique', 'permissions' => ['rapports.view']],
+            'financier' => ['title' => 'Rapport financier', 'url' => BASE_URL . '?page=rapports/financier', 'permissions' => ['rapports.view']],
+            'personnel' => ['title' => 'Rapport personnel', 'url' => BASE_URL . '?page=rapports/personnel', 'permissions' => ['rapports.view']]
         ]
     ],
     'administration' => [
         'icon' => 'fas fa-cogs',
         'title' => 'Administration',
-        'url' => BASE_URL . '/administration',
+        'url' => BASE_URL . '?page=administration/utilisateurs',
         'roles' => ['admin'],
         'permissions' => ['admin.access'],
         'submenu' => [
-            'utilisateurs' => ['title' => 'Gestion utilisateurs', 'url' => BASE_URL . '/administration/utilisateurs', 'permissions' => ['admin.users']],
-            'parametres' => ['title' => 'Paramètres système', 'url' => BASE_URL . '/administration/parametres', 'permissions' => ['admin.settings']],
-            'annee_scolaire' => ['title' => 'Année scolaire', 'url' => BASE_URL . '/administration/annee-scolaire', 'permissions' => ['admin.settings']],
-            'logs' => ['title' => 'Journaux système', 'url' => BASE_URL . '/administration/logs', 'permissions' => ['admin.logs']]
+            'utilisateurs' => ['title' => 'Gestion utilisateurs', 'url' => BASE_URL . '?page=administration/utilisateurs', 'permissions' => ['admin.users']],
+            'parametres' => ['title' => 'Paramètres système', 'url' => BASE_URL . '?page=administration/parametres', 'permissions' => ['admin.settings']],
+            'annee_scolaire' => ['title' => 'Année scolaire', 'url' => BASE_URL . '?page=administration/annee-scolaire', 'permissions' => ['admin.settings']],
+            'logs' => ['title' => 'Journaux système', 'url' => BASE_URL . '?page=administration/logs', 'permissions' => ['admin.logs']],
+            'backup' => ['title' => 'Sauvegarde', 'url' => BASE_URL . '?page=administration/backup', 'permissions' => ['admin.backup']]
         ]
     ]
 ];

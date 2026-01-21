@@ -9,19 +9,19 @@
 
 // Définition des constantes de chemin si non définies
 if (!defined('ASSETS_PATH')) {
-    define('ASSETS_PATH', '/assets');
+    define('ASSETS_PATH', ASSETS_URL);
 }
 
 if (!defined('CSS_PATH')) {
-    define('CSS_PATH', ASSETS_PATH . '/css');
+    define('CSS_PATH', ASSETS_PATH . 'css/');
 }
 
 if (!defined('JS_PATH')) {
-    define('JS_PATH', ASSETS_PATH . '/js');
+    define('JS_PATH', ASSETS_PATH . 'js/');
 }
 
 if (!defined('LIBS_PATH')) {
-    define('LIBS_PATH', ASSETS_PATH . '/libs');
+    define('LIBS_PATH', ASSETS_PATH . 'libs/');
 }
 
 // Titre de la page (défini par le contrôleur)
@@ -153,3 +153,18 @@ $csrf_token = generer_token_csrf();
 
     <!-- Conteneur principal -->
     <div id="main-container">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

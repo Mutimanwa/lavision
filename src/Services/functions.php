@@ -802,4 +802,35 @@ function hasPermission(string $permission): bool
 
     return in_array($permission, $user_permissions) || in_array('*', $user_permissions);
 }
+
+/**
+ * Affiche une vue d'authentification avec le template approprié
+ *
+ * @param string $view Nom de la vue (ex: 'auth/login')
+ * @param array $data Données à passer à la vue
+ * @return void
+ */
+function renderAuth(string $view, array $data = []): void
+{
+    extract($data);
+    // Convertir les traits d'union en underscores seulement dans le nom du fichier (après le dernier /)
+    $last_slash_pos = strrpos($view, '/');
+    if ($last_slash_pos !== false) {
+        $path = substr($view, 0, $last_slash_pos + 1);
+        $filename = substr($view, $last_slash_pos + 1);
+        $filename = str_replace('-', '_', $filename);
+        $view_file = VIEWS_PATH . '/' . $path . $filename . '.php';
+    } else {
+        $view_file = VIEWS_PATH . '/' . str_replace('-', '_', $view) . '.php';
+    }
+
+    if (file_exists(VIEWS_PATH . '/templates/auth_template.php')) {
+        include VIEWS_PATH . '/templates/auth_template.php';
+    } elseif (file_exists($view_file)) {
+        include $view_file;
+    } else {
+        echo '<div style="color:red">Vue d\'authentification introuvable : ' . htmlspecialchars($view) . ' (fichier: ' . htmlspecialchars($view_file) . ')</div>';
+    }
+    exit;
+}
 ?>

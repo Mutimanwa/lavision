@@ -118,7 +118,7 @@ $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $script = $_SERVER['SCRIPT_NAME'] ?? ''; // ex : /lavision/a/app/public/index.php
 
 // On retire tout après /public
-$base_path = preg_replace('#/public(/.*)?$#', '/public', $script);
+$base_path = preg_replace('#/public(/.*)?$#', '/public/', $script);
 
 // On retire /index.php si présent
 $base_path = str_replace('/index.php', '', $base_path);

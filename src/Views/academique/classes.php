@@ -3,15 +3,13 @@
  * Vue de gestion des classes
  * Interface complète pour gérer les classes scolaires
  * Interface responsive avec Bootstrap 5 et DataTables
- * Version: 2.0.0 - Refactorisée pour scalabilité
- * Date: 20 janvier 2026
+ * Version: 1.0.0 - Refactorisée pour scalabilité
  */
 
 // Inclusion du template d'en-tête
 require_once TEMPLATES_PATH . '/header.php';
 ?>
 
-<div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 px-0">
@@ -253,7 +251,7 @@ require_once TEMPLATES_PATH . '/header.php';
             </div>
         </div>
     </div>
-</div>
+
 
 <!-- Modal de confirmation de suppression -->
 <div class="modal fade" id="suppressionModal" tabindex="-1">
@@ -276,7 +274,7 @@ require_once TEMPLATES_PATH . '/header.php';
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <form method="post" action="" id="formSuppression" style="display: inline;">
-                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo generer_csrf_token(); ?>">
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-trash me-2"></i>
                         Supprimer

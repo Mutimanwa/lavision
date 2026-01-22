@@ -54,7 +54,7 @@ define('CSRF_TOKEN_LIFETIME', 3600);
  * Paramètres de connexion à la base de données MySQL
  */
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'gestion_academique_ecole');
+define('DB_NAME', value: 'gestion_academique_ecole');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');

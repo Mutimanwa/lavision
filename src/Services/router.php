@@ -104,7 +104,9 @@ $routes = [
     'documentation/faq' => 'documentation/faq.php',
 
     // page d'authentification
-    // 'auth/login' => 'auth/login.php',
+    'login' => 'auth/login.php',
+    'forgot-password' => 'auth/forgot-password.php',
+    'logout' => 'auth/logout.php',
 
     // Pages d'erreur
     '404' => 'errors/404.php',

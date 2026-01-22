@@ -4,13 +4,12 @@
  * Vue d'authentification pour la connexion utilisateur
  */
 
-// Inclure l'en-tête
-// require_once __DIR__ . '/../templates/auth_template.php';
+// Inclure les fonctions utilitaires
+require_once SERVICES_PATH . '/functions.php';
 
 // Vérifier si l'utilisateur est déjà connecté
-if (isset($_SESSION['utilisateur_id'])) {
-    header('Location: ' . BASE_URL . '?page=dashboard');
-    exit;
+if(est_connecte()){
+  redirect("dashboard");
 }
 
 // Récupérer les messages d'erreur ou de succès
@@ -84,13 +83,7 @@ unset($_SESSION['error_message'], $_SESSION['success_message']);
                             <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input type="password"
-                                   class="form-control"
-                                   id="mot_de_passe"
-                                   name="mot_de_passe"
-                                   required
-                                   autocomplete="current-password"
-                                   placeholder="Votre mot de passe">
+                            <input type="password" class="form-control" id="mot_de_passe" name="mot_de_passe" required autocomplete="current-password" placeholder="Votre mot de passe">
                             <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                 <i class="fas fa-eye"></i>
                             </button>
@@ -116,3 +109,19 @@ unset($_SESSION['error_message'], $_SESSION['success_message']);
     </div>
   </div>
 </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('mot_de_passe');
+
+        if (togglePassword && passwordField) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+        }
+    });
+</script>

@@ -829,8 +829,106 @@ function renderAuth(string $view, array $data = []): void
     } elseif (file_exists($view_file)) {
         include $view_file;
     } else {
-        echo '<div style="color:red">Vue d\'authentification introuvable : ' . htmlspecialchars($view) . ' (fichier: ' . htmlspecialchars($view_file) . ')</div>';
+        redirect(buildUrl('errors/404'));
     }
     exit;
+}
+
+/**
+ * Affiche une vue d'erreur avec le template approprié
+ *
+ * @param string $view Nom de la vue (ex: 'errors/404')
+ * @param array $data Données à passer à la vue
+ * @return void
+ */
+function renderError(string $view, array $data = []): void
+{
+    extract($data);
+    // Convertir les traits d'union en underscores seulement dans le nom du fichier (après le dernier /)
+    $last_slash_pos = strrpos($view, '/');
+    if ($last_slash_pos !== false) {
+        $path = substr($view, 0, $last_slash_pos + 1);
+        $filename = substr($view, $last_slash_pos + 1);
+        $filename = str_replace('-', '_', $filename);
+        $view_file = VIEWS_PATH . '/' . $path . $filename . '.php';
+    } else {
+        $view_file = VIEWS_PATH . '/' . str_replace('-', '_', $view) . '.php';
+    }
+
+    if (file_exists(VIEWS_PATH . '/templates/error_template.php')) {
+        include VIEWS_PATH . '/templates/error_template.php';
+    } elseif (file_exists($view_file)) {
+        include $view_file;
+    } else {
+        redirect(buildUrl('errors/404'));
+    }
+    exit;
+}
+
+/**
+ * Fonction globale pour rendre une vue
+ */
+function render($view, $data = [] , $use_layout = true) {
+    // chemin de vue
+    extract($data);
+    // Convertir les traits d'union en underscores seulement dans le nom du fichier (après le dernier /)
+    $last_slash_pos = strrpos($view, '/');
+    if ($last_slash_pos !== false) {
+        $path = substr($view, 0, $last_slash_pos + 1);
+        $filename = substr($view, $last_slash_pos + 1);
+        $filename = str_replace('-', '_', $filename);
+        $view_file = VIEWS_PATH . '/' . $path . $filename . '.php';
+    } else {
+        $view_file = VIEWS_PATH . '/' . str_replace('-', '_', $view) . '.php';
+    }
+
+    if (!file_exists($view_file)) {
+        redirect(buildUrl('errors/500'));
+    }
+   
+     if ($use_layout) {
+            // Charger le layout principal
+            $layout_file = SRC_PATH . '/Views/templates/header.php';
+            if (file_exists($layout_file)) {
+                include $layout_file;
+            }
+
+            // Charger la vue
+            include $view_file;
+
+            // Charger le footer
+            $footer_file = SRC_PATH . '/Views/templates/footer.php';
+            if (file_exists($footer_file)) {
+                include $footer_file;
+            }
+        } else {
+            // Charger seulement la vue
+            include $view_file;
+        }
+}
+
+/**
+ * Vérifie si la page actuelle est active
+ */
+function is_active($page_name) {
+    $current = $_GET['page'] ?? 'dashboard';
+    
+    // Pour les pages parentes (ex: "eleves" active pour "eleves/admission")
+    if (strpos($current, $page_name . '/') === 0) {
+        return 'active';
+    }
+    
+    // Comparaison exacte
+    if ($current === $page_name) {
+        return 'active';
+    }
+    
+    // Pour les URLs avec ID (ex: "eleves/123")
+    $parts = explode('/', $current);
+    if (isset($parts[0]) && $parts[0] === $page_name) {
+        return 'active';
+    }
+    
+    return '';
 }
 ?>

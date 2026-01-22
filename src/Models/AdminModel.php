@@ -8,7 +8,7 @@ class AdminModel {
     private $db;
 
     public function __construct() {
-        $this->db = Database::getInstance();
+        $this->db = get_db_connection();
     }
 
     /**

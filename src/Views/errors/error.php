@@ -13,7 +13,7 @@ $code = $data['code'] ?? 500;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erreur <?= $code ?> - LaVision</title>
+    <title>Erreur <?= $code ?> - Falcon</title>
     <link rel="stylesheet" href="<?= CSS_URL ?>theme.min.css">
     <link rel="stylesheet" href="<?= CSS_URL ?>user.min.css">
 </head>
@@ -23,8 +23,8 @@ $code = $data['code'] ?? 500;
             <div class="row flex-center min-vh-100 py-6 text-center">
                 <div class="col-sm-10 col-md-8 col-lg-6 col-xxl-5">
                     <a class="d-flex flex-center mb-4" href="<?= BASE_URL ?>">
-                        <img class="me-2" src="<?= IMAGES_URL ?>logos/logo.png" alt="LaVision" width="58" />
-                        <span class="font-sans-serif text-primary fw-bolder fs-4 d-inline-block">LaVision</span>
+                        <img class="me-2" src="<?= IMAGES_URL ?>favicons/favicon.ico" alt="Falcon" width="58" />
+                        <span class="font-sans-serif text-primary fw-bolder fs-4 d-inline-block">Falcon</span>
                     </a>
                     <div class="card">
                         <div class="card-body p-4 p-sm-5">

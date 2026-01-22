@@ -19,8 +19,8 @@ require_once SERVICES_PATH . '/database.php';
 define('TABLE_CLASSES', 'classes');
 define('TABLE_MATIERES', 'matieres');
 define('TABLE_HORAIRES', 'horaires');
-define('TABLE_NIVEAUX', 'niveaux_academiques');
-define('TABLE_SECTIONS', 'sections_academiques');
+define('TABLE_NIVEAUX', 'niveau');
+define('TABLE_SECTIONS', 'sections');
 define('TABLE_ANNEES_SCOLAIRES', 'annees_scolaire');
 
 // =============================================
@@ -233,13 +233,13 @@ function get_classes_pagines(array $filtres = [], int $page = 1, int $par_page =
                    p.nom AS nom_prof_principal, p.prenoms AS prenoms_prof_principal,
                    COUNT(e.id) AS nombre_eleves
             FROM " . TABLE_CLASSES . " c
-            LEFT JOIN " . TABLE_NIVEAUX . " n ON c.id_niveau = n.id
-            LEFT JOIN " . TABLE_SECTIONS . " s ON c.id_section = s.id
-            LEFT JOIN " . TABLE_ANNEES_SCOLAIRES . " a ON c.id_annee_scolaire = a.id
+            LEFT JOIN " . TABLE_NIVEAUX . " n ON c.niveau_id = n.niveau_id
+            LEFT JOIN " . TABLE_SECTIONS . " s ON c.section_id = s.section_id
+            LEFT JOIN " . TABLE_ANNEES_SCOLAIRES . " a ON c.annee_id = a.annee_id
             LEFT JOIN professeurs p ON c.id_prof_principal = p.id
             LEFT JOIN eleves e ON e.id_classe = c.id AND e.actif = 1
             $where_clause
-            GROUP BY c.id
+            GROUP BY c.classe_id
             ORDER BY n.ordre_affichage ASC, c.nom_classe ASC
             LIMIT ? OFFSET ?
         ");
@@ -658,7 +658,7 @@ function get_annees_scolaires(): array
     try {
         $stmt = $pdo->query("
             SELECT * FROM " . TABLE_ANNEES_SCOLAIRES . "
-            ORDER BY annee_debut DESC
+            ORDER BY date_debut DESC
         ");
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

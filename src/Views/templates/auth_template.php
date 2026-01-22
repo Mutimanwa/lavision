@@ -22,6 +22,7 @@
   <meta name="msapplication-TileImage" content="<?= IMAGES_URL ?>favicons/mstile-150x150.png" />
   <meta name="theme-color" content="#ffffff" />
   <script src="<?= JS_URL ?>config.js"></script>
+  <script src="<?= LIBS_URL ?>jquery/jquery.min.js"></script>
 
 
   <!-- ===============================================-->
@@ -31,8 +32,8 @@
   <link
     href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:300,400,500,600,700,800,900&amp;display=swap"
     rel="stylesheet" /> -->
-  <link href="<?= ASSETS_URL ?>css/theme.min.css" rel="stylesheet" id="style-default" />
-  <link href="<?= ASSETS_URL ?>css/user.min.css" rel="stylesheet" id="user-style-default" />
+  <link href="<?= CSS_URL ?>/theme.min.css" rel="stylesheet" id="style-default" />
+  <link href="<?= CSS_URL ?>/user.min.css" rel="stylesheet" id="user-style-default" />
 
 </head>
 
@@ -42,11 +43,8 @@
   <!-- ===============================================-->
   <?php
   // Inclure le contenu de la page d'auth spécifique
-  if (isset($view_file) && file_exists($view_file)) {
-      include $view_file;
-  } else {
-      echo '<div class="container mt-5"><div class="alert alert-danger">Page d\'authentification introuvable</div></div>';
-  }
+    $page = get_current_page();
+    load_page($page);
   ?>
 
   <!-- ===============================================-->
@@ -59,9 +57,8 @@
 <!-- ===============================================-->
   <script src="<?= JS_URL ?>theme.js"></script>
   <script src="<?= LIBS_URL ?>fontawesome/all.min.js"></script>
-  <script src="<?= LIBS_URL ?>popper/popper.min.js"></script>
-  <script src="<?= LIBS_URL ?>bootstrap/bootstrap.min.js"></script>
 
+  <script src="<?= LIBS_URL ?>bootstrap/bootstrap.min.js"></script>
 </body>
 
 </html>

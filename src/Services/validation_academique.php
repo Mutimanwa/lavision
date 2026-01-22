@@ -317,7 +317,7 @@ function valider_donnees_horaire(array $donnees): array
 function niveau_existe(int $id_niveau): bool
 {
     $pdo = get_db_connection();
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM niveaux_academiques WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM niveaux WHERE id = ?");
     $stmt->execute([$id_niveau]);
     return $stmt->fetchColumn() > 0;
 }

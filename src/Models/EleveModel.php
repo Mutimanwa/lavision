@@ -50,28 +50,28 @@ function get_eleves_pagines(array $filtres, int $page, int $par_page, string $tr
     $offset = ($page - 1) * $par_page;
 
     // Construction de la requête avec filtres
-    $where = ["e.statut != 'supprime'"];
+    $where = ["statut_etudiant != 'desiste'"];
     $params = [];
 
     if (!empty($filtres['nom'])) {
-        $where[] = "(e.nom LIKE ? OR e.post_nom LIKE ? OR e.prenom LIKE ?)";
+        $where[] = "(nom LIKE ? OR post_nom LIKE ? OR prenom LIKE ?)";
         $params[] = '%' . $filtres['nom'] . '%';
         $params[] = '%' . $filtres['nom'] . '%';
         $params[] = '%' . $filtres['nom'] . '%';
     }
 
-    if (!empty($filtres['classe'])) {
-        $where[] = "e.id_classe = ?";
-        $params[] = $filtres['classe'];
+    if(!empty($filtres['nationalite'])){
+        $where[] = "nationalite = ?";
+        $params[] = $filtres['nationalite'];
     }
 
     if (!empty($filtres['statut'])) {
-        $where[] = "e.statut = ?";
+        $where[] = "statut_etudiant = ?";
         $params[] = $filtres['statut'];
     }
 
     if (!empty($filtres['genre'])) {
-        $where[] = "e.genre = ?";
+        $where[] = "genre = ?";
         $params[] = $filtres['genre'];
     }
 
@@ -86,11 +86,8 @@ function get_eleves_pagines(array $filtres, int $page, int $par_page, string $tr
     // Validation de l'ordre
     $ordre = strtoupper($ordre) === 'DESC' ? 'DESC' : 'ASC';
 
-    $sql = "SELECT e.*, c.nom_classe, c.niveau, c.section,
-                   u.email, u.date_creation as date_inscription
-            FROM eleves e
-            LEFT JOIN classes c ON e.id_classe = c.id
-            LEFT JOIN utilisateurs u ON e.id_utilisateur = u.id
+    $sql = "SELECT * 
+            FROM eleves 
             WHERE $where_clause
             ORDER BY $tri $ordre
             LIMIT $par_page OFFSET $offset";
@@ -106,7 +103,7 @@ function get_eleves_pagines(array $filtres, int $page, int $par_page, string $tr
  */
 function compter_eleves(array $filtres): int
 {
-    $where = ["statut != 'supprime'"];
+    $where = ["statut_etudiant != 'desiste'"];
     $params = [];
 
     if (!empty($filtres['nom'])) {
@@ -116,14 +113,14 @@ function compter_eleves(array $filtres): int
         $params[] = '%' . $filtres['nom'] . '%';
     }
 
-    if (!empty($filtres['classe'])) {
-        $where[] = "id_classe = ?";
-        $params[] = $filtres['classe'];
+     if(!empty($filtres['nationalite'])){
+        $where[] = "nationalite = ?";
+        $params[] = $filtres['nationalite'];
     }
 
-    if (!empty($filtres['statut'])) {
-        $where[] = "statut = ?";
-        $params[] = $filtres['statut'];
+    if (!empty($filtres['statut_etudiant'])) {
+        $where[] = "statut_etudiant = ?";
+        $params[] = $filtres['statut_etudiant'];
     }
 
     if (!empty($filtres['genre'])) {
@@ -180,8 +177,8 @@ function ajouter_eleve(array $donnees): int|bool
             $donnees['adresse'] ?? null,
             $donnees['telephone'] ?? null,
             $donnees['email'],
-            $donnees['id_classe'] ?? null,
-            $donnees['id_parent'] ?? null,
+            // $donnees['id_classe'] ?? null,
+            // $donnees['id_parent'] ?? null,
             $donnees['date_inscription'] ?? date('Y-m-d'),
             $donnees['statut'] ?? 'en_attente'
         ];
@@ -267,7 +264,7 @@ function modifier_eleve(int $id_eleve, array $donnees): bool
 function desinscrire_eleve(int $id_eleve): bool
 {
     try {
-        $sql = "UPDATE eleves SET statut = 'desiste', updated_at = NOW() WHERE id = ?";
+        $sql = "UPDATE eleves SET statut_etudiant = 'desiste', date_modif = NOW() WHERE id = ?";
         return db_execute($sql, [$id_eleve]) !== false;
     } catch (Exception $e) {
         logError('Erreur désinscription élève', ['id_eleve' => $id_eleve, 'error' => $e->getMessage()]);

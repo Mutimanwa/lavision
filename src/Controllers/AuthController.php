@@ -26,47 +26,46 @@ function auth_login() {
  * Traite la connexion
  */
 function auth_processLogin() {
-    global $db;
+    $db = get_db_connection();
 
     // Vérifier le token CSRF
-    if (!auth_verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
+    if (!validateCSRFToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
         $_SESSION['error_message'] = 'Token de sécurité invalide.';
         redirect('login');
     }
 
-    $email = trim(isset($_POST['email']) ? $_POST['email'] : '');
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $identifiant = trim(isset($_POST['identifiant']) ? $_POST['identifiant'] : '');
+    $password = isset($_POST['mot_de_passe']) ? $_POST['mot_de_passe'] : '';
 
     // Validation
-    if (empty($email) || empty($password)) {
-        $_SESSION['error_message'] = 'Veuillez saisir votre email et mot de passe.';
+    if (empty($identifiant) || empty($password)) {
+        $_SESSION['error_message'] = 'Veuillez saisir votre identifiant et mot de passe.';
         redirect('login');
     }
 
     try {
         // Vérifier les identifiants
         $user = $db->prepare("
-            SELECT u.*, r.nom as role_nom, r.permissions
-            FROM utilisateurs u
-            LEFT JOIN roles r ON u.id_role = r.id
-            WHERE u.email = ? AND u.actif = 1
+            SELECT user_id as id, identifiant, nom, prenom, role, email as email_real, statut, mot_de_passe
+            FROM user_admins
+            WHERE (identifiant = ? OR email = ?) AND statut = 'actif'
         ");
-        $user->execute([$email]);
+        $user->execute([$identifiant, $identifiant]);
         $user_data = $user->fetch();
 
         if (!$user_data || !password_verify($password, $user_data['mot_de_passe'])) {
-            logAction('Tentative de connexion échouée', "Email: $email");
+            logAction('Tentative de connexion échouée', "Identifiant: $identifiant");
             $_SESSION['error_message'] = 'Identifiants incorrects.';
             redirect('login');
         }
 
         // Connexion réussie
         $_SESSION['utilisateur_id'] = $user_data['id'];
-        $_SESSION['utilisateur_nom'] = $user_data['nom'];
-        $_SESSION['utilisateur_email'] = $user_data['email'];
-        $_SESSION['utilisateur_role'] = $user_data['role_nom'];
+        $_SESSION['utilisateur_nom'] = $user_data['nom'] . ' ' . $user_data['prenom'];
+        $_SESSION['utilisateur_email'] = $user_data['email_real'];
+        $_SESSION['utilisateur_role'] = $user_data['role'];
 
-        logAction('Connexion réussie', "Utilisateur: {$user_data['nom']} {$user_data['prenom']}");
+        logAction('Connexion réussie', "Utilisateur: {$user_data['nom']}");
 
         // Rediriger vers le dashboard ou l'URL demandée
         $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : '';
@@ -109,7 +108,7 @@ function auth_forgotPassword() {
  * Traite la demande de réinitialisation de mot de passe
  */
 function auth_processForgotPassword() {
-    global $db;
+    $db = get_db_connection();
 
     // Vérifier le token CSRF
     if (!auth_verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {
@@ -165,7 +164,7 @@ function auth_processForgotPassword() {
  * Affiche le formulaire de réinitialisation de mot de passe
  */
 function auth_resetPassword() {
-    global $db;
+    $db = get_db_connection();
 
     $token = isset($_GET['token']) ? $_GET['token'] : '';
 
@@ -195,7 +194,7 @@ function auth_resetPassword() {
  * Traite la réinitialisation de mot de passe
  */
 function auth_processResetPassword() {
-    global $db;
+    $db = get_db_connection();
 
     // Vérifier le token CSRF
     if (!auth_verifyCsrfToken(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '')) {

@@ -1,135 +1,60 @@
-    <!-- Scripts supplémentaires -->
-    <?php if (isset($scripts_supplementaires)): ?>
-        <?php foreach ($scripts_supplementaires as $script): ?>
-            <script src="<?php echo $script; ?>"></script>
-        <?php endforeach; ?>
-    <?php endif; ?>
+<div class="toast hide notice shadow-none bg-transparent" id="cookie-notice" role="alert"
+  data-options='{"autoShow":true,"autoShowDelay":3000,"showOnce":true,"cookieExpireTime":7200000}' data-autohide="false"
+  aria-live="assertive" aria-atomic="true" style="max-width:35rem">
+  <div class="toast-body my-3 ms-0 ms-md-5">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex">
+          <div class="pe-3"><img src="assets/img/icons/cookie-1.png" width="40" alt="cookie" /></div>
+          <div>
+            <p>We use third party cookies to personalize content, ads and  analyze site traffic.</p><button
+              class="btn btn-sm btn-falcon-primary me-3" type="button" data-bs-dismiss="toast"
+              aria-label="Close">Okay</button><a class="learn-more me-3" href="#">Learn more<span
+                class="fas fa-chevron-right ms-1 fs-11"></span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <!-- Script principal du thème -->
-    <script src="<?php echo JS_PATH; ?>/theme.js"></script>
-    <script src="<?php echo JS_PATH; ?>/app.js"></script>
+<footer class="footer">
+  <div class="row g-0 justify-content-between fs-10 mt-4 mb-3">
+    <div class="col-12 col-sm-auto text-center">
+      <p class="mb-0 text-600">Merci d'avoir choisit Falcon<span class="d-none d-sm-inline-block">|
+        </span><br class="d-sm-none"> <?= date('Y') ?> © <a href="https://themewagon.com">calvindev</a></p>
+    </div>
+    <div class="col-12 col-sm-auto text-center">
+      <p class="mb-0 text-600">v3.22.0</p>
+    </div>
+  </div>
+</footer>
+</div>
 
-    <!-- Script de configuration -->
-    <script src="<?php echo JS_PATH; ?>/config.js"></script>
+</div>
+</main>
+<!-- ===============================================-->
+<!--    End of Main Content-->
+<!-- ===============================================-->
 
-    <!-- Initialisation finale -->
-    <script>
-        // Masquer le spinner de chargement
-        document.getElementById('loading-spinner').classList.add('d-none');
+<!-- ===============================================-->
+<!--    JavaScripts-->
+<!-- ===============================================-->
+<script src="<?= LIBS_URL ?>echarts/echarts.min.js"></script>
+<script src="<?= LIBS_URL ?>popper/popper.min.js"></script>
+<script src="<?= LIBS_URL ?>bootstrap/bootstrap.min.js"></script>
+<script src="<?= LIBS_URL ?>anchorjs/anchor.min.js"></script>
+<script src="<?= LIBS_URL ?>is/is.min.js"></script>
+<script src="<?= LIBS_URL ?>flatpickr/flatpickr.min.js"></script>
+<script src="<?= LIBS_URL ?>fontawesome/all.min.js"></script>
 
-        // Initialisation des tooltips Bootstrap
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+<!-- <script src="assets/libs/list.js/list.min.js"></script> -->
+<!-- <script src="assets/libs/dropzone/dropzone-min.js"></script> -->
+<!-- <script src="assets/libs/lottie/lottie.min.js"></script> -->
+<!-- <script src="assets/libs/dayjs/dayjs.min.js"></script> -->
+<script src="<?= LIBS_URL ?>lodash/lodash.min.js"></script>
+<script src="assets/js/theme.js"></script>
 
-        // Gestion des erreurs JavaScript
-        window.addEventListener('error', function(e) {
-            console.error('Erreur JavaScript:', e.error);
-            // Envoi à un service de monitoring si configuré
-        });
-
-        // Gestion des erreurs de promesse non gérées
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('Promesse rejetée non gérée:', e.reason);
-        });
-
-        // Confirmation avant fermeture de page avec des modifications non sauvegardées
-        let hasUnsavedChanges = false;
-
-        window.addEventListener('beforeunload', function(e) {
-            if (hasUnsavedChanges) {
-                e.preventDefault();
-                e.returnValue = 'Vous avez des modifications non sauvegardées. Voulez-vous vraiment quitter ?';
-                return e.returnValue;
-            }
-        });
-
-        // Fonction pour marquer les changements comme non sauvegardés
-        window.markAsUnsaved = function() {
-            hasUnsavedChanges = true;
-        };
-
-        // Fonction pour marquer les changements comme sauvegardés
-        window.markAsSaved = function() {
-            hasUnsavedChanges = false;
-        };
-
-        // Auto-save pour les formulaires (optionnel)
-        document.addEventListener('input', function(e) {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                window.markAsUnsaved();
-            }
-        });
-
-        // Gestion du thème sombre/clair (si implémenté)
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-theme');
-                const isDark = document.body.classList.contains('dark-theme');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            });
-
-            // Restaurer le thème sauvegardé
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-            }
-        }
-
-        // Fonction de recherche globale (si barre de recherche présente)
-        const globalSearch = document.getElementById('global-search');
-        if (globalSearch) {
-            let searchTimeout;
-            globalSearch.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    const query = this.value.trim();
-                    if (query.length >= 3) {
-                        // Implémenter la recherche globale
-                        console.log('Recherche globale:', query);
-                    }
-                }, 300);
-            });
-        }
-
-        // Gestion des raccourcis clavier
-        document.addEventListener('keydown', function(e) {
-            // Ctrl/Cmd + S pour sauvegarder
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                const saveBtn = document.querySelector('[data-action="save"], .btn-save, #save-btn');
-                if (saveBtn) {
-                    saveBtn.click();
-                }
-            }
-
-            // Échap pour fermer les modales
-            if (e.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal.show');
-                modals.forEach(modal => {
-                    const bsModal = bootstrap.Modal.getInstance(modal);
-                    if (bsModal) {
-                        bsModal.hide();
-                    }
-                });
-            }
-        });
-
-        // Performance monitoring (optionnel)
-        if ('performance' in window && 'timing' in performance) {
-            window.addEventListener('load', function() {
-                const perfData = performance.timing;
-                const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-                console.log('Temps de chargement de la page:', pageLoadTime + 'ms');
-
-                // Envoi à un service de monitoring si configuré
-            });
-        }
-
-        // Initialisation terminée
-        console.log('LaVision - Initialisation terminée');
-    </script>
 </body>
+
 </html>

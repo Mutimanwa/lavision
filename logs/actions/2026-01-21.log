@@ -1,0 +1,8 @@
+[2026-01-21 18:23:00] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion DB établie - Description: Etablissement de la connexion à la base de données - Context: {"host":"localhost","base":"gestion_academique_ecole","charset":"utf8mb4"}
+[2026-01-21 18:23:00] ACTION - IP: 127.0.0.1 - User: system - Action: Erreur récupération stats dashboard - Description: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'montant' in 'field list'
+[2026-01-21 18:23:10] ACTION - IP: 127.0.0.1 - User: system - Action: Déconnexion - Description: Utilisateur: Admin Super
+[2026-01-21 18:23:10] ACTION - IP: 127.0.0.1 - User: system - Action: Page chargée - Description: Chargement de la page - Context: {"page":"login"}
+[2026-01-21 18:23:18] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion DB établie - Description: Etablissement de la connexion à la base de données - Context: {"host":"localhost","base":"gestion_academique_ecole","charset":"utf8mb4"}
+[2026-01-21 18:23:18] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion réussie - Description: Utilisateur: Admin
+[2026-01-21 18:23:18] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion DB établie - Description: Etablissement de la connexion à la base de données - Context: {"host":"localhost","base":"gestion_academique_ecole","charset":"utf8mb4"}
+[2026-01-21 18:23:18] ACTION - IP: 127.0.0.1 - User: system - Action: Erreur récupération stats dashboard - Description: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'montant' in 'field list'

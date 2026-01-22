@@ -19,7 +19,7 @@ function admin_utilisateurs() {
 
     // Vérifier les permissions
     if (!hasPermission('admin.users')) {
-        redirect('dashboard', 'Accès non autorisé', 'error');
+        redirect('dashboard', ['Accès non autorisé', 'error']);
     }
 
     $page = $_GET['page'] ?? 1;
@@ -47,7 +47,7 @@ function admin_parametres() {
 
     // Vérifier les permissions
     if (!hasPermission('admin.settings')) {
-        redirect('dashboard', 'Accès non autorisé', 'error');
+        load_error_page(403);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -69,7 +69,7 @@ function admin_anneeScolaire() {
 
     // Vérifier les permissions
     if (!hasPermission('admin.settings')) {
-        redirect('dashboard', 'Accès non autorisé', 'error');
+        redirect('dashboard', ['access' =>'Accès non autorisé', 'success' => 'error']);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -91,7 +91,7 @@ function admin_logs() {
 
     // Vérifier les permissions
     if (!hasPermission('admin.logs')) {
-        redirect('dashboard', 'Accès non autorisé', 'error');
+        redirect('dashboard', ['Accès non autorisé', 'error']);
     }
 
     $page = $_GET['page'] ?? 1;
@@ -122,7 +122,7 @@ function admin_backup() {
 
     // Vérifier les permissions
     if (!hasPermission('admin.backup')) {
-        redirect('dashboard', 'Accès non autorisé', 'error');
+        redirect('dashboard', ['Accès non autorisé', 'error']);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -144,7 +144,7 @@ function admin_restore() {
 
     // Vérifier les permissions
     if (!hasPermission('admin.backup')) {
-        redirect('/dashboard', 'Accès non autorisé', 'error');
+        redirect('/dashboard', ['Accès non autorisé', 'error']);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -164,22 +164,22 @@ function admin_restore() {
 function admin_handleParametresUpdate() {
     global $adminModel;
 
-    validateCSRF();
+    validateCSRFToken($_POST['csrf_token'] ?? '');
 
     $parametres = $_POST['parametres'] ?? [];
 
     if ($adminModel->updateParametres($parametres)) {
         logAction('admin', 'Modification des paramètres système', ['count' => count($parametres)]);
-        redirect('administration/parametres', 'Paramètres mis à jour avec succès', 'success');
+        redirect('administration/parametres', ['Paramètres mis à jour avec succès', 'success']);
     } else {
-        redirect('administration/parametres', 'Erreur lors de la mise à jour des paramètres', 'error');
+        redirect('administration/parametres', ['Erreur lors de la mise à jour des paramètres', 'error']);
     }
 }
 
 function admin_handleAnneeScolaireUpdate() {
     global $adminModel;
 
-    validateCSRF();
+    validateCSRFToken($_POST['csrf_token'] ?? '');
 
     $action = $_POST['action'] ?? '';
 
@@ -194,7 +194,7 @@ function admin_handleAnneeScolaireUpdate() {
 
             if ($adminModel->creerAnneeScolaire($data)) {
                 logAction('admin', 'Création d\'une année scolaire', $data);
-                redirect('administration/annee-scolaire', 'Année scolaire créée avec succès', 'success');
+                redirect('administration/annee-scolaire', ['Année scolaire créée avec succès', 'success']);
             }
             break;
 
@@ -209,7 +209,7 @@ function admin_handleAnneeScolaireUpdate() {
 
             if ($adminModel->modifierAnneeScolaire($annee_id, $data)) {
                 logAction('admin', 'Modification d\'une année scolaire', array_merge(['annee_id' => $annee_id], $data));
-                redirect('administration/annee-scolaire', 'Année scolaire modifiée avec succès', 'success');
+                redirect('administration/annee-scolaire', ['Année scolaire modifiée avec succès', 'success']);
             }
             break;
 
@@ -217,41 +217,41 @@ function admin_handleAnneeScolaireUpdate() {
             $annee_id = $_POST['annee_id'] ?? 0;
             if ($adminModel->activerAnneeScolaire($annee_id)) {
                 logAction('admin', 'Activation d\'une année scolaire', ['annee_id' => $annee_id]);
-                redirect('administration/annee-scolaire', 'Année scolaire activée avec succès', 'success');
+                redirect('administration/annee-scolaire', ['Année scolaire activée avec succès', 'success']);
             }
             break;
     }
 
-    redirect('administration/annee-scolaire', 'Erreur lors de l\'opération', 'error');
+    redirect('administration/annee-scolaire', ['Erreur lors de l\'opération', 'error']);
 }
 
 function admin_handleBackupAction() {
     global $adminModel;
 
-    validateCSRF();
+    validateCSRFToken($_POST['csrf_token'] ?? '');
 
     $type = $_POST['type'] ?? 'manuel';
 
     if ($adminModel->creerSauvegarde($type)) {
         logAction('admin', 'Création d\'une sauvegarde', ['type' => $type]);
-        redirect('administration/backup', 'Sauvegarde créée avec succès', 'success');
+        redirect('administration/backup', ['Sauvegarde créée avec succès', 'success']);
     } else {
-        redirect('administration/backup', 'Erreur lors de la création de la sauvegarde', 'error');
+        redirect('administration/backup', ['Erreur lors de la création de la sauvegarde', 'error']);
     }
 }
 
 function admin_handleRestoreAction() {
     global $adminModel;
 
-    validateCSRF();
+    validateCSRFToken($_POST['csrf_token'] ?? '');
 
     $backup_id = $_POST['backup_id'] ?? 0;
 
     if ($adminModel->restaurerSauvegarde($backup_id)) {
         logAction('admin', 'Restauration d\'une sauvegarde', ['backup_id' => $backup_id]);
-        redirect('administration/backup', 'Sauvegarde restaurée avec succès', 'success');
+        redirect('administration/backup', ['Sauvegarde restaurée avec succès', 'success']);
     } else {
-        redirect('administration/backup', 'Erreur lors de la restauration', 'error');
+        redirect('administration/backup', ['Erreur lors de la restauration', 'error']);
     }
 }
 ?>

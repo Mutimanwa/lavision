@@ -69,11 +69,15 @@ $routes = [
     'academique/options' => 'academique/options.php',
     'academique/classes' => 'academique/classes.php',
     'academique/matieres' => 'academique/matieres.php',
+    'academique/matieres/ajouter' => 'academique/formulaire_matiere.php',
     'academique/horaires' => 'academique/horaires.php',
 
     // Gestion du personnel
     'personnel/professeurs' => 'personnel/professeurs.php',
     'personnel/personnels' => 'personnel/personnels.php',
+    'personnel/detail' => 'personnel/detail.php',
+    'personnel/professeurs/ajouter' => 'personnel/formulaire_professeur.php',
+    'personnel/modifier' => 'personnel/modifier.php',
 
     // Cours et examens
     'cours/planification' => 'cours/planification.php',

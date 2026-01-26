@@ -16,23 +16,40 @@ require_once __DIR__ . '/../Services/database.php';
 /**
  * Récupère un élève par son ID
  *
- * @param int $id_eleve ID de l'élève
+ * @param int $eleve_id ID de l'élève
  * @return array|null Données de l'élève ou null si non trouvé
  */
-function get_eleve_par_id(int $id_eleve): ?array
+function get_eleve_par_id(int $eleve_id): ?array
 {
-    $sql = "SELECT e.*, u.email, u.role, u.date_creation as date_inscription,
-                   c.nom_classe, c.niveau, c.section,
-                   p.nom_complet as nom_parent, p.telephone as tel_parent, p.email as email_parent
+    $pdo = get_db_connection();
+
+    try {
+        $stmt = $pdo->prepare("
+            SELECT e.*, adm.class_id, c.libelle as classe_nom,
+                   n.nom_niveau, s.nom_section, a.annee_libelle,
+                   GROUP_CONCAT(DISTINCT CONCAT(p.prenom, ' ', p.nom) SEPARATOR '; ') as parents_info
             FROM eleves e
-            LEFT JOIN utilisateurs u ON e.id_utilisateur = u.id
-            LEFT JOIN classes c ON e.id_classe = c.id
-            LEFT JOIN parents p ON e.id_parent = p.id
-            WHERE e.id = ? AND e.statut != 'supprime'";
+            LEFT JOIN admissions adm ON e.eleve_id = adm.eleve_id AND adm.statut_admission = 'approuve'
+            LEFT JOIN classes c ON adm.class_id = c.class_id
+            LEFT JOIN niveau n ON c.niveau_id = n.niveau_id
+            LEFT JOIN sections s ON c.section_id = s.section_id
+            LEFT JOIN annees_scolaire a ON c.annee_id = a.annee_id
+            LEFT JOIN student_parents sp ON e.eleve_id = sp.eleve_id
+            LEFT JOIN parents p ON sp.parent_id = p.parent_id
+            WHERE e.eleve_id = ? AND e.statut_etudiant != 'desiste'
+            GROUP BY e.eleve_id
+        ");
 
-    $result = db_query($sql, [$id_eleve]);
+        $stmt->execute([$eleve_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 
-    return $result ? $result[0] : null;
+    } catch (PDOException $e) {
+        logError('Erreur récupération élève par ID', [
+            'eleve_id' => $eleve_id,
+            'error' => $e->getMessage()
+        ]);
+        return null;
+    }
 }
 
 /**
@@ -47,52 +64,84 @@ function get_eleve_par_id(int $id_eleve): ?array
  */
 function get_eleves_pagines(array $filtres, int $page, int $par_page, string $tri, string $ordre): array
 {
-    $offset = ($page - 1) * $par_page;
+    $pdo = get_db_connection();
 
-    // Construction de la requête avec filtres
-    $where = ["statut_etudiant != 'desiste'"];
-    $params = [];
+    try {
+        $offset = ($page - 1) * $par_page;
 
-    if (!empty($filtres['nom'])) {
-        $where[] = "(nom LIKE ? OR post_nom LIKE ? OR prenom LIKE ?)";
-        $params[] = '%' . $filtres['nom'] . '%';
-        $params[] = '%' . $filtres['nom'] . '%';
-        $params[] = '%' . $filtres['nom'] . '%';
-    }
+        // Construction de la requête avec filtres
+        $where = ["e.statut_etudiant != 'desiste'"];
+        $params = [];
 
-    if(!empty($filtres['nationalite'])){
-        $where[] = "nationalite = ?";
-        $params[] = $filtres['nationalite'];
-    }
+        if (!empty($filtres['nom'])) {
+            $where[] = "(e.nom LIKE ? OR e.post_nom LIKE ? OR e.prenom LIKE ?)";
+            $params[] = '%' . $filtres['nom'] . '%';
+            $params[] = '%' . $filtres['nom'] . '%';
+            $params[] = '%' . $filtres['nom'] . '%';
+        }
 
-    if (!empty($filtres['statut'])) {
-        $where[] = "statut_etudiant = ?";
-        $params[] = $filtres['statut'];
-    }
+        if (!empty($filtres['nationalite'])) {
+            $where[] = "e.nationalite = ?";
+            $params[] = $filtres['nationalite'];
+        }
 
-    if (!empty($filtres['genre'])) {
-        $where[] = "genre = ?";
-        $params[] = $filtres['genre'];
-    }
+        if (!empty($filtres['statut'])) {
+            $where[] = "e.statut_etudiant = ?";
+            $params[] = $filtres['statut'];
+        }
 
-    $where_clause = implode(' AND ', $where);
+        if (!empty($filtres['genre'])) {
+            $where[] = "e.genre = ?";
+            $params[] = $filtres['genre'];
+        }
 
-    // Validation du champ de tri
-    $champs_tri_valides = ['nom', 'post_nom', 'prenom', 'date_naissance', 'date_inscription', 'nom_classe'];
-    if (!in_array($tri, $champs_tri_valides)) {
-        $tri = 'nom';
-    }
+        if (!empty($filtres['classe'])) {
+            $where[] = "adm.class_id = ?";
+            $params[] = $filtres['classe'];
+        }
 
-    // Validation de l'ordre
-    $ordre = strtoupper($ordre) === 'DESC' ? 'DESC' : 'ASC';
+        $where_clause = implode(' AND ', $where);
 
-    $sql = "SELECT * 
-            FROM eleves 
+        // Validation du champ de tri
+        $champs_tri_valides = ['nom', 'post_nom', 'prenom', 'date_naissance', 'date_inscription', 'libelle'];
+        if (!in_array($tri, $champs_tri_valides)) {
+            $tri = 'nom';
+        }
+
+        // Validation de l'ordre
+        $ordre = strtoupper($ordre) === 'DESC' ? 'DESC' : 'ASC';
+
+        $stmt = $pdo->prepare("
+            SELECT e.*, adm.class_id, c.libelle as classe_nom,
+                   n.nom_niveau, s.nom_section, a.annee_libelle,
+                   GROUP_CONCAT(DISTINCT CONCAT(p.prenom, ' ', p.nom) SEPARATOR '; ') as parents_info
+            FROM eleves e
+            LEFT JOIN admissions adm ON e.eleve_id = adm.eleve_id AND adm.statut_admission = 'approuve'
+            LEFT JOIN classes c ON adm.class_id = c.class_id
+            LEFT JOIN niveau n ON c.niveau_id = n.niveau_id
+            LEFT JOIN sections s ON c.section_id = s.section_id
+            LEFT JOIN annees_scolaire a ON c.annee_id = a.annee_id
+            LEFT JOIN student_parents sp ON e.eleve_id = sp.eleve_id
+            LEFT JOIN parents p ON sp.parent_id = p.parent_id
             WHERE $where_clause
-            ORDER BY $tri $ordre
-            LIMIT $par_page OFFSET $offset";
+            GROUP BY e.eleve_id
+            ORDER BY e.$tri $ordre
+            LIMIT ? OFFSET ?
+        ");
 
-    return db_query($sql, $params);
+        $params[] = $par_page;
+        $params[] = $offset;
+
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        logError('Erreur récupération élèves paginés', [
+            'filtres' => $filtres,
+            'error' => $e->getMessage()
+        ]);
+        return [];
+    }
 }
 
 /**
@@ -103,36 +152,58 @@ function get_eleves_pagines(array $filtres, int $page, int $par_page, string $tr
  */
 function compter_eleves(array $filtres): int
 {
-    $where = ["statut_etudiant != 'desiste'"];
-    $params = [];
+    $pdo = get_db_connection();
 
-    if (!empty($filtres['nom'])) {
-        $where[] = "(nom LIKE ? OR post_nom LIKE ? OR prenom LIKE ?)";
-        $params[] = '%' . $filtres['nom'] . '%';
-        $params[] = '%' . $filtres['nom'] . '%';
-        $params[] = '%' . $filtres['nom'] . '%';
+    try {
+        $where = ["e.statut_etudiant != 'desiste'"];
+        $params = [];
+
+        if (!empty($filtres['nom'])) {
+            $where[] = "(e.nom LIKE ? OR e.post_nom LIKE ? OR e.prenom LIKE ?)";
+            $params[] = '%' . $filtres['nom'] . '%';
+            $params[] = '%' . $filtres['nom'] . '%';
+            $params[] = '%' . $filtres['nom'] . '%';
+        }
+
+        if (!empty($filtres['nationalite'])) {
+            $where[] = "e.nationalite = ?";
+            $params[] = $filtres['nationalite'];
+        }
+
+        if (!empty($filtres['statut'])) {
+            $where[] = "e.statut_etudiant = ?";
+            $params[] = $filtres['statut'];
+        }
+
+        if (!empty($filtres['genre'])) {
+            $where[] = "e.genre = ?";
+            $params[] = $filtres['genre'];
+        }
+
+        if (!empty($filtres['classe'])) {
+            $where[] = "adm.class_id = ?";
+            $params[] = $filtres['classe'];
+        }
+
+        $where_clause = implode(' AND ', $where);
+
+        $stmt = $pdo->prepare("
+            SELECT COUNT(DISTINCT e.eleve_id) as total
+            FROM eleves e
+            LEFT JOIN admissions adm ON e.eleve_id = adm.eleve_id AND adm.statut_admission = 'approuve'
+            WHERE $where_clause
+        ");
+
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
+
+    } catch (PDOException $e) {
+        logError('Erreur comptage élèves', [
+            'filtres' => $filtres,
+            'error' => $e->getMessage()
+        ]);
+        return 0;
     }
-
-     if(!empty($filtres['nationalite'])){
-        $where[] = "nationalite = ?";
-        $params[] = $filtres['nationalite'];
-    }
-
-    if (!empty($filtres['statut_etudiant'])) {
-        $where[] = "statut_etudiant = ?";
-        $params[] = $filtres['statut_etudiant'];
-    }
-
-    if (!empty($filtres['genre'])) {
-        $where[] = "genre = ?";
-        $params[] = $filtres['genre'];
-    }
-
-    $where_clause = implode(' AND ', $where);
-    $sql = "SELECT COUNT(*) as total FROM eleves WHERE $where_clause";
-
-    $result = db_query($sql, $params);
-    return $result ? (int)$result[0]['total'] : 0;
 }
 
 /**
@@ -143,61 +214,46 @@ function compter_eleves(array $filtres): int
  */
 function ajouter_eleve(array $donnees): int|bool
 {
-    // Démarrage de la transaction
-    db_begin_transaction();
+    $pdo = get_db_connection();
 
     try {
-        // Insertion dans la table utilisateurs d'abord
-        $sql_user = "INSERT INTO utilisateurs (email, mot_de_passe, role, date_creation)
-                     VALUES (?, ?, 'eleve', NOW())";
+        // Générer un matricule unique
+        $matricule = generer_matricule_eleve();
 
-        $mot_de_passe_hash = password_hash($donnees['mot_de_passe'] ?? 'password123', PASSWORD_DEFAULT);
-        $id_utilisateur = db_insert($sql_user, [$donnees['email'], $mot_de_passe_hash]);
+        $stmt = $pdo->prepare("
+            INSERT INTO eleves (
+                matricule, nom, post_nom, prenom, date_naissance, lieu_naissance,
+                genre, nationalite, telephone, email, adresse, photo,
+                groupe_sanguin, allergies, statut_etudiant, date_inscription, date_creation
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        ");
 
-        if (!$id_utilisateur) {
-            throw new Exception("Erreur lors de la création de l'utilisateur");
-        }
-
-        // Insertion dans la table eleves
-        $sql_eleve = "INSERT INTO eleves (
-            id_utilisateur, nom, post_nom, prenom, date_naissance, lieu_naissance,
-            genre, groupe_sanguin, adresse, telephone, email, id_classe, id_parent,
-            date_inscription, statut, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, NOW())";
-
-        $params = [
-            $id_utilisateur,
+        $stmt->execute([
+            $matricule,
             $donnees['nom'],
             $donnees['post_nom'],
             $donnees['prenom'],
             $donnees['date_naissance'],
             $donnees['lieu_naissance'] ?? null,
-            $donnees['genre'],
-            $donnees['groupe_sanguin'] ?? null,
-            $donnees['adresse'] ?? null,
+            $donnees['genre'] ?? 'Autre',
+            $donnees['nationalite'] ?? 'Congolaise',
             $donnees['telephone'] ?? null,
-            $donnees['email'],
-            // $donnees['id_classe'] ?? null,
-            // $donnees['id_parent'] ?? null,
-            $donnees['date_inscription'] ?? date('Y-m-d'),
-            $donnees['statut'] ?? 'en_attente'
-        ];
+            $donnees['email'] ?? null,
+            $donnees['adresse'] ?? null,
+            $donnees['photo'] ?? null,
+            $donnees['groupe_sanguin'] ?? null,
+            $donnees['allergies'] ?? null,
+            $donnees['statut_etudiant'] ?? 'en_attente',
+            $donnees['date_inscription'] ?? date('Y-m-d')
+        ]);
 
-        $id_eleve = db_insert($sql_eleve, $params);
+        return $pdo->lastInsertId();
 
-        if (!$id_eleve) {
-            throw new Exception("Erreur lors de la création de l'élève");
-        }
-
-        // Validation de la transaction
-        db_commit();
-
-        return $id_eleve;
-
-    } catch (Exception $e) {
-        // Annulation de la transaction en cas d'erreur
-        db_rollback();
-        logError('Erreur ajout élève', ['error' => $e->getMessage(), 'donnees' => $donnees]);
+    } catch (PDOException $e) {
+        logError('Erreur ajout élève', [
+            'error' => $e->getMessage(),
+            'donnees' => $donnees
+        ]);
         return false;
     }
 }
@@ -205,52 +261,50 @@ function ajouter_eleve(array $donnees): int|bool
 /**
  * Modifie un élève existant
  *
- * @param int $id_eleve ID de l'élève
+ * @param int $eleve_id ID de l'élève
  * @param array $donnees Nouvelles données
  * @return bool Succès de la modification
  */
-function modifier_eleve(int $id_eleve, array $donnees): bool
+function modifier_eleve(int $eleve_id, array $donnees): bool
 {
-    try {
-        $sql = "UPDATE eleves SET
-                nom = ?, post_nom = ?, prenom = ?, date_naissance = ?,
-                lieu_naissance = ?, genre = ?, groupe_sanguin = ?,
-                adresse = ?, telephone = ?, email = ?, id_classe = ?,
-                id_parent = ?, statut = ?, updated_at = NOW()
-                WHERE id = ?";
+    $pdo = get_db_connection();
 
-        $params = [
+    try {
+        $stmt = $pdo->prepare("
+            UPDATE eleves SET
+                nom = ?, post_nom = ?, prenom = ?, date_naissance = ?,
+                lieu_naissance = ?, genre = ?, nationalite = ?,
+                telephone = ?, email = ?, adresse = ?, photo = ?,
+                groupe_sanguin = ?, allergies = ?, statut_etudiant = ?,
+                date_modif = NOW()
+            WHERE eleve_id = ?
+        ");
+
+        $stmt->execute([
             $donnees['nom'],
             $donnees['post_nom'],
             $donnees['prenom'],
             $donnees['date_naissance'],
             $donnees['lieu_naissance'] ?? null,
-            $donnees['genre'],
-            $donnees['groupe_sanguin'] ?? null,
-            $donnees['adresse'] ?? null,
+            $donnees['genre'] ?? 'Autre',
+            $donnees['nationalite'] ?? 'Congolaise',
             $donnees['telephone'] ?? null,
-            $donnees['email'],
-            $donnees['id_classe'] ?? null,
-            $donnees['id_parent'] ?? null,
-            $donnees['statut'] ?? 'actif',
-            $id_eleve
-        ];
+            $donnees['email'] ?? null,
+            $donnees['adresse'] ?? null,
+            $donnees['photo'] ?? null,
+            $donnees['groupe_sanguin'] ?? null,
+            $donnees['allergies'] ?? null,
+            $donnees['statut_etudiant'] ?? 'actif',
+            $eleve_id
+        ]);
 
-        $result = db_execute($sql, $params);
+        return true;
 
-        // Mise à jour de l'email dans la table utilisateurs si changé
-        if (isset($donnees['email'])) {
-            $eleve = get_eleve_par_id($id_eleve);
-            if ($eleve && $eleve['email'] !== $donnees['email']) {
-                db_execute("UPDATE utilisateurs SET email = ? WHERE id = ?",
-                          [$donnees['email'], $eleve['id_utilisateur']]);
-            }
-        }
-
-        return $result !== false;
-
-    } catch (Exception $e) {
-        logError('Erreur modification élève', ['id_eleve' => $id_eleve, 'error' => $e->getMessage()]);
+    } catch (PDOException $e) {
+        logError('Erreur modification élève', [
+            'eleve_id' => $eleve_id,
+            'error' => $e->getMessage()
+        ]);
         return false;
     }
 }
@@ -258,16 +312,21 @@ function modifier_eleve(int $id_eleve, array $donnees): bool
 /**
  * Désinscrit un élève (changement de statut)
  *
- * @param int $id_eleve ID de l'élève
+ * @param int $eleve_id ID de l'élève
  * @return bool Succès de la désinscription
  */
-function desinscrire_eleve(int $id_eleve): bool
+function desinscrire_eleve(int $eleve_id): bool
 {
+    $pdo = get_db_connection();
+
     try {
-        $sql = "UPDATE eleves SET statut_etudiant = 'desiste', date_modif = NOW() WHERE id = ?";
-        return db_execute($sql, [$id_eleve]) !== false;
-    } catch (Exception $e) {
-        logError('Erreur désinscription élève', ['id_eleve' => $id_eleve, 'error' => $e->getMessage()]);
+        $stmt = $pdo->prepare("UPDATE eleves SET statut_etudiant = 'desiste', date_modif = NOW() WHERE eleve_id = ?");
+        return $stmt->execute([$eleve_id]);
+    } catch (PDOException $e) {
+        logError('Erreur désinscription élève', [
+            'eleve_id' => $eleve_id,
+            'error' => $e->getMessage()
+        ]);
         return false;
     }
 }
@@ -275,32 +334,22 @@ function desinscrire_eleve(int $id_eleve): bool
 /**
  * Supprime définitivement un élève (utiliser avec précaution)
  *
- * @param int $id_eleve ID de l'élève
+ * @param int $eleve_id ID de l'élève
  * @return bool Succès de la suppression
  */
-function supprimer_eleve_definitivement(int $id_eleve): bool
+function supprimer_eleve_definitivement(int $eleve_id): bool
 {
-    // Récupération des infos avant suppression
-    $eleve = get_eleve_par_id($id_eleve);
-    if (!$eleve) {
-        return false;
-    }
-
-    db_begin_transaction();
+    $pdo = get_db_connection();
 
     try {
-        // Suppression de l'élève
-        db_execute("UPDATE eleves SET statut = 'supprime', updated_at = NOW() WHERE id = ?", [$id_eleve]);
-
-        // Suppression de l'utilisateur associé (optionnel, selon la politique)
-        // db_execute("DELETE FROM utilisateurs WHERE id = ?", [$eleve['id_utilisateur']]);
-
-        db_commit();
-        return true;
-
-    } catch (Exception $e) {
-        db_rollback();
-        logError('Erreur suppression élève', ['id_eleve' => $id_eleve, 'error' => $e->getMessage()]);
+        // Au lieu de supprimer, on marque comme supprimé pour conserver l'historique
+        $stmt = $pdo->prepare("UPDATE eleves SET statut_etudiant = 'desiste', date_modif = NOW() WHERE eleve_id = ?");
+        return $stmt->execute([$eleve_id]);
+    } catch (PDOException $e) {
+        logError('Erreur suppression élève', [
+            'eleve_id' => $eleve_id,
+            'error' => $e->getMessage()
+        ]);
         return false;
     }
 }
@@ -340,17 +389,34 @@ function rechercher_eleves(string $recherche, int $limit = 10): array
 /**
  * Récupère les élèves d'une classe spécifique
  *
- * @param int $id_classe ID de la classe
+ * @param int $class_id ID de la classe
  * @return array Liste des élèves
  */
-function get_eleves_par_classe(int $id_classe): array
+function get_eleves_par_classe(int $class_id): array
 {
-    $sql = "SELECT e.*, CONCAT(e.nom, ' ', e.post_nom, ' ', e.prenom) as nom_complet
-            FROM eleves e
-            WHERE e.id_classe = ? AND e.statut = 'actif'
-            ORDER BY e.nom, e.post_nom, e.prenom";
+    $pdo = get_db_connection();
 
-    return db_query($sql, [$id_classe]);
+    try {
+        $stmt = $pdo->prepare("
+            SELECT e.*, CONCAT(e.nom, ' ', e.post_nom, ' ', e.prenom) as nom_complet,
+                   adm.date_admission, adm.statut_admission
+            FROM eleves e
+            JOIN admissions adm ON e.eleve_id = adm.eleve_id
+            WHERE adm.class_id = ? AND adm.statut_admission = 'approuve'
+            AND e.statut_etudiant = 'actif'
+            ORDER BY e.nom, e.post_nom, e.prenom
+        ");
+
+        $stmt->execute([$class_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        logError('Erreur récupération élèves par classe', [
+            'class_id' => $class_id,
+            'error' => $e->getMessage()
+        ]);
+        return [];
+    }
 }
 
 /**
@@ -360,25 +426,37 @@ function get_eleves_par_classe(int $id_classe): array
  */
 function get_statistiques_eleves(): array
 {
-    $stats = [];
+    $pdo = get_db_connection();
 
-    // Total par statut
-    $sql = "SELECT statut, COUNT(*) as nombre FROM eleves WHERE statut != 'supprime' GROUP BY statut";
-    $stats['par_statut'] = db_query($sql);
+    try {
+        $stats = [];
 
-    // Total par genre
-    $sql = "SELECT genre, COUNT(*) as nombre FROM eleves WHERE statut != 'supprime' GROUP BY genre";
-    $stats['par_genre'] = db_query($sql);
+        // Total par statut
+        $stmt = $pdo->query("SELECT statut_etudiant, COUNT(*) as nombre FROM eleves GROUP BY statut_etudiant");
+        $stats['par_statut'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Total par classe
-    $sql = "SELECT c.nom_classe, COUNT(e.id) as nombre
+        // Total par genre
+        $stmt = $pdo->query("SELECT genre, COUNT(*) as nombre FROM eleves GROUP BY genre");
+        $stats['par_genre'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Total par classe
+        $stmt = $pdo->prepare("
+            SELECT c.libelle as classe_nom, COUNT(adm.eleve_id) as nombre
             FROM classes c
-            LEFT JOIN eleves e ON c.id = e.id_classe AND e.statut = 'actif'
-            GROUP BY c.id, c.nom_classe
-            ORDER BY c.nom_classe";
-    $stats['par_classe'] = db_query($sql);
+            LEFT JOIN admissions adm ON c.class_id = adm.class_id AND adm.statut_admission = 'approuve'
+            LEFT JOIN eleves e ON adm.eleve_id = e.eleve_id AND e.statut_etudiant = 'actif'
+            GROUP BY c.class_id, c.libelle
+            ORDER BY c.libelle
+        ");
+        $stmt->execute();
+        $stats['par_classe'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return $stats;
+        return $stats;
+
+    } catch (PDOException $e) {
+        logError('Erreur récupération statistiques élèves', ['error' => $e->getMessage()]);
+        return [];
+    }
 }
 
 // =============================================
@@ -388,58 +466,126 @@ function get_statistiques_eleves(): array
 /**
  * Récupère les notes d'un élève
  *
- * @param int $id_eleve ID de l'élève
+ * @param int $eleve_id ID de l'élève
  * @return array Notes de l'élève
  */
-function get_notes_eleve(int $id_eleve): array
+function get_notes_eleve(int $eleve_id): array
 {
-    $sql = "SELECT n.*, m.nom_matiere, m.coefficient, c.nom_classe,
-                   CONCAT(p.nom, ' ', p.prenom) as nom_professeur
-            FROM notes n
-            JOIN matieres m ON n.id_matiere = m.id
-            LEFT JOIN classes c ON n.id_classe = c.id
-            LEFT JOIN professeurs p ON n.id_professeur = p.id
-            WHERE n.id_eleve = ?
-            ORDER BY n.date_evaluation DESC, m.nom_matiere";
+    $pdo = get_db_connection();
 
-    return db_query($sql, [$id_eleve]);
+    try {
+        $stmt = $pdo->prepare("
+            SELECT n.*, m.nom_matiere, m.coefficient,
+                   CONCAT(p.prenom, ' ', p.nom) as nom_professeur,
+                   a.annee_libelle, n.periode
+            FROM notes n
+            JOIN matieres m ON n.matiere_id = m.matiere_id
+            LEFT JOIN professeurs p ON n.professeur_id = p.professeur_id
+            LEFT JOIN annees_scolaire a ON n.annee_id = a.annee_id
+            WHERE n.eleve_id = ?
+            ORDER BY n.date_evaluation DESC, m.nom_matiere
+        ");
+
+        $stmt->execute([$eleve_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        logError('Erreur récupération notes élève', [
+            'eleve_id' => $eleve_id,
+            'error' => $e->getMessage()
+        ]);
+        return [];
+    }
 }
 
 /**
- * Récupère les présences d'un élève
+ * Récupère les absences d'un élève
  *
- * @param int $id_eleve ID de l'élève
- * @return array Présences de l'élève
+ * @param int $eleve_id ID de l'élève
+ * @return array Absences de l'élève
  */
-function get_presences_eleve(int $id_eleve): array
+function get_absences_eleve(int $eleve_id): array
 {
-    $sql = "SELECT p.*, m.nom_matiere, c.nom_classe,
-                   CONCAT(prof.nom, ' ', prof.prenom) as nom_professeur
-            FROM presences p
-            JOIN matieres m ON p.id_matiere = m.id
-            LEFT JOIN classes c ON p.id_classe = c.id
-            LEFT JOIN professeurs prof ON p.id_professeur = prof.id
-            WHERE p.id_eleve = ?
-            ORDER BY p.date_cours DESC";
+    $pdo = get_db_connection();
 
-    return db_query($sql, [$id_eleve]);
+    try {
+        $stmt = $pdo->prepare("
+            SELECT a.*, m.nom_matiere, a.periode_journee, a.justifiee, a.motif,
+                   CONCAT(u.prenom, ' ', u.nom) as enregistreur
+            FROM absences a
+            LEFT JOIN matieres m ON a.matiere_id = m.matiere_id
+            LEFT JOIN user_admins u ON a.enregistre_par = u.user_id
+            WHERE a.eleve_id = ?
+            ORDER BY a.date_absence DESC
+        ");
+
+        $stmt->execute([$eleve_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        logError('Erreur récupération absences élève', [
+            'eleve_id' => $eleve_id,
+            'error' => $e->getMessage()
+        ]);
+        return [];
+    }
 }
 
 /**
  * Récupère les paiements d'un élève
  *
- * @param int $id_eleve ID de l'élève
+ * @param int $eleve_id ID de l'élève
  * @return array Paiements de l'élève
  */
-function get_paiements_eleve(int $id_eleve): array
+function get_paiements_eleve(int $eleve_id): array
 {
-    $sql = "SELECT p.*, f.nom_frais, f.montant as montant_frais
-            FROM paiements p
-            JOIN frais_scolaires f ON p.id_frais = f.id
-            WHERE p.id_eleve = ?
-            ORDER BY p.date_paiement DESC";
+    $pdo = get_db_connection();
 
-    return db_query($sql, [$id_eleve]);
+    try {
+        $stmt = $pdo->prepare("
+            SELECT p.*, a.annee_libelle, CONCAT(u.prenom, ' ', u.nom) as caissier
+            FROM paiements p
+            LEFT JOIN annees_scolaire a ON p.annee_id = a.annee_id
+            LEFT JOIN user_admins u ON p.caissier_id = u.user_id
+            WHERE p.eleve_id = ?
+            ORDER BY p.date_creation DESC
+        ");
+
+        $stmt->execute([$eleve_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $e) {
+        logError('Erreur récupération paiements élève', [
+            'eleve_id' => $eleve_id,
+            'error' => $e->getMessage()
+        ]);
+        return [];
+    }
+}
+
+/**
+ * Génère un matricule unique pour un élève
+ *
+ * @return string Matricule généré
+ */
+function generer_matricule_eleve(): string
+{
+    $pdo = get_db_connection();
+
+    do {
+        // Format: ELEVE + Année + Numéro séquentiel (ex: ELEVE20250001)
+        $annee = date('Y');
+        $numero = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $matricule = 'ELEVE' . $annee . $numero;
+
+        // Vérifier si le matricule existe déjà
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM eleves WHERE matricule = ?");
+        $stmt->execute([$matricule]);
+        $exists = $stmt->fetchColumn();
+
+    } while ($exists > 0);
+
+    return $matricule;
 }
 
 ?>

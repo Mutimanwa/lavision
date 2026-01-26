@@ -10,6 +10,16 @@ require_once __DIR__ . '/../Models/EleveModel.php';
 require_once __DIR__ . '/../Services/validation.php';
 require_once __DIR__ . '/AcademiqueController.php';
 
+/**
+ * Récupère la liste des parents disponibles
+ */
+function get_parents_disponibles()
+{    
+    $query = "SELECT parent_id, nom, prenom, telephone, email 
+              FROM parents ORDER BY nom, prenom";    
+    return db_query($query);
+}
+
 // =============================================
 // CONSTANTES SPÉCIFIQUES AUX ÉLÈVES
 // =============================================
@@ -113,7 +123,7 @@ function afficher_liste_eleves(): void
 
         // Chargement de la vue
 
-        require_once VIEWS_PATH . '/eleves/liste.php';
+        render('eleves/liste', $data);
 
     } catch (Exception $e) {
         logError('Erreur affichage liste élèves', ['error' => $e->getMessage()]);
@@ -127,10 +137,10 @@ function afficher_liste_eleves(): void
 function afficher_formulaire_ajout_eleve(): void
 {
     // Vérification des permissions
-    if (!a_permission('eleves_gerer')) {
-        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
-        return;
-    }
+    // if (!a_permission('eleves_gerer')) {
+    //     afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+    //     return;
+    // }
 
     // Récupération des données nécessaires depuis la BD
     $classes = get_classes_actives();
@@ -148,7 +158,7 @@ function afficher_formulaire_ajout_eleve(): void
         'nationalites' => ['Congolaise', 'Étrangère'] // Valeur par défaut selon BD
     ];
 
-    require_once VIEWS_PATH . '/eleves/formulaire.php';
+    render('eleves/formulaire', $data);
 }
 
 /**
@@ -157,10 +167,10 @@ function afficher_formulaire_ajout_eleve(): void
 function traiter_ajout_eleve(): void
 {
     // Vérification des permissions
-    if (!a_permission('eleves_gerer')) {
-        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
-        return;
-    }
+    // if (!a_permission('eleves_gerer')) {
+    //     afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+    //     return;
+    // }
 
     // Vérification du token CSRF
     if (!verifier_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -197,7 +207,7 @@ function traiter_ajout_eleve(): void
                         'eleve_id' => $id_eleve,
                         'class_id' => $donnees['validees']['class_id'],
                         'annee_id' => $donnees['validees']['annee_id'],
-                        'admis_par' => get_current_user_id(),
+                        'admis_par' => $_SESSION['utilisateur_id'],
                         'statut_admission' => 'approuve',
                         'frais_inscription' => $donnees['validees']['frais_inscription'] ?? 0,
                         'frais_payes' => $donnees['validees']['frais_payes'] ?? 0
@@ -205,7 +215,7 @@ function traiter_ajout_eleve(): void
                     creer_admission($admission_data);
                 }
 
-                log_action('Élève ajouté', [
+                logger_action('Élève ajouté', [
                     'eleve_id' => $id_eleve, 
                     'matricule' => $donnees['validees']['matricule'],
                     'nom' => $donnees['validees']['nom']

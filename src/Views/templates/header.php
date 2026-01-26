@@ -65,14 +65,13 @@ $csrf_token = generer_token_csrf();
     <script src="<?= JS_URL ?>config.js"></script>
     <script src="<?= LIBS_URL ?>simplebar/simplebar.min.js"></script>
 
-
     <!-- ===============================================-->
     <!--    Stylesheets-->
     <!-- ===============================================-->
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <!-- <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
         href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700%7cPoppins:300,400,500,600,700,800,900&amp;display=swap"
-        rel="stylesheet" />
+        rel="stylesheet" /> -->
     <link href="<?= LIBS_URL ?>simplebar/simplebar.min.css" rel="stylesheet" />
     <link href="<?= CSS_URL ?>theme.min.css" rel="stylesheet" id="style-default" />
     <link href="<?= CSS_URL ?>user.min.css" rel="stylesheet" id="user-style-default" />

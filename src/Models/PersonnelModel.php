@@ -412,9 +412,50 @@ function get_administrateurs_pagines(int $page = 1, int $par_page = 20, array $f
  */
 function validate_professeur_data(array $data, bool $is_creation = true): bool
 {
-    // Validation de base
-    if (empty($data['matricule_prof']) || empty($data['nom']) || empty($data['prenom']) || empty($data['telephone'])) {
-        return false;
+    $erreurs = [];
+    $valide = [];
+
+    $data = nettoyer_donnees($data);
+    // Validation des données
+    if (empty($data['matricule_prof'])) {
+        $erreurs['matricule_prof'] = 'Le matricule est obligatoire.';
+    }else{
+        $valide[''];
+    }
+
+    if (empty($data['nom'])) {
+        $erreurs['nom'] = 'Le nom est obligatoire.';
+    }else{
+        $valide[''];
+    }
+
+    if (empty($data['prenom'])) {
+        $erreurs['prenom'] = 'Le prénom est obligatoire.';
+    }else{
+        $valide[''];
+    }
+
+    if (empty($data['telephone'])) {
+        $erreurs['telephone'] = 'Le téléphone est obligatoire.';
+    }else if(!valider_telephone($data['telephone'])){
+       $erreurs['telephone'] = 'Numero de telephone non valide';
+    }
+    else{
+        $valide['telephone'];
+    }
+
+    if (!empty($data['email']) && !valider_email($data['email'])) {
+        $erreurs['email'] = 'L\'adresse email n\'est pas valide.';
+    }else{
+        $valide['email'];
+    }
+
+    if (!empty($data['date_naissance']) && !strtotime($data['date_naissance'])) {
+        $erreurs['date_naissance'] = 'La date de naissance n\'est pas valide.';
+    }
+
+    if (!empty($data['date_embauche']) && !strtotime($data['date_embauche'])) {
+        $erreurs['date_embauche'] = 'La date d\'embauche n\'est pas valide.';
     }
 
     // Validation du matricule (unique)
@@ -496,5 +537,28 @@ function get_statistiques_personnel(): array
         logError('Erreur récupération statistiques personnel', ['error' => $e->getMessage()]);
         return [];
     }
+}
+
+
+// =============================================
+// FONCTTIONS UTILITAIRES GÉNÉRIQUES
+// =============================================
+function generer_matricule_prof(): string
+{
+    $pdo = get_db_connection();
+    $prefixe = 'PROF';
+    $date_part = date('Ymd');
+    $unique_number = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+    $matricule = "{$prefixe}-{$date_part}-{$unique_number}";
+
+    // Vérifier l'unicité
+    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM " . TABLE_PROFESSEURS . " WHERE matricule_prof = ?");
+    $stmt->execute([$matricule]);
+    if ($stmt->fetch(PDO::FETCH_ASSOC)['count'] > 0) {
+        return generer_matricule_prof(); // Regénérer si déjà existant
+    }
+
+    return $matricule;
 }
 ?>

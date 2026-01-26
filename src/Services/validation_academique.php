@@ -414,3 +414,238 @@ function conflit_horaire_existe(int $id_classe, int $jour_semaine, string $heure
     ]);
     return $stmt->fetchColumn() > 0;
 }
+
+// =============================================
+// VALIDATION DES DONNÉES DE NIVEAU ACADÉMIQUE
+// =============================================
+
+/**
+ * Valide les données d'un niveau académique
+ */
+function valider_donnees_niveau(array $donnees): array
+{
+    $erreurs = [];
+    $validees = [];
+
+    // Nettoyage des données
+    $donnees = nettoyer_donnees($donnees);
+
+    // Validation du nom du niveau
+    $nom_niveau = trim($donnees['nom_niveau'] ?? '');
+    if (empty($nom_niveau)) {
+        $erreurs['nom_niveau'] = "Le nom du niveau est obligatoire.";
+    } elseif (strlen($nom_niveau) < 2) {
+        $erreurs['nom_niveau'] = "Le nom du niveau doit contenir au moins 2 caractères.";
+    } elseif (strlen($nom_niveau) > 50) {
+        $erreurs['nom_niveau'] = "Le nom du niveau ne peut pas dépasser 50 caractères.";
+    } elseif (!preg_match('/^[a-zA-ZÀ-ÿ0-9\s\-\.]+$/', $nom_niveau)) {
+        $erreurs['nom_niveau'] = "Le nom du niveau contient des caractères invalides.";
+    } else {
+        $validees['nom_niveau'] = $nom_niveau;
+    }
+
+    // Validation de l'ordre d'affichage (optionnel)
+    $ordre_affichage = intval($donnees['ordre_affichage'] ?? 0);
+    if ($ordre_affichage < 0) {
+        $erreurs['ordre_affichage'] = "L'ordre d'affichage ne peut pas être négatif.";
+    } elseif ($ordre_affichage > 999) {
+        $erreurs['ordre_affichage'] = "L'ordre d'affichage ne peut pas dépasser 999.";
+    } else {
+        $validees['ordre_affichage'] = $ordre_affichage;
+    }
+
+    // Validation de la description (optionnel)
+    $description = trim($donnees['description'] ?? '');
+    if (!empty($description)) {
+        if (strlen($description) > 500) {
+            $erreurs['description'] = "La description ne peut pas dépasser 500 caractères.";
+        } else {
+            $validees['description'] = $description;
+        }
+    }
+
+    // Vérification d'unicité du nom de niveau
+    if (empty($erreurs) && isset($validees['nom_niveau'])) {
+        if (nom_niveau_existe_deja($validees['nom_niveau'])) {
+            $erreurs['nom_niveau'] = "Ce nom de niveau existe déjà.";
+        }
+    }
+
+    return ['erreurs' => $erreurs, 'validees' => $validees];
+}
+
+// =============================================
+// VALIDATION DES DONNÉES DE SECTION ACADÉMIQUE
+// =============================================
+
+/**
+ * Valide les données d'une section académique
+ */
+function valider_donnees_section(array $donnees): array
+{
+    $erreurs = [];
+    $validees = [];
+
+    // Nettoyage des données
+    $donnees = nettoyer_donnees($donnees);
+
+    // Validation du nom de la section
+    $nom_section = trim($donnees['nom_section'] ?? '');
+    if (empty($nom_section)) {
+        $erreurs['nom_section'] = "Le nom de la section est obligatoire.";
+    } elseif (strlen($nom_section) < 2) {
+        $erreurs['nom_section'] = "Le nom de la section doit contenir au moins 2 caractères.";
+    } elseif (strlen($nom_section) > 50) {
+        $erreurs['nom_section'] = "Le nom de la section ne peut pas dépasser 50 caractères.";
+    } elseif (!preg_match('/^[a-zA-ZÀ-ÿ\s\-\.]+$/', $nom_section)) {
+        $erreurs['nom_section'] = "Le nom de la section contient des caractères invalides.";
+    } else {
+        $validees['nom_section'] = $nom_section;
+    }
+
+    // Validation de la couleur (optionnel)
+    $couleur = trim($donnees['couleur'] ?? '');
+    if (!empty($couleur)) {
+        if (!preg_match('/^#[a-fA-F0-9]{6}$/', $couleur)) {
+            $erreurs['couleur'] = "Le format de la couleur n'est pas valide (ex: #FF0000).";
+        } else {
+            $validees['couleur'] = $couleur;
+        }
+    }
+
+    // Validation de la description (optionnel)
+    $description = trim($donnees['description'] ?? '');
+    if (!empty($description)) {
+        if (strlen($description) > 500) {
+            $erreurs['description'] = "La description ne peut pas dépasser 500 caractères.";
+        } else {
+            $validees['description'] = $description;
+        }
+    }
+
+    // Vérification d'unicité du nom de section
+    if (empty($erreurs) && isset($validees['nom_section'])) {
+        if (nom_section_existe_deja($validees['nom_section'])) {
+            $erreurs['nom_section'] = "Ce nom de section existe déjà.";
+        }
+    }
+
+    return ['erreurs' => $erreurs, 'validees' => $validees];
+}
+
+// =============================================
+// VALIDATION DES DONNÉES D'ANNÉE SCOLAIRE
+// =============================================
+
+/**
+ * Valide les données d'une année scolaire
+ */
+function valider_donnees_annee_scolaire(array $donnees): array
+{
+    $erreurs = [];
+    $validees = [];
+
+    // Nettoyage des données
+    $donnees = nettoyer_donnees($donnees);
+
+    // Validation du libellé de l'année scolaire
+    $annee_libelle = trim($donnees['annee_libelle'] ?? '');
+    if (empty($annee_libelle)) {
+        $erreurs['annee_libelle'] = "Le libellé de l'année scolaire est obligatoire.";
+    } elseif (strlen($annee_libelle) < 4) {
+        $erreurs['annee_libelle'] = "Le libellé de l'année scolaire doit contenir au moins 4 caractères.";
+    } elseif (strlen($annee_libelle) > 50) {
+        $erreurs['annee_libelle'] = "Le libellé de l'année scolaire ne peut pas dépasser 50 caractères.";
+    } elseif (!preg_match('/^[a-zA-Z0-9\s\-\.\/]+$/', $annee_libelle)) {
+        $erreurs['annee_libelle'] = "Le libellé de l'année scolaire contient des caractères invalides.";
+    } else {
+        $validees['annee_libelle'] = $annee_libelle;
+    }
+
+    // Validation de la date de début
+    $date_debut = trim($donnees['date_debut'] ?? '');
+    if (empty($date_debut)) {
+        $erreurs['date_debut'] = "La date de début est obligatoire.";
+    } elseif (!strtotime($date_debut)) {
+        $erreurs['date_debut'] = "Le format de la date de début n'est pas valide.";
+    } else {
+        $validees['date_debut'] = $date_debut;
+    }
+
+    // Validation de la date de fin
+    $date_fin = trim($donnees['date_fin'] ?? '');
+    if (empty($date_fin)) {
+        $erreurs['date_fin'] = "La date de fin est obligatoire.";
+    } elseif (!strtotime($date_fin)) {
+        $erreurs['date_fin'] = "Le format de la date de fin n'est pas valide.";
+    } elseif (isset($validees['date_debut']) && strtotime($date_fin) <= strtotime($validees['date_debut'])) {
+        $erreurs['date_fin'] = "La date de fin doit être postérieure à la date de début.";
+    } else {
+        $validees['date_fin'] = $date_fin;
+    }
+
+    // Validation du statut (optionnel)
+    $statut = trim($donnees['statut'] ?? 'inactive');
+    $statuts_valides = ['active', 'inactive', 'archive'];
+    if (!in_array($statut, $statuts_valides)) {
+        $erreurs['statut'] = "Le statut sélectionné n'est pas valide.";
+    } else {
+        $validees['statut'] = $statut;
+    }
+
+    // Validation de la description (optionnel)
+    $description = trim($donnees['description'] ?? '');
+    if (!empty($description)) {
+        if (strlen($description) > 1000) {
+            $erreurs['description'] = "La description ne peut pas dépasser 1000 caractères.";
+        } else {
+            $validees['description'] = $description;
+        }
+    }
+
+    // Vérification d'unicité du libellé d'année scolaire
+    if (empty($erreurs) && isset($validees['annee_libelle'])) {
+        if (libelle_annee_existe_deja($validees['annee_libelle'])) {
+            $erreurs['annee_libelle'] = "Ce libellé d'année scolaire existe déjà.";
+        }
+    }
+
+    return ['erreurs' => $erreurs, 'validees' => $validees];
+}
+
+// =============================================
+// NOUVELLES FONCTIONS UTILITAIRES DE VALIDATION
+// =============================================
+
+/**
+ * Vérifie si un nom de niveau existe déjà
+ */
+function nom_niveau_existe_deja(string $nom_niveau): bool
+{
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM " . TABLE_NIVEAUX . " WHERE nom_niveau = ?");
+    $stmt->execute([$nom_niveau]);
+    return $stmt->fetchColumn() > 0;
+}
+
+/**
+ * Vérifie si un nom de section existe déjà
+ */
+function nom_section_existe_deja(string $nom_section): bool
+{
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM " . TABLE_SECTIONS . " WHERE nom_section = ?");
+    $stmt->execute([$nom_section]);
+    return $stmt->fetchColumn() > 0;
+}
+
+/**
+ * Vérifie si un libellé d'année scolaire existe déjà
+ */
+function libelle_annee_existe_deja(string $annee_libelle): bool
+{
+    $pdo = get_db_connection();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM " . TABLE_ANNEES_SCOLAIRES . " WHERE annee_libelle = ?");
+    $stmt->execute([$annee_libelle]);
+    return $stmt->fetchColumn() > 0;
+}

@@ -17,7 +17,7 @@ function auth_login() {
         redirect('dashboard');
     }
 
-    renderAuth('auth/login', [
+    renderAuth(buildUrl('auth/login'), [
         'page_title' => 'Connexion'
     ]);
 }

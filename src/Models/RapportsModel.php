@@ -154,7 +154,7 @@ function generer_rapport_eleves(array $filtres = []): array
                 s.nom_section,
                 COUNT(e.eleve_id) as nombre_eleves
             FROM classes c
-            JOIN niveaux n ON c.niveau_id = n.niveau_id
+            JOIN niveau n ON c.niveau_id = n.niveau_id
             JOIN sections s ON c.section_id = s.section_id
             LEFT JOIN eleves e ON c.classe_id = e.classe_id AND e.statut = 'actif'
             GROUP BY c.classe_id, c.nom_classe, n.nom_niveau, s.nom_section
@@ -207,7 +207,7 @@ function generer_rapport_academique(array $filtres = []): array
                 s.nom_section,
                 COUNT(c.classe_id) as nombre_classes,
                 COALESCE(SUM(c.capacite_max), 0) as capacite_totale
-            FROM niveaux n
+            FROM niveau n
             CROSS JOIN sections s
             LEFT JOIN classes c ON n.niveau_id = c.niveau_id AND s.section_id = c.section_id
             GROUP BY n.niveau_id, n.nom_niveau, s.section_id, s.nom_section
@@ -239,7 +239,7 @@ function generer_rapport_academique(array $filtres = []): array
                 c.capacite_max,
                 ROUND(COUNT(e.eleve_id) * 100.0 / c.capacite_max, 1) as taux_occupation
             FROM classes c
-            JOIN niveaux n ON c.niveau_id = n.niveau_id
+            JOIN niveau n ON c.niveau_id = n.niveau_id
             JOIN sections s ON c.section_id = s.section_id
             LEFT JOIN eleves e ON c.classe_id = e.classe_id AND e.statut = 'actif'
             GROUP BY c.classe_id, c.nom_classe, n.nom_niveau, s.nom_section, c.capacite_max
@@ -539,7 +539,7 @@ function compter_classes_par_niveau(): array
     $pdo = get_db_connection();
     $stmt = $pdo->query("
         SELECT n.nom_niveau, COUNT(c.classe_id) as nombre_classes
-        FROM niveaux n
+        FROM niveau n
         LEFT JOIN classes c ON n.niveau_id = c.niveau_id
         GROUP BY n.niveau_id, n.nom_niveau
         ORDER BY n.nom_niveau

@@ -123,7 +123,7 @@ unset($_SESSION['message_succes'], $_SESSION['message_erreur']);
             </div>
 
             <!-- Statistiques -->
-            <div class="card-body border-bottom bg-light">
+            <div class="card-body border-bottom ">
                 <div class="row text-center">
                     <div class="col-md-3">
                         <div class="border-end">

@@ -93,7 +93,7 @@ function afficher_professeurs()
     ];
 
     // Chargement de la vue
-    require_once VIEWS_PATH . '/personnel/liste_professeurs.php';
+   render("personnel/liste_professeurs", $donnees_vue);
 }
 
 /**
@@ -109,7 +109,7 @@ function afficher_formulaire_professeur($professeur_id = null)
     if ($professeur_id) {
         $professeur = get_professeur_by_id($professeur_id);
         if (!$professeur) {
-            set_flash_message('danger', 'Professeur non trouvé.');
+            set_message_erreur( 'Professeur non trouvé.');
             redirect('personnel/professeurs');
             return;
         }
@@ -119,7 +119,7 @@ function afficher_formulaire_professeur($professeur_id = null)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resultat = traiter_formulaire_professeur($professeur_id);
         if ($resultat['succes']) {
-            set_flash_message('success', $resultat['message']);
+            set_message_succes( $resultat['message']);
             redirect('personnel/professeurs');
             return;
         } else {
@@ -142,7 +142,7 @@ function afficher_formulaire_professeur($professeur_id = null)
     ];
 
     // Chargement de la vue
-    require_once VIEWS_PATH . '/personnel/formulaire_professeur.php';
+    render("personnel/formulaire_professeur", $donnees_vue);
 }
 
 /**
@@ -154,7 +154,7 @@ function traiter_formulaire_professeur($professeur_id = null)
 
     // Récupération et nettoyage des données
     $donnees = [
-        'matricule_prof' => trim($_POST['matricule_prof'] ?? ''),
+        'matricule_prof' => generer_matricule_prof(),
         'nom' => trim($_POST['nom'] ?? ''),
         'post_nom' => trim($_POST['post_nom'] ?? ''),
         'prenom' => trim($_POST['prenom'] ?? ''),
@@ -231,7 +231,7 @@ function traiter_formulaire_professeur($professeur_id = null)
 function supprimer_professeur($professeur_id)
 {
     // Vérification CSRF
-    verifier_csrf_token();
+    verifier_csrf_token($_POST['csrf_token'] ?? '');
 
     $resultat = delete_professeur($professeur_id);
 
@@ -284,7 +284,7 @@ function afficher_administrateurs()
     ];
 
     // Chargement de la vue
-    require_once VIEWS_PATH . '/personnel/liste_administrateurs.php';
+    render("personnel/liste_administrateurs", $donnees_vue);
 }
 
 /**
@@ -414,7 +414,7 @@ function afficher_tableau_bord_personnel()
         'sous_titre' => 'Vue d\'ensemble du personnel scolaire'
     ];
 
-    require_once VIEWS_PATH . '/personnel/tableau_bord.php';
+    render('personnel/tableau_bord.php', $donnees_vue);
 }
 
 /**
@@ -454,4 +454,7 @@ function exporter_professeurs_csv()
     fclose($output);
     exit;
 }
+
+
+
 ?>

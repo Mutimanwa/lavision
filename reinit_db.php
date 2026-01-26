@@ -1,5 +1,5 @@
 <?php
-require_once '../config/config.php';
+require_once 'src/Config/config.php';
 
 // Sécurité : Vérifier si l'utilisateur est un superadmin
 // Note: La logique d'authentification et de gestion des rôles doit être implémentée
@@ -13,7 +13,7 @@ $db_pass = DB_PASS;
 $db_name = DB_NAME;
 $charset = DB_CHARSET;
 
-$sql_file = '../sql.sql';
+$sql_file = 'sql.sql';
 
 if (!file_exists($sql_file)) {
     die("Erreur : Le fichier SQL '$sql_file' est introuvable.");

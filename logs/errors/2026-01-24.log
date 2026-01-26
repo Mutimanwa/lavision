@@ -1,0 +1,1 @@
+[2026-01-24 11:35:34] ERROR - IP: 127.0.0.1 - User: system - Message: Erreur ajout classe - Context: {"error":"SQLSTATE[42S02]: Base table or view not found: 1146 Table 'gestion_academique_ecole.niveaux' doesn't exist"}

@@ -4,37 +4,28 @@
  * Formulaire complet avec validation côté client
  */
 
-// Vérifier que les données nécessaires sont disponibles
-if (!isset($donnees_vue)) {
-    die('Erreur: Données de vue non disponibles');
-}
-
-extract($donnees_vue); // Extraire les variables du tableau
-
-// Inclure l'en-tête si nécessaire
-require_once TEMPLATES_PATH . '/header.php';
 ?>
 
-<div class="container-fluid">
-    <!-- En-tête de page -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h3 mb-0 text-gray-800">
-                        <i class="fas fa-user-edit text-primary"></i>
-                        <?php echo htmlspecialchars($titre_page); ?>
-                    </h1>
-                    <p class="text-muted"><?php echo htmlspecialchars($sous_titre); ?></p>
-                </div>
-                <div>
-                    <a href="<?php echo BASE_URL; ?>personnel/professeurs" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i> Retour à la liste
-                    </a>
-                </div>
+
+<!-- En-tête de page -->
+<div class="row mb-2 py-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-user-edit text-primary"></i>
+                    <?php echo htmlspecialchars($titre_page); ?>
+                </h1>
+                <p class="text-muted"><?php echo htmlspecialchars($sous_titre); ?></p>
+            </div>
+            <div>
+                <a href="<?php echo url('personnel/professeurs'); ?>" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Affichage des erreurs -->
     <?php if (!empty($erreurs)): ?>
@@ -68,9 +59,9 @@ require_once TEMPLATES_PATH . '/header.php';
                     </h6>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="" id="formProfesseur" novalidate>
+                    <form method="POST" action="<?php echo url('personnel/professeurs/ajouter'); ?>" id="formProfesseur" novalidate>
                         <!-- Token CSRF -->
-                        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
 
                         <!-- Informations personnelles -->
                         <h5 class="text-primary mb-3">
@@ -85,7 +76,7 @@ require_once TEMPLATES_PATH . '/header.php';
                                 <input type="text" class="form-control <?php echo isset($erreurs['matricule_prof']) ? 'is-invalid' : ''; ?>"
                                        id="matricule_prof" name="matricule_prof"
                                        value="<?php echo htmlspecialchars($professeur['matricule_prof'] ?? ''); ?>"
-                                       required maxlength="30">
+                                       required maxlength="30" disabled>
                                 <div class="invalid-feedback">
                                     <?php echo $erreurs['matricule_prof'] ?? 'Veuillez saisir un matricule valide.'; ?>
                                 </div>
@@ -389,7 +380,6 @@ require_once TEMPLATES_PATH . '/header.php';
             </div>
         </div>
     </div>
-</div>
 
 <script>
 // Mise à jour de l'aperçu en temps réel
@@ -450,8 +440,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-<?php
-// Inclure le pied de page si nécessaire
-require_once TEMPLATES_PATH . '/footer.php';
-?>

@@ -494,7 +494,7 @@ function get_classes_for_select(): array
                 c.classe_id,
                 CONCAT(c.nom_classe, ' - ', n.nom_niveau, ' ', s.nom_section) as nom_complet
             FROM classes c
-            JOIN niveaux n ON c.niveau_id = n.niveau_id
+            JOIN niveau n ON c.niveau_id = n.niveau_id
             JOIN sections s ON c.section_id = s.section_id
             ORDER BY n.nom_niveau, s.nom_section, c.nom_classe
         ");

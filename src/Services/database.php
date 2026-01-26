@@ -156,6 +156,11 @@ function db_query(string $sql, array $params = [], int $fetch_mode = PDO::FETCH_
     }
 }
 
+function db_query_one(string $sql, array $params = [], int $fetch_mode = PDO::FETCH_ASSOC)
+{
+    $results = db_query($sql, $params, $fetch_mode);
+    return $results[0] ?? null;
+}
 /**
  * Exécute une requête INSERT, UPDATE ou DELETE
  *

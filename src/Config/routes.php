@@ -39,7 +39,8 @@ $routes = [
         'classes' => ['controller' => 'AcademiqueController', 'method' => 'classes', 'auth_required' => true, 'permissions' => ['academique.view']],
         'matieres' => ['controller' => 'AcademiqueController', 'method' => 'matieres', 'auth_required' => true, 'permissions' => ['academique.view']],
         'horaires' => ['controller' => 'AcademiqueController', 'method' => 'horaires', 'auth_required' => true, 'permissions' => ['academique.view']],
-        'options' => ['controller' => 'AcademiqueController', 'method' => 'options', 'auth_required' => true, 'permissions' => ['academique.manage']],
+        'options' => ['controller' => 'AcademiqueController', 'method' => 'afficher_options_academiques', 'auth_required' => true, 'permissions' => ['academique.manage']],
+        'traiter-options' => ['controller' => 'AcademiqueController', 'method' => 'traiter_modification_options', 'auth_required' => true, 'permissions' => ['academique.manage']],
         'ajouter-classe' => ['controller' => 'AcademiqueController', 'method' => 'ajouterClasse', 'auth_required' => true, 'permissions' => ['academique.create']],
         'modifier-classe' => ['controller' => 'AcademiqueController', 'method' => 'modifierClasse', 'auth_required' => true, 'permissions' => ['academique.edit']],
         'supprimer-classe' => ['controller' => 'AcademiqueController', 'method' => 'supprimerClasse', 'auth_required' => true, 'permissions' => ['academique.delete']],
@@ -48,7 +49,19 @@ $routes = [
         'supprimer-matiere' => ['controller' => 'AcademiqueController', 'method' => 'supprimerMatiere', 'auth_required' => true, 'permissions' => ['academique.delete']],
         'ajouter-horaire' => ['controller' => 'AcademiqueController', 'method' => 'ajouterHoraire', 'auth_required' => true, 'permissions' => ['academique.create']],
         'modifier-horaire' => ['controller' => 'AcademiqueController', 'method' => 'modifierHoraire', 'auth_required' => true, 'permissions' => ['academique.edit']],
-        'supprimer-horaire' => ['controller' => 'AcademiqueController', 'method' => 'supprimerHoraire', 'auth_required' => true, 'permissions' => ['academique.delete']]
+        'supprimer-horaire' => ['controller' => 'AcademiqueController', 'method' => 'supprimerHoraire', 'auth_required' => true, 'permissions' => ['academique.delete']],
+        // Routes pour les niveaux académiques
+        'niveau/ajouter' => ['controller' => 'AcademiqueController', 'method' => 'afficher_formulaire_ajout_niveau', 'auth_required' => true, 'permissions' => ['academique.create']],
+        'niveau/traiter-ajout' => ['controller' => 'AcademiqueController', 'method' => 'traiter_ajout_niveau', 'auth_required' => true, 'permissions' => ['academique.create']],
+        // Routes pour les sections académiques
+        'section/ajouter' => ['controller' => 'AcademiqueController', 'method' => 'afficher_formulaire_ajout_section', 'auth_required' => true, 'permissions' => ['academique.create']],
+        'section/traiter-ajout' => ['controller' => 'AcademiqueController', 'method' => 'traiter_ajout_section', 'auth_required' => true, 'permissions' => ['academique.create']],
+        // Routes pour les années scolaires
+        'annee-scolaire/ajouter' => ['controller' => 'AcademiqueController', 'method' => 'afficher_formulaire_ajout_annee_scolaire', 'auth_required' => true, 'permissions' => ['academique.create']],
+        'annee-scolaire/traiter-ajout' => ['controller' => 'AcademiqueController', 'method' => 'traiter_ajout_annee_scolaire', 'auth_required' => true, 'permissions' => ['academique.create']],
+        'annee-scolaire/modifier' => ['controller' => 'AcademiqueController', 'method' => 'afficher_formulaire_modification_annee_scolaire', 'auth_required' => true, 'permissions' => ['academique.edit']],
+        'annee-scolaire/traiter-modification' => ['controller' => 'AcademiqueController', 'method' => 'traiter_modification_annee_scolaire', 'auth_required' => true, 'permissions' => ['academique.edit']],
+        'annee-scolaire/activer' => ['controller' => 'AcademiqueController', 'method' => 'activer_annee_scolaire', 'auth_required' => true, 'permissions' => ['academique.manage']]
     ],
 
     // Routes du personnel

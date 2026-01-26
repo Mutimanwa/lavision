@@ -195,8 +195,22 @@ elseif (strpos($page_actuelle, 'academique') === 0) {
         case 'academique/classes':
             afficher_gestion_classes();
             break;
+        case 'academique/classes/ajouter':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                traiter_ajout_classe();
+            } else {
+                afficher_formulaire_ajout_classe();
+            }
+            break;
         case 'academique/matieres':
             afficher_gestion_matieres();
+            break;
+        case 'academique/matieres/ajouter':
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                traiter_ajout_matiere();
+            }else{
+                afficher_formulaire_ajout_matiere();
+            }
             break;
         case 'academique/horaires':
             afficher_gestion_horaires();
@@ -214,11 +228,26 @@ elseif (strpos($page_actuelle, 'personnel') === 0) {
 
     switch ($page_actuelle) {
         case 'personnel/professeurs':
-            afficher_gestion_professeurs();
+            afficher_professeurs();
+            break;
+        case 'personnel/professeurs/ajouter':
+            if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                afficher_formulaire_professeur();
+            }else{
+                afficher_formulaire_professeur();
+            }
             break;
         case 'personnel/personnels':
-            afficher_gestion_personnel_admin();
+            afficher_administrateurs();
             break;
+         case 'personnel/personnels/ajouter':
+            if($_SERVER['REQUEST_METHOD']=== "POST"){
+                traiter_formulaire_administrateur();
+            }else{
+                afficher_formulaire_administrateur();
+            }
+            break;
+
         default:
             load_page($page_actuelle);
             break;

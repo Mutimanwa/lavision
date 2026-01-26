@@ -4,20 +4,10 @@
  * Affiche la liste paginée des professeurs avec filtres et actions
  */
 
-// Vérifier que les données nécessaires sont disponibles
-if (!isset($donnees_vue)) {
-    die('Erreur: Données de vue non disponibles');
-}
-
-extract($donnees_vue); // Extraire les variables du tableau
-
-// Inclure l'en-tête si nécessaire
-require_once TEMPLATES_PATH . '/header.php';
 ?>
 
-<div class="container-fluid">
     <!-- En-tête de page -->
-    <div class="row mb-4">
+    <div class="row mb-2 py-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -28,10 +18,10 @@ require_once TEMPLATES_PATH . '/header.php';
                     <p class="text-muted"><?php echo htmlspecialchars($sous_titre); ?></p>
                 </div>
                 <div>
-                    <a href="<?php echo BASE_URL; ?>personnel/professeurs/ajouter" class="btn btn-primary">
+                    <a href="<?= url('personnel/professeurs/ajouter') ?>" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Nouveau Professeur
                     </a>
-                    <a href="<?php echo BASE_URL; ?>personnel/tableau-bord" class="btn btn-outline-info">
+                    <a href="<?= url('personnel/tableau-bord') ?>" class="btn btn-outline-info">
                         <i class="fas fa-chart-bar"></i> Tableau de Bord
                     </a>
                 </div>
@@ -40,7 +30,7 @@ require_once TEMPLATES_PATH . '/header.php';
     </div>
 
     <!-- Statistiques rapides -->
-    <div class="row mb-4">
+    <div class="row mb-2">
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
@@ -150,18 +140,18 @@ require_once TEMPLATES_PATH . '/header.php';
                            placeholder="Ex: Mathématiques, Français...">
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="recherche" class="form-label">Recherche</label>
                     <input type="text" name="recherche" id="recherche" class="form-control"
                            value="<?php echo htmlspecialchars($filtres['recherche'] ?? ''); ?>"
                            placeholder="Nom, prénom ou matricule...">
                 </div>
 
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2 ">
                         <i class="fas fa-search"></i> Filtrer
                     </button>
-                    <a href="<?php echo BASE_URL; ?>personnel/professeurs" class="btn btn-outline-secondary">
+                    <a href="<?php echo url('personnel/professeurs'); ?>" class="btn btn-outline-secondary">
                         <i class="fas fa-times"></i> Réinitialiser
                     </a>
                 </div>
@@ -177,7 +167,7 @@ require_once TEMPLATES_PATH . '/header.php';
                 <span class="badge bg-primary ms-2"><?php echo $pagination['total_professeurs']; ?></span>
             </h6>
             <div>
-                <a href="<?php echo BASE_URL; ?>personnel/professeurs/exporter" class="btn btn-sm btn-outline-success">
+                <a href="<?php echo url('personnel/professeurs/exporter'); ?>" class="btn btn-sm btn-outline-success">
                     <i class="fas fa-download"></i> Exporter CSV
                 </a>
             </div>
@@ -188,7 +178,7 @@ require_once TEMPLATES_PATH . '/header.php';
                     <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">Aucun professeur trouvé</h5>
                     <p class="text-muted">Il n'y a encore aucun professeur enregistré ou correspondant aux critères de recherche.</p>
-                    <a href="<?php echo BASE_URL; ?>personnel/professeurs/ajouter" class="btn btn-primary">
+                    <a href="<?php echo url('personnel/professeurs/ajouter'); ?>" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Ajouter le premier professeur
                     </a>
                 </div>
@@ -253,11 +243,11 @@ require_once TEMPLATES_PATH . '/header.php';
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="<?php echo BASE_URL; ?>personnel/professeurs/voir/<?php echo $prof['professeur_id']; ?>"
+                                            <a href="<?php echo url('personnel/professeurs/voir',['prof_id'=> $prof['professeur_id'] ] ); ?>"
                                                class="btn btn-sm btn-outline-info" title="Voir détails">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="<?php echo BASE_URL; ?>personnel/professeurs/modifier/<?php echo $prof['professeur_id']; ?>"
+                                            <a href="<?php echo url('personnel/professeurs/modifier', ['prof_id'=> $prof['professeur_id'] ]); ?>"
                                                class="btn btn-sm btn-outline-primary" title="Modifier">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -277,41 +267,38 @@ require_once TEMPLATES_PATH . '/header.php';
                 </div>
 
                 <!-- Pagination -->
-                <?php if ($pagination['pages'] > 1): ?>
-                    <div class="d-flex justify-content-center mt-4">
-                        <nav aria-label="Navigation des pages">
-                            <ul class="pagination">
-                                <?php if ($pagination['page_actuelle'] > 1): ?>
-                                    <li class="page-item">
-                                        <a class="page-link" href="<?php echo build_url_with_params(['page' => $pagination['page_actuelle'] - 1]); ?>">
-                                            <i class="fas fa-chevron-left"></i> Précédent
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
+                <?php if ($data['pagination']['total_pages'] > 1): ?>
+                    <nav aria-label="Pagination des matières" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <?php if ($data['pagination']['page_actuelle'] > 1): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="<?php echo url('academique/matieres', array_merge($data['filtres'], ['page' => $data['pagination']['page_actuelle'] - 1])); ?>">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
 
-                                <?php for ($i = max(1, $pagination['page_actuelle'] - 2); $i <= min($pagination['pages'], $pagination['page_actuelle'] + 2); $i++): ?>
-                                    <li class="page-item <?php echo $i === $pagination['page_actuelle'] ? 'active' : ''; ?>">
-                                        <a class="page-link" href="<?php echo build_url_with_params(['page' => $i]); ?>">
-                                            <?php echo $i; ?>
-                                        </a>
-                                    </li>
-                                <?php endfor; ?>
+                            <?php for ($i = max(1, $data['pagination']['page_actuelle'] - 2); $i <= min($data['pagination']['total_pages'], $data['pagination']['page_actuelle'] + 2); $i++): ?>
+                                <li class="page-item <?php echo ($i == $data['pagination']['page_actuelle']) ? 'active' : ''; ?>">
+                                    <a class="page-link" href="<?php echo url('academique/matieres', array_merge($data['filtres'], ['page' => $i])); ?>">
+                                        <?php echo $i; ?>
+                                    </a>
+                                </li>
+                            <?php endfor; ?>
 
-                                <?php if ($pagination['page_actuelle'] < $pagination['pages']): ?>
-                                    <li class="page-item">
-                                        <a class="page-link" href="<?php echo build_url_with_params(['page' => $pagination['page_actuelle'] + 1]); ?>">
-                                            Suivant <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </nav>
-                    </div>
-                <?php endif; ?>
+                            <?php if ($data['pagination']['page_actuelle'] < $data['pagination']['total_pages']): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="<?php echo url('academique/matieres', array_merge($data['filtres'], ['page' => $data['pagination']['page_actuelle'] + 1])); ?>">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </nav>
+                <?php endif; ?>                              
             <?php endif; ?>
         </div>
     </div>
-</div>
 
 <!-- Modal de confirmation de suppression -->
 <div class="modal fade" id="modalSuppression" tabindex="-1" aria-labelledby="modalSuppressionLabel" aria-hidden="true">
@@ -358,7 +345,3 @@ function confirmerSuppression(professeurId, nomProfesseur) {
 }
 </script>
 
-<?php
-// Inclure le pied de page si nécessaire
-require_once TEMPLATES_PATH . '/footer.php';
-?>

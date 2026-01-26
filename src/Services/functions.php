@@ -401,22 +401,6 @@ function logger_action(string $message, array $contexte = []): void
 // FONCTIONS DIVERS
 // =============================================
 
-/**
- * Redirige vers une URL
- *
- * @param string $url URL de destination
- * @param int $delai Délai en secondes (0 = immédiat)
- * @return void
- */
-function rediriger(string $url, int $delai = 0): void
-{
-    if ($delai > 0) {
-        header("Refresh: $delai; url=$url");
-    } else {
-        header("Location: $url");
-    }
-    exit;
-}
 
 /**
  * Génère une réponse JSON
@@ -931,4 +915,5 @@ function is_active($page_name) {
     
     return '';
 }
+
 ?>

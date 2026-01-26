@@ -78,16 +78,18 @@ function afficher_options_academiques(): void
     $niveaux = get_niveaux_academiques();
     $sections = get_sections_academiques();
     $annee_scolaire = get_annee_scolaire_active();
+    $annees_scolaires = get_annees_scolaires();
 
     $data = [
         'niveaux' => $niveaux,
         'sections' => $sections,
         'annee_scolaire' => $annee_scolaire,
+        'annees_scolaires' => $annees_scolaires,
         'niveaux_constantes' => NIVEAUX_SCOLAIRES,
         'sections_constantes' => SECTIONS
     ];
 
-    require_once VIEWS_PATH . '/academique/options.php';
+    render('academique/options', $data);
 }
 
 /**
@@ -143,6 +145,211 @@ function traiter_modification_options(): void
 }
 
 // =============================================
+// FONCTIONS D'AJOUT DE NIVEAUX, SECTIONS ET ANNÉES SCOLAIRES
+// =============================================
+
+/**
+ * Affiche le formulaire d'ajout d'un niveau académique
+ */
+function afficher_formulaire_ajout_niveau(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique_gerer')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+        return;
+    }
+
+    $data = [
+        'mode' => 'ajout'
+    ];
+
+    require_once VIEWS_PATH . '/academique/formulaire_niveau.php';
+}
+
+/**
+ * Traite l'ajout d'un nouveau niveau académique
+ */
+function traiter_ajout_niveau(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique_gerer')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+        return;
+    }
+
+    // Vérification du token CSRF
+    if (!verifier_csrf_token($_POST['csrf_token'] ?? '')) {
+        afficher_erreur("Token de sécurité invalide.", 403);
+        return;
+    }
+
+    try {
+        // Validation des données
+        $donnees = valider_donnees_niveau($_POST);
+
+        if (empty($donnees['erreurs'])) {
+            // Création du niveau
+            $id_niveau = ajouter_niveau_academique($donnees['validees']);
+
+            if ($id_niveau) {
+                logAction('Niveau académique ajouté', 'Traitement ajout niveau',['id_niveau' => $id_niveau, 'nom' => $donnees['validees']['nom_niveau']]);
+                set_message_succes("Le niveau académique a été ajouté avec succès.");
+                redirect('academique/options');
+            } else {
+                afficher_erreur("Erreur lors de l'ajout du niveau académique.");
+            }
+        } else {
+            // Réaffichage du formulaire avec erreurs
+            $data = [
+                'mode' => 'ajout',
+                'valeurs' => $_POST,
+                'erreurs' => $donnees['erreurs']
+            ];
+
+            require_once VIEWS_PATH . '/academique/formulaire_niveau.php';
+        }
+
+    } catch (Exception $e) {
+        logError('Erreur ajout niveau académique', ['error' => $e->getMessage()]);
+        afficher_erreur("Erreur lors de l'ajout du niveau académique.");
+    }
+}
+
+/**
+ * Affiche le formulaire d'ajout d'une section académique
+ */
+function afficher_formulaire_ajout_section(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique_gerer')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+        return;
+    }
+
+    $data = [
+        'mode' => 'ajout'
+    ];
+
+    require_once VIEWS_PATH . '/academique/formulaire_section.php';
+}
+
+/**
+ * Traite l'ajout d'une nouvelle section académique
+ */
+function traiter_ajout_section(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique_gerer')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+        return;
+    }
+
+    // Vérification du token CSRF
+    if (!verifier_csrf_token($_POST['csrf_token'] ?? '')) {
+        afficher_erreur("Token de sécurité invalide.", 403);
+        return;
+    }
+
+    try {
+        // Validation des données
+        $donnees = valider_donnees_section($_POST);
+
+        if (empty($donnees['erreurs'])) {
+            // Création de la section
+            $id_section = ajouter_section_academique($donnees['validees']);
+
+            if ($id_section) {
+                logAction('Section académique ajoutée', 'Traitement ajout section',['id_section' => $id_section, 'nom' => $donnees['validees']['nom_section']]);
+                set_message_succes("La section académique a été ajoutée avec succès.");
+                redirect('academique/options');
+            } else {
+                afficher_erreur("Erreur lors de l'ajout de la section académique.");
+            }
+        } else {
+            // Réaffichage du formulaire avec erreurs
+            $data = [
+                'mode' => 'ajout',
+                'valeurs' => $_POST,
+                'erreurs' => $donnees['erreurs']
+            ];
+
+            require_once VIEWS_PATH . '/academique/formulaire_section.php';
+        }
+
+    } catch (Exception $e) {
+        logError('Erreur ajout section académique', ['error' => $e->getMessage()]);
+        afficher_erreur("Erreur lors de l'ajout de la section académique.");
+    }
+}
+
+/**
+ * Affiche le formulaire d'ajout d'une année scolaire
+ */
+function afficher_formulaire_ajout_annee_scolaire(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique_gerer')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+        return;
+    }
+
+    $data = [
+        'mode' => 'ajout'
+    ];
+
+    require_once VIEWS_PATH . '/academique/formulaire_annee_scolaire.php';
+}
+
+/**
+ * Traite l'ajout d'une nouvelle année scolaire
+ */
+function traiter_ajout_annee_scolaire(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique_gerer')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+        return;
+    }
+
+    // Vérification du token CSRF
+    if (!verifier_csrf_token($_POST['csrf_token'] ?? '')) {
+        afficher_erreur("Token de sécurité invalide.", 403);
+        return;
+    }
+
+    try {
+        // Validation des données
+        $donnees = valider_donnees_annee_scolaire($_POST);
+
+        if (empty($donnees['erreurs'])) {
+            // Création de l'année scolaire
+            $id_annee = ajouter_annee_scolaire($donnees['validees']);
+
+            if ($id_annee) {
+                logAction('Année scolaire ajoutée', 'Traitement ajout année scolaire',['id_annee' => $id_annee, 'libelle' => $donnees['validees']['annee_libelle']]);
+                set_message_succes("L'année scolaire a été ajoutée avec succès.");
+                redirect('academique/options');
+            } else {
+                afficher_erreur("Erreur lors de l'ajout de l'année scolaire.");
+            }
+        } else {
+            // Réaffichage du formulaire avec erreurs
+            $data = [
+                'mode' => 'ajout',
+                'valeurs' => $_POST,
+                'erreurs' => $donnees['erreurs']
+            ];
+
+            require_once VIEWS_PATH . '/academique/formulaire_annee_scolaire.php';
+        }
+
+    } catch (Exception $e) {
+        logError('Erreur ajout année scolaire', ['error' => $e->getMessage()]);
+        afficher_erreur("Erreur lors de l'ajout de l'année scolaire.");
+    }
+}
+
+// =============================================
 // FONCTIONS DE GESTION DES CLASSES
 // =============================================
 
@@ -189,7 +396,7 @@ function afficher_gestion_classes(): void
             'sections_constantes' => SECTIONS
         ];
 
-        require_once VIEWS_PATH . '/academique/classes.php';
+       render('academique/classes',$data);
 
     } catch (Exception $e) {
         logError('Erreur affichage classes', ['error' => $e->getMessage()]);
@@ -203,10 +410,10 @@ function afficher_gestion_classes(): void
 function afficher_formulaire_ajout_classe(): void
 {
     // Vérification des permissions
-    if (!hasPermission('academique_gerer')) {
-        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
-        return;
-    }
+    // if (!hasPermission('academique_gerer')) {
+    //     afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+    //     return;
+    // }
 
     // Données nécessaires
     $niveaux = get_niveaux_actifs();
@@ -224,7 +431,7 @@ function afficher_formulaire_ajout_classe(): void
         'mode' => 'ajout'
     ];
 
-    require_once VIEWS_PATH . '/academique/formulaire_classe.php';
+    render('academique/formulaire_classe', $data);
 }
 
 /**
@@ -233,10 +440,10 @@ function afficher_formulaire_ajout_classe(): void
 function traiter_ajout_classe(): void
 {
     // Vérification des permissions
-    if (!hasPermission('academique_gerer')) {
-        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
-        return;
-    }
+    // if (!hasPermission('academique_gerer')) {
+    //     afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+    //     return;
+    // }
 
     // Vérification du token CSRF
     if (!verifier_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -329,7 +536,7 @@ function afficher_gestion_matieres(): void
             'niveaux_constantes' => NIVEAUX_SCOLAIRES
         ];
 
-        require_once VIEWS_PATH . '/academique/matieres.php';
+        render('academique/matieres',$data);
 
     } catch (Exception $e) {
         logError('Erreur affichage matières', ['error' => $e->getMessage()]);
@@ -343,10 +550,10 @@ function afficher_gestion_matieres(): void
 function afficher_formulaire_ajout_matiere(): void
 {
     // Vérification des permissions
-    if (!hasPermission('academique_gerer')) {
-        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
-        return;
-    }
+    // if (!hasPermission('academique_gerer')) {
+    //     afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+    //     return;
+    // }
 
     // Données nécessaires
     $niveaux = get_niveaux_actifs();
@@ -358,7 +565,7 @@ function afficher_formulaire_ajout_matiere(): void
         'mode' => 'ajout'
     ];
 
-    require_once VIEWS_PATH . '/academique/formulaire_matiere.php';
+    render('academique/formulaire_matiere',$data);
 }
 
 /**
@@ -406,7 +613,7 @@ function traiter_ajout_matiere(): void
                 'erreurs' => $donnees['erreurs']
             ];
 
-            require_once VIEWS_PATH . '/academique/formulaire_matiere.php';
+           render('academique/formulaire_matiere' ,$data);
         }
 
     } catch (Exception $e) {
@@ -451,7 +658,7 @@ function afficher_gestion_horaires(): void
             'periodes_journee' => PERIODES_JOURNEE
         ];
 
-        require_once VIEWS_PATH . '/academique/horaires.php';
+        render('academique/horaires',$data);
 
     } catch (Exception $e) {
         logError('Erreur affichage horaires', ['error' => $e->getMessage()]);
@@ -532,6 +739,118 @@ function traiter_sauvegarde_horaires(): void
     } catch (Exception $e) {
         logError('Erreur sauvegarde horaires', ['error' => $e->getMessage()]);
         afficher_erreur("Erreur lors de la sauvegarde des horaires.");
+    }
+}
+
+/**
+ * Active une année scolaire spécifique
+ */
+function activer_annee_scolaire(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique.manage')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires pour effectuer cette action.");
+        return;
+    }
+
+    $id = $_GET['id'] ?? null;
+
+    if (!$id || !is_numeric($id)) {
+        afficher_erreur("ID d'année scolaire invalide.");
+        return;
+    }
+
+    try {
+        // Désactiver toutes les années scolaires actives
+        desactiver_toutes_annees_scolaires();
+
+        // Activer l'année scolaire spécifiée
+        activer_annee_scolaire_par_id($id);
+
+        logAction('Année scolaire activée', 'Activation d\'une année scolaire', ['id' => $id]);
+        set_message_succes("L'année scolaire a été activée avec succès.");
+        redirect('academique/options');
+
+    } catch (Exception $e) {
+        logError('Erreur activation année scolaire', ['error' => $e->getMessage(), 'id' => $id]);
+        afficher_erreur("Erreur lors de l'activation de l'année scolaire.");
+    }
+}
+
+/**
+ * Affiche le formulaire de modification d'une année scolaire
+ */
+function afficher_formulaire_modification_annee_scolaire(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique.edit')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires pour effectuer cette action.");
+        return;
+    }
+
+    $id = $_GET['id'] ?? null;
+
+    if (!$id || !is_numeric($id)) {
+        afficher_erreur("ID d'année scolaire invalide.");
+        return;
+    }
+
+    try {
+        $annee_scolaire = get_annee_scolaire_par_id($id);
+
+        if (!$annee_scolaire) {
+            afficher_erreur("Année scolaire introuvable.");
+            return;
+        }
+
+        $data = [
+            'annee_scolaire' => $annee_scolaire,
+            'action' => 'modifier'
+        ];
+
+        render('academique/formulaire_annee_scolaire', $data);
+
+    } catch (Exception $e) {
+        logError('Erreur affichage formulaire modification année scolaire', ['error' => $e->getMessage(), 'id' => $id]);
+        afficher_erreur("Erreur lors de l'affichage du formulaire de modification.");
+    }
+}
+
+/**
+ * Traite la modification d'une année scolaire
+ */
+function traiter_modification_annee_scolaire(): void
+{
+    // Vérification des permissions
+    if (!hasPermission('academique.edit')) {
+        afficher_erreur("Vous n'avez pas les permissions nécessaires pour effectuer cette action.");
+        return;
+    }
+
+    $id = $_POST['id'] ?? null;
+
+    if (!$id || !is_numeric($id)) {
+        afficher_erreur("ID d'année scolaire invalide.");
+        return;
+    }
+
+    // Validation des données
+    $donnees = valider_donnees_annee_scolaire($_POST);
+
+    if (!$donnees) {
+        return; // Erreur déjà affichée par la fonction de validation
+    }
+
+    try {
+        modifier_annee_scolaire($id, $donnees);
+
+        logAction('Année scolaire modifiée', 'Modification d\'une année scolaire', ['id' => $id, 'donnees' => $donnees]);
+        set_message_succes("L'année scolaire a été modifiée avec succès.");
+        redirect('academique/options');
+
+    } catch (Exception $e) {
+        logError('Erreur modification année scolaire', ['error' => $e->getMessage(), 'id' => $id]);
+        afficher_erreur("Erreur lors de la modification de l'année scolaire.");
     }
 }
 

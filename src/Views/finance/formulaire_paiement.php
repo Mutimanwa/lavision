@@ -55,7 +55,7 @@ require_once TEMPLATES_PATH . '/header.php';
             <div class="row">
                 <div class="col-lg-8">
                     <form method="POST" action="/finance" id="paiementForm" novalidate>
-                        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                         <input type="hidden" name="action" value="<?php echo $paiement ? 'modifier_paiement&id=' . $paiement['paiement_id'] : 'creer_paiement'; ?>">
 
                         <!-- Informations de base -->

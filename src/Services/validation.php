@@ -255,12 +255,12 @@ function valider_donnees_eleve(array $donnees, bool $est_modification = false): 
     }
 
     // Validation de la classe
-    $id_classe = intval($donnees['id_classe'] ?? 0);
-    if ($id_classe > 0) {
-        if (!classe_existe($id_classe)) {
-            $erreurs['id_classe'] = "Classe invalide";
+    $class_id = intval($donnees['class_id'] ?? 0);
+    if ($class_id > 0) {
+        if (!classe_existe($class_id)) {
+            $erreurs['class_id'] = "Classe invalide";
         } else {
-            $validees['id_classe'] = $id_classe;
+            $validees['class_id'] = $class_id;
         }
     }
 
@@ -338,12 +338,12 @@ function email_existe_deja(string $email, int $exclude_id = 0): bool
 /**
  * Vérifie si une classe existe
  *
- * @param int $id_classe ID de la classe
+ * @param int $class_id ID de la classe
  * @return bool True si existe
  */
-function classe_existe(int $id_classe): bool
+function classe_existe(int $class_id): bool
 {
-    $result = db_query("SELECT COUNT(*) as count FROM classes WHERE id = ?", [$id_classe]);
+    $result = db_query("SELECT COUNT(*) as count FROM classes WHERE id = ?", [$class_id]);
     return $result && $result[0]['count'] > 0;
 }
 

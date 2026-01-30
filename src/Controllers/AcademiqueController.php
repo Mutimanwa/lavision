@@ -457,10 +457,10 @@ function traiter_ajout_classe(): void
 
         if (empty($donnees['erreurs'])) {
             // Création de la classe
-            $id_classe = ajouter_classe($donnees['validees']);
+            $class_id = ajouter_classe($donnees['validees']);
 
-            if ($id_classe) {
-                logAction('Classe ajoutée', 'Traitement ajout classe',['id_classe' => $id_classe, 'nom' => $donnees['validees']['nom_classe']]);
+            if ($class_id) {
+                logAction('Classe ajoutée', 'Traitement ajout classe',['class_id' => $class_id, 'nom' => $donnees['validees']['nom_classe']]);
                 set_message_succes("La classe a été ajoutée avec succès.");
                 redirect('academique/classes');
             } else {
@@ -591,10 +591,10 @@ function traiter_ajout_matiere(): void
 
         if (empty($donnees['erreurs'])) {
             // Création de la matière
-            $id_matiere = ajouter_matiere($donnees['validees']);
+            $matiere_id = ajouter_matiere($donnees['validees']);
 
-            if ($id_matiere) {
-                logAction('Matière ajoutée', 'Traitement ajout matière',['id_matiere' => $id_matiere, 'nom' => $donnees['validees']['nom_matiere']]);
+            if ($matiere_id) {
+                logAction('Matière ajoutée', 'Traitement ajout matière',['matiere_id' => $matiere_id, 'nom' => $donnees['validees']['nom_matiere']]);
                 set_message_succes("La matière a été ajoutée avec succès.");
                 redirect('academique/matieres');
             } else {
@@ -632,7 +632,7 @@ function traiter_ajout_matiere(): void
 function afficher_gestion_horaires(): void
 {
     // Récupération des paramètres
-    $id_classe = intval($_GET['classe'] ?? 0);
+    $class_id = intval($_GET['classe'] ?? 0);
     $jour_semaine = intval($_GET['jour'] ?? date('N')); // Jour actuel par défaut
 
     try {
@@ -640,8 +640,8 @@ function afficher_gestion_horaires(): void
         $classes = get_classes_actives();
         $horaires = [];
 
-        if ($id_classe > 0) {
-            $horaires = get_horaires_classe($id_classe, $jour_semaine);
+        if ($class_id > 0) {
+            $horaires = get_horaires_classe($class_id, $jour_semaine);
         }
 
         $matieres = get_matieres_actives();
@@ -652,7 +652,7 @@ function afficher_gestion_horaires(): void
             'horaires' => $horaires,
             'matieres' => $matieres,
             'professeurs' => $professeurs,
-            'id_classe_selectionnee' => $id_classe,
+            'class_id_selectionnee' => $class_id,
             'jour_selectionne' => $jour_semaine,
             'jours_semaine' => JOURS_SEMAINE,
             'periodes_journee' => PERIODES_JOURNEE
@@ -672,10 +672,10 @@ function afficher_gestion_horaires(): void
 function traiter_sauvegarde_horaires(): void
 {
     // Vérification des permissions
-    if (!a_permission('academique_gerer')) {
-        afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
-        return;
-    }
+    // if (!a_permission('academique_gerer')) {
+    //     afficher_erreur("Vous n'avez pas les permissions nécessaires.", 403);
+    //     return;
+    // }
 
     // Vérification du token CSRF
     if (!verifier_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -683,11 +683,14 @@ function traiter_sauvegarde_horaires(): void
         return;
     }
 
-    $id_classe = intval($_POST['id_classe'] ?? 0);
+    $class_id = intval($_POST['class_id'] ?? 0);
     $jour_semaine = intval($_POST['jour_semaine'] ?? 0);
 
-    if ($id_classe <= 0 || $jour_semaine <= 0) {
+    if ($class_id < 1) {
         afficher_erreur("Classe et jour de la semaine requis.", 400);
+        return;
+    }elseif($jour_semaine < 1 || $jour_semaine > 7){
+        afficher_erreur("Jour de la semaine invalide.", 400);
         return;
     }
 
@@ -699,24 +702,27 @@ function traiter_sauvegarde_horaires(): void
             foreach ($_POST['horaires'] as $index => $horaire) {
                 $heure_debut = $horaire['heure_debut'] ?? '';
                 $heure_fin = $horaire['heure_fin'] ?? '';
-                $id_matiere = intval($horaire['id_matiere'] ?? 0);
-                $id_professeur = intval($horaire['id_professeur'] ?? 0);
+                $matiere_id = intval($horaire['matiere_id'] ?? 0);
+                $professeur_id = intval($horaire['professeur_id'] ?? 0);
 
                 // Validation basique
-                if (!empty($heure_debut) && !empty($heure_fin) && $id_matiere > 0) {
+                if (!empty($heure_debut) && !empty($heure_fin) && $matiere_id > 0) {
                     // Création ou mise à jour de l'horaire
+                    // Récupération de l'année scolaire active
+                    $annee_scolaire_active = get_annee_scolaire_active();
                     $donnees_horaire = [
-                        'id_classe' => $id_classe,
+                        'class_id' => $class_id,
                         'jour_semaine' => $jour_semaine,
                         'heure_debut' => $heure_debut,
                         'heure_fin' => $heure_fin,
-                        'id_matiere' => $id_matiere,
-                        'id_professeur' => $id_professeur
+                        'matiere_id' => $matiere_id,
+                        'professeur_id' => $professeur_id,
+                        'annee_id' => $annee_scolaire_active['annee_id']
                     ];
 
-                    if (isset($horaire['id']) && $horaire['id'] > 0) {
+                    if (isset($horaire['edt_id']) && $horaire['edt_id'] > 0) {
                         // Mise à jour
-                        modifier_horaire($horaire['id'], $donnees_horaire);
+                        modifier_horaire($horaire['edt_id'], $donnees_horaire);
                     } else {
                         // Création
                         ajouter_horaire($donnees_horaire);
@@ -728,17 +734,23 @@ function traiter_sauvegarde_horaires(): void
         }
 
         logAction('Horaires sauvegardés', 'Traitement des sauvegardes d\'horaires',[
-            'id_classe' => $id_classe,
+            'class_id' => $class_id,
             'jour_semaine' => $jour_semaine,
             'horaires_modifies' => $horaires_modifies
         ]);
 
-        set_message_succes("$horaires_modifies horaire(s) sauvegardé(s) avec succès.");
-        redirect('academique/horaires', ['classe' => $id_classe, 'jour' => $jour_semaine]);
+        if($horaires_modifies != 0){
+            set_message_succes("$horaires_modifies horaire(s) sauvegardé(s) avec succès.");
+        }else{
+            set_message_succes("Aucun horaire modifié.");
+        }
+        
+        redirect('academique/horaires', ['classe' => $class_id, 'jour' => $jour_semaine]);
 
     } catch (Exception $e) {
-        logError('Erreur sauvegarde horaires', ['error' => $e->getMessage()]);
         afficher_erreur("Erreur lors de la sauvegarde des horaires.");
+        logError('Erreur sauvegarde horaires', ['error' => $e->getMessage()]);
+        
     }
 }
 

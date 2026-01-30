@@ -370,7 +370,7 @@ function rechercher_eleves(string $recherche, int $limit = 10): array
     $sql = "SELECT e.id, CONCAT(e.nom, ' ', e.post_nom, ' ', e.prenom) as nom_complet,
                    c.nom_classe, e.statut
             FROM eleves e
-            LEFT JOIN classes c ON e.id_classe = c.id
+            LEFT JOIN classes c ON e.class_id = c.id
             WHERE e.statut != 'supprime'
             AND (e.nom LIKE ? OR e.post_nom LIKE ? OR e.prenom LIKE ?)
             ORDER BY e.nom, e.post_nom, e.prenom

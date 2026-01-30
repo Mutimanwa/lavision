@@ -18,9 +18,9 @@ function admin_utilisateurs() {
     global $adminModel;
 
     // Vérifier les permissions
-    // if (!hasPermission('admin.users')) {
-    //     afficher_erreur('Vous avez pas l\'autorisaion necessaire', 403);
-    // }
+    if (!hasPermission('admin.users')) {
+        afficher_erreur('Vous avez pas l\'autorisaion necessaire', 403);
+    }
 
     $page = $_GET['page'] ?? 1;
     $search = $_GET['search'] ?? '';

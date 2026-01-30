@@ -593,7 +593,7 @@ function ajouter_matiere(array $donnees): int|false
 /**
  * Récupère les horaires d'une classe pour un jour donné
  */
-function get_horaires_classe(int $id_classe, string $jour_semaine): array
+function get_horaires_classe(int $class_id, string $jour_semaine): array
 {
     $pdo = get_db_connection();
 
@@ -608,12 +608,12 @@ function get_horaires_classe(int $id_classe, string $jour_semaine): array
             ORDER BY edt.heure_debut ASC
         ");
 
-        $stmt->execute([$id_classe, $jour_semaine]);
+        $stmt->execute([$class_id, $jour_semaine]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     } catch (PDOException $e) {
         logError('Erreur récupération horaires classe', [
-            'id_classe' => $id_classe,
+            'class_id' => $class_id,
             'jour_semaine' => $jour_semaine,
             'error' => $e->getMessage()
         ]);

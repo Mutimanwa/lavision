@@ -212,13 +212,20 @@ elseif (strpos($page_actuelle, 'academique') === 0) {
                 afficher_formulaire_ajout_matiere();
             }
             break;
-        case 'academique/horaires':
-            afficher_gestion_horaires();
+            case 'academique/horaires':
+                afficher_gestion_horaires();
             break;
-        default:
+            case 'academique/horaires/sauvegarder':
+                if($_SERVER['REQUEST_METHOD'] == 'POST'){
+                    traiter_sauvegarde_horaires();
+                }else{
+                    afficher_gestion_horaires();
+                }
+            break;
+            default:
             load_page($page_actuelle);
             break;
-    }
+    }   
     exit;
 }
 

@@ -46,7 +46,8 @@
     <!-- Sélecteurs de classe et jour -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="get" action="<?= url('academique/horaires') ?>" class="row g-3">
+            <form method="get" action="" class="row g-3">
+                <input type="hidden" name="page" value="academique/horaires">
                 <div class="col-md-5">
                     <label for="classe" class="form-label">
                         <i class="fas fa-school me-1"></i>
@@ -55,9 +56,9 @@
                     <select class="form-select" id="classe" name="classe" onchange="this.form.submit()">
                         <option value="">Sélectionner une classe</option>
                         <?php foreach ($data['classes'] as $classe): ?>
-                            <option value="<?php echo $classe['id']; ?>"
-                                    <?php echo ($data['id_classe_selectionnee'] == $classe['id']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($classe['nom_classe']); ?> -
+                            <option value="<?php echo $classe['class_id']; ?>"
+                                    <?php echo ($data['class_id_selectionnee'] == $classe['class_id']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($classe['libelle']); ?> -
                                 <?php echo htmlspecialchars($classe['nom_niveau']); ?> <?php echo htmlspecialchars($classe['nom_section']); ?>
                             </option>
                         <?php endforeach; ?>
@@ -90,7 +91,7 @@
         </div>
     </div>
 
-    <?php if ($data['id_classe_selectionnee']): ?>
+    <?php if ($data['class_id_selectionnee']): ?>
         <!-- Grille des horaires -->
         <div class="card shadow-sm">
             <div class="card-header">
@@ -98,9 +99,9 @@
                     <i class="fas fa-clock me-2"></i>
                     Emploi du temps -
                     <?php
-                    $classeSelectionnee = array_filter($data['classes'], fn($c) => $c['id'] == $data['id_classe_selectionnee']);
+                    $classeSelectionnee = array_filter($data['classes'], fn($c) => $c['class_id'] == $data['class_id_selectionnee']);
                     $classeSelectionnee = reset($classeSelectionnee);
-                    echo htmlspecialchars($classeSelectionnee['nom_classe']);
+                    echo htmlspecialchars($classeSelectionnee['libelle']);
                     ?> -
                     <?php echo htmlspecialchars($data['jours_semaine'][$data['jour_selectionne']]); ?>
                 </h6>
@@ -108,7 +109,7 @@
             <div class="card-body">
                 <form id="formHoraires" method="post" action="<?= url('academique/horaires/sauvegarder') ?>">
                     <input type="hidden" name="csrf_token" value="<?php echo generer_csrf_token(); ?>">
-                    <input type="hidden" name="id_classe" value="<?php echo $data['id_classe_selectionnee']; ?>">
+                    <input type="hidden" name="class_id" value="<?php echo $data['class_id_selectionnee']; ?>">
                     <input type="hidden" name="jour_semaine" value="<?php echo $data['jour_selectionne']; ?>">
 
                     <div class="table-responsive">
@@ -148,11 +149,11 @@
                                         </td>
                                         <td>
                                             <select class="form-select form-select-sm matiere-select"
-                                                    name="horaires[<?php echo $i; ?>][id_matiere]">
+                                                    name="horaires[<?php echo $i; ?>][matiere_id]">
                                                 <option value="">-- Sélectionner une matière --</option>
                                                 <?php foreach ($data['matieres'] as $matiere): ?>
-                                                    <option value="<?php echo $matiere['id']; ?>"
-                                                            <?php echo ($horaireExistant && $horaireExistant['id_matiere'] == $matiere['id']) ? 'selected' : ''; ?>>
+                                                    <option value="<?php echo $matiere['matiere_id']; ?>"
+                                                            <?php echo ($horaireExistant && $horaireExistant['matiere_id'] == $matiere['matiere_id']) ? 'selected' : ''; ?>>
                                                         <?php echo htmlspecialchars($matiere['nom_matiere']); ?>
                                                     </option>
                                                 <?php endforeach; ?>
@@ -160,12 +161,12 @@
                                         </td>
                                         <td>
                                             <select class="form-select form-select-sm professeur-select"
-                                                    name="horaires[<?php echo $i; ?>][id_professeur]">
+                                                    name="horaires[<?php echo $i; ?>][professeur_id]">
                                                 <option value="">-- Sélectionner un professeur --</option>
                                                 <?php foreach ($data['professeurs'] as $professeur): ?>
-                                                    <option value="<?php echo $professeur['id']; ?>"
-                                                            <?php echo ($horaireExistant && $horaireExistant['id_professeur'] == $professeur['id']) ? 'selected' : ''; ?>>
-                                                        <?php echo htmlspecialchars($professeur['nom'] . ' ' . $professeur['prenoms']); ?>
+                                                    <option value="<?php echo $professeur['professeur_id']; ?>"
+                                                            <?php echo ($horaireExistant && $horaireExistant['professeur_id'] == $professeur['professeur_id']) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($professeur['nom'] . ' ' . $professeur['prenom']); ?>
                                                         <?php if ($professeur['specialite']): ?>
                                                             (<?php echo htmlspecialchars($professeur['specialite']); ?>)
                                                         <?php endif; ?>
@@ -182,7 +183,7 @@
                                         <td>
                                             <div class="btn-group btn-group-sm">
                                                 <?php if ($horaireExistant): ?>
-                                                    <input type="hidden" name="horaires[<?php echo $i; ?>][id]" value="<?php echo $horaireExistant['id']; ?>">
+                                                    <input type="hidden" name="horaires[<?php echo $i; ?>][id]" value="<?php echo $horaireExistant['horaire_id']; ?>">
                                                 <?php endif; ?>
                                                 <button type="button" class="btn btn-outline-success btn-sm ajouter-cours"
                                                         title="Ajouter ce cours">
@@ -315,18 +316,18 @@ function ajouterCreneau() {
             </div>
         </td>
         <td>
-            <select class="form-select form-select-sm matiere-select" name="horaires[${rowCount}][id_matiere]">
+            <select class="form-select form-select-sm matiere-select" name="horaires[${rowCount}][matiere_id]">
                 <option value="">-- Sélectionner une matière --</option>
                 <?php foreach ($data['matieres'] as $matiere): ?>
-                <option value="<?php echo $matiere['id']; ?>"><?php echo htmlspecialchars($matiere['nom_matiere']); ?></option>
+                <option value="<?php echo $matiere['matiere_id']; ?>"><?php echo htmlspecialchars($matiere['nom_matiere']); ?></option>
                 <?php endforeach; ?>
             </select>
         </td>
         <td>
-            <select class="form-select form-select-sm professeur-select" name="horaires[${rowCount}][id_professeur]">
+            <select class="form-select form-select-sm professeur-select" name="horaires[${rowCount}][professeur_id]">
                 <option value="">-- Sélectionner un professeur --</option>
                 <?php foreach ($data['professeurs'] as $professeur): ?>
-                <option value="<?php echo $professeur['id']; ?>"><?php echo htmlspecialchars($professeur['nom'] . ' ' . $professeur['prenoms']); ?></option>
+                <option value="<?php echo $professeur['professeur_id']; ?>"><?php echo htmlspecialchars($professeur['nom'] . ' ' . $professeur['prenom']); ?></option>
                 <?php endforeach; ?>
             </select>
         </td>

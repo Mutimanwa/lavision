@@ -226,13 +226,13 @@ function valider_donnees_horaire(array $donnees): array
     $donnees = nettoyer_donnees($donnees);
 
     // Validation de la classe
-    $id_classe = intval($donnees['id_classe'] ?? 0);
-    if ($id_classe <= 0) {
-        $erreurs['id_classe'] = "La classe est obligatoire.";
-    } elseif (!classe_existe($id_classe)) {
-        $erreurs['id_classe'] = "La classe sélectionnée n'existe pas.";
+    $class_id = intval($donnees['class_id'] ?? 0);
+    if ($class_id <= 0) {
+        $erreurs['class_id'] = "La classe est obligatoire.";
+    } elseif (!classe_existe($class_id)) {
+        $erreurs['class_id'] = "La classe sélectionnée n'existe pas.";
     } else {
-        $validees['id_classe'] = $id_classe;
+        $validees['class_id'] = $class_id;
     }
 
     // Validation du jour de la semaine
@@ -266,22 +266,22 @@ function valider_donnees_horaire(array $donnees): array
     }
 
     // Validation de la matière
-    $id_matiere = intval($donnees['id_matiere'] ?? 0);
-    if ($id_matiere <= 0) {
-        $erreurs['id_matiere'] = "La matière est obligatoire.";
-    } elseif (!matiere_existe($id_matiere)) {
-        $erreurs['id_matiere'] = "La matière sélectionnée n'existe pas.";
+    $matiere_id = intval($donnees['matiere_id'] ?? 0);
+    if ($matiere_id <= 0) {
+        $erreurs['matiere_id'] = "La matière est obligatoire.";
+    } elseif (!matiere_existe($matiere_id)) {
+        $erreurs['matiere_id'] = "La matière sélectionnée n'existe pas.";
     } else {
-        $validees['id_matiere'] = $id_matiere;
+        $validees['matiere_id'] = $matiere_id;
     }
 
     // Validation du professeur (optionnel)
-    $id_professeur = intval($donnees['id_professeur'] ?? 0);
-    if ($id_professeur > 0) {
-        if (!professeur_existe($id_professeur)) {
-            $erreurs['id_professeur'] = "Le professeur sélectionné n'existe pas.";
+    $professeur_id = intval($donnees['professeur_id'] ?? 0);
+    if ($professeur_id > 0) {
+        if (!professeur_existe($professeur_id)) {
+            $erreurs['professeur_id'] = "Le professeur sélectionné n'existe pas.";
         } else {
-            $validees['id_professeur'] = $id_professeur;
+            $validees['professeur_id'] = $professeur_id;
         }
     }
 
@@ -298,8 +298,8 @@ function valider_donnees_horaire(array $donnees): array
     }
 
     // Vérification des conflits d'horaire
-    if (empty($erreurs) && isset($validees['id_classe'], $validees['jour_semaine'], $validees['heure_debut'], $validees['heure_fin'])) {
-        if (conflit_horaire_existe($validees['id_classe'], $validees['jour_semaine'], $validees['heure_debut'], $validees['heure_fin'])) {
+    if (empty($erreurs) && isset($validees['class_id'], $validees['jour_semaine'], $validees['heure_debut'], $validees['heure_fin'])) {
+        if (conflit_horaire_existe($validees['class_id'], $validees['jour_semaine'], $validees['heure_debut'], $validees['heure_fin'])) {
             $erreurs['heure_debut'] = "Il y a un conflit d'horaire pour cette classe à cette période.";
         }
     }
@@ -347,22 +347,22 @@ function annee_scolaire_existe(int $id_annee): bool
 /**
  * Vérifie si un professeur existe
  */
-function professeur_existe(int $id_professeur): bool
+function professeur_existe(int $professeur_id): bool
 {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM professeurs WHERE id = ? AND actif = 1");
-    $stmt->execute([$id_professeur]);
+    $stmt->execute([$professeur_id]);
     return $stmt->fetchColumn() > 0;
 }
 
 /**
  * Vérifie si une matière existe
  */
-function matiere_existe(int $id_matiere): bool
+function matiere_existe(int $matiere_id): bool
 {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM matieres WHERE id = ? AND actif = 1");
-    $stmt->execute([$id_matiere]);
+    $stmt->execute([$matiere_id]);
     return $stmt->fetchColumn() > 0;
 }
 
@@ -394,12 +394,12 @@ function code_matiere_existe_deja(string $code_matiere): bool
 /**
  * Vérifie s'il y a un conflit d'horaire
  */
-function conflit_horaire_existe(int $id_classe, int $jour_semaine, string $heure_debut, string $heure_fin): bool
+function conflit_horaire_existe(int $class_id, int $jour_semaine, string $heure_debut, string $heure_fin): bool
 {
     $pdo = get_db_connection();
     $stmt = $pdo->prepare("
         SELECT COUNT(*) FROM horaires
-        WHERE id_classe = ? AND jour_semaine = ? AND actif = 1
+        WHERE class_id = ? AND jour_semaine = ? AND actif = 1
         AND (
             (heure_debut <= ? AND heure_fin > ?) OR
             (heure_debut < ? AND heure_fin >= ?) OR
@@ -407,7 +407,7 @@ function conflit_horaire_existe(int $id_classe, int $jour_semaine, string $heure
         )
     ");
     $stmt->execute([
-        $id_classe, $jour_semaine,
+        $class_id, $jour_semaine,
         $heure_debut, $heure_debut,
         $heure_fin, $heure_fin,
         $heure_debut, $heure_fin

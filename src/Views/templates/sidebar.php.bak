@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Récupérer les informations de l'utilisateur
-$user_role = $_SESSION['user_role'] ?? 'eleve';
+$user_role = $_SESSION['utilisateur_role'] ?? 'eleve';
 $user_permissions = $_SESSION['user_permissions'] ?? [];
 
 // Définir les modules disponibles selon le rôle

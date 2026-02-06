@@ -1,0 +1,2 @@
+[2026-02-05 07:37:21] ERROR - IP: 127.0.0.1 - User: system - Message: Erreur requête SELECT - Context: {"sql":"SELECT COUNT(*) as count FROM utilisateurs WHERE email = ?","params":["calvin@gmail.com"],"error":"SQLSTATE[42S02]: Base table or view not found: 1146 Table 'gestion_academique_ecole.utilisateurs' doesn't exist"}
+[2026-02-05 07:37:21] ERROR - IP: 127.0.0.1 - User: system - Message: Erreur ajout élève - Context: {"error":"SQLSTATE[42S02]: Base table or view not found: 1146 Table 'gestion_academique_ecole.utilisateurs' doesn't exist"}

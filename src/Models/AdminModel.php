@@ -4,18 +4,28 @@
  * Gestion des utilisateurs, paramètres système, logs, sauvegardes
  */
 require_once __DIR__ . '/../Services/database.php';
-class AdminModel {
+class AdminModel
+{
     private $db;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = get_db_connection();
     }
 
     /**
      * Récupère la liste des utilisateurs avec pagination
      */
-    public function getUtilisateurs($page = 1, $search = '', $role = '', $statut = '') {
-        $limit = ITEMS_PER_PAGE;
+    public function getUtilisateurs($page = 1, $search = '', $role = '', $statut = '')
+    {
+        $limit = 10;
+
+        // Sécurisation stricte
+        $page = (int) $page;
+        if ($page < 1) {
+            $page = 1;
+        }
+
         $offset = ($page - 1) * $limit;
 
         $where = [];
@@ -40,7 +50,7 @@ class AdminModel {
 
         // Compter le total
         $countQuery = "SELECT COUNT(*) as total FROM user_admins u $whereClause";
-        $total = $this->db->fetch($countQuery, $params)['total'];
+        $total = db_query_one($countQuery, $params)['total'];
 
         // Récupérer les utilisateurs
         $query = "SELECT u.*, COUNT(l.log_id) as nb_actions
@@ -51,7 +61,7 @@ class AdminModel {
                   ORDER BY u.date_creation DESC
                   LIMIT $limit OFFSET $offset";
 
-        $utilisateurs = $this->db->fetchAll($query, $params);
+        $utilisateurs = db_query($query, $params);
 
         return [
             'utilisateurs' => $utilisateurs,
@@ -67,7 +77,8 @@ class AdminModel {
     /**
      * Récupère tous les rôles disponibles
      */
-    public function getRoles() {
+    public function getRoles()
+    {
         return [
             'superadmin' => 'Super Administrateur',
             'admin' => 'Administrateur',
@@ -80,9 +91,11 @@ class AdminModel {
     /**
      * Récupère tous les paramètres système
      */
-    public function getParametres() {
+    public function getParametres()
+    {
         $query = "SELECT * FROM parametres ORDER BY categorie, cle";
-        $parametres = db_execute($query);
+        // $parametres = db_execute($query);
+        $parametres =  db_query($query);
 
         // Grouper par catégorie
         $grouped = [];
@@ -96,8 +109,9 @@ class AdminModel {
     /**
      * Met à jour les paramètres système
      */
-    public function updateParametres($parametres) {
-         db_begin_transaction();
+    public function updateParametres($parametres)
+    {
+        db_begin_transaction();
 
         try {
             foreach ($parametres as $cle => $valeur) {
@@ -116,7 +130,8 @@ class AdminModel {
     /**
      * Récupère toutes les années scolaires
      */
-    public function getAnneesScolaires() {
+    public function getAnneesScolaires()
+    {
         $query = "SELECT * FROM annees_scolaire ORDER BY date_debut DESC";
         return db_query($query);
     }
@@ -124,21 +139,24 @@ class AdminModel {
     /**
      * Crée une nouvelle année scolaire
      */
-    public function creerAnneeScolaire($data) {
+    public function creerAnneeScolaire($data)
+    {
         $query = "INSERT INTO annees_scolaire (annee_libelle, date_debut, date_fin, statut)
                   VALUES (?, ?, ?, ?)";
 
-       return db_execute($query , [           
-        $data['annee_libelle'],
+        return db_execute($query, [
+            $data['annee_libelle'],
             $data['date_debut'],
             $data['date_fin'],
-            $data['statut']]);
+            $data['statut']
+        ]);
     }
 
     /**
      * Modifie une année scolaire
      */
-    public function modifierAnneeScolaire($annee_id, $data) {
+    public function modifierAnneeScolaire($annee_id, $data)
+    {
         $query = "UPDATE annees_scolaire
                   SET annee_libelle = ?, date_debut = ?, date_fin = ?, statut = ?
                   WHERE annee_id = ?";
@@ -154,15 +172,16 @@ class AdminModel {
     /**
      * Active une année scolaire (désactive les autres)
      */
-    public function activerAnneeScolaire($annee_id) {
+    public function activerAnneeScolaire($annee_id)
+    {
         $this->db->beginTransaction();
 
         try {
             // Désactiver toutes les années
-         db_execute("UPDATE annees_scolaire SET statut = 'inactive'");
+            db_execute("UPDATE annees_scolaire SET statut = 'inactive'");
 
             // Activer l'année sélectionnée
-         db_execute("UPDATE annees_scolaire SET statut = 'active' WHERE annee_id = ?", [$annee_id]);
+            db_execute("UPDATE annees_scolaire SET statut = 'active' WHERE annee_id = ?", [$annee_id]);
 
             $this->db->commit();
             return true;
@@ -175,8 +194,9 @@ class AdminModel {
     /**
      * Récupère les logs système avec pagination
      */
-    public function getLogs($page = 1, $niveau = '', $categorie = '', $date_debut = '', $date_fin = '') {
-        $limit = ITEMS_PER_PAGE;
+    public function getLogs($page = 1, $niveau = '', $categorie = '', $date_debut = '', $date_fin = '')
+    {
+        $limit = 20;
         $offset = ($page - 1) * $limit;
 
         $where = [];
@@ -232,14 +252,16 @@ class AdminModel {
     /**
      * Récupère les niveaux de log disponibles
      */
-    public function getNiveauxLog() {
+    public function getNiveauxLog()
+    {
         return ['info', 'warning', 'error', 'security'];
     }
 
     /**
      * Récupère les catégories de log disponibles
      */
-    public function getCategoriesLog() {
+    public function getCategoriesLog()
+    {
         $query = "SELECT DISTINCT categorie FROM logs ORDER BY categorie";
         $result = db_query($query);
         return array_column($result, 'categorie');
@@ -248,7 +270,8 @@ class AdminModel {
     /**
      * Récupère l'historique des sauvegardes
      */
-    public function getBackupLogs() {
+    public function getBackupLogs()
+    {
         $query = "SELECT * FROM backup_logs ORDER BY date_execution DESC LIMIT 50";
         return db_query($query);
     }
@@ -256,7 +279,8 @@ class AdminModel {
     /**
      * Récupère les sauvegardes disponibles pour restauration
      */
-    public function getAvailableBackups() {
+    public function getAvailableBackups()
+    {
         $query = "SELECT * FROM backup_logs
                   WHERE statut = 'success'
                   ORDER BY date_execution DESC LIMIT 20";
@@ -266,7 +290,8 @@ class AdminModel {
     /**
      * Crée une nouvelle sauvegarde
      */
-    public function creerSauvegarde($type) {
+    public function creerSauvegarde($type)
+    {
         // Insérer le log de sauvegarde
         $query = "INSERT INTO backup_logs (type_backup, fichier, statut, execute_par)
                   VALUES (?, ?, 'pending', ?)";
@@ -276,9 +301,10 @@ class AdminModel {
 
         if (db_execute($query, [$type, $fichier, $user_id])) {
             // Ici nous lancerions le processus de sauvegarde réel
+            
             // Pour l'instant, on simule le succès
             $backup_id = $this->db->lastInsertId();
-         db_execute(
+            db_execute(
                 "UPDATE backup_logs SET statut = 'success', taille = ? WHERE backup_id = ?",
                 [rand(1000000, 10000000), $backup_id]
             );
@@ -291,7 +317,8 @@ class AdminModel {
     /**
      * Restaure une sauvegarde
      */
-    public function restaurerSauvegarde($backup_id) {
+    public function restaurerSauvegarde($backup_id)
+    {
         // Vérifier que la sauvegarde existe et est valide
         $query = "SELECT * FROM backup_logs WHERE backup_id = ? AND statut = 'success'";
         $backup = db_query($query, [$backup_id]);

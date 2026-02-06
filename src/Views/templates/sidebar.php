@@ -293,8 +293,7 @@
                     </a>
 
                     <!-- Réinitialiser la base de données -->
-                    <a class="nav-link text-danger" href="<?= url('administration/reinit-db') ?>" role="button"
-                        onclick="return confirm('ATTENTION : Cette action est irréversible et va effacer toutes les données existantes. Voulez-vous vraiment réinitialiser la base de données ?');">
+                    <a class="nav-link text-danger <?= is_active('administration/backup') ?> "  href="<?= url('administration/backup') ?>" role="button">
                         <div class="d-flex align-items-center">
                             <span class="nav-link-icon"><span class="fas fa-database"></span></span>
                             <span class="nav-link-text ps-1">Backup </span>

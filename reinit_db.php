@@ -3,7 +3,7 @@ require_once 'src/Config/config.php';
 
 // Sécurité : Vérifier si l'utilisateur est un superadmin
 // Note: La logique d'authentification et de gestion des rôles doit être implémentée
-// if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'superadmin') {
+// if (!isset($_SESSION['utilisateur_role']) || $_SESSION['utilisateur_role'] !== 'superadmin') {
 //     die("Accès non autorisé. Seul un super-administrateur peut exécuter cette action.");
 // }
 

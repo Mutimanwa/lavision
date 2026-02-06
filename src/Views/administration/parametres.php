@@ -4,9 +4,6 @@
  * Vue d'administration pour la configuration de l'application
  */
 
-// Inclure l'en-tête
-require_once __DIR__ . '/../templates/header.php';
-
 // Récupérer les données du contexte
 $parametres = $parametres ?? [];
 
@@ -18,244 +15,183 @@ $success_message = $_SESSION['success_message'] ?? '';
 unset($_SESSION['error_message'], $_SESSION['success_message']);
 ?>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-            <?php require_once __DIR__ . '/../templates/sidebar.php'; ?>
-        </nav>
 
-        <!-- Contenu principal -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">
-                    <i class="fas fa-cogs me-2"></i>
-                    Paramètres système
-                </h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="<?php echo BASE_URL; ?>/dashboard">Tableau de bord</a></li>
-                        <li class="breadcrumb-item active">Administration</li>
-                        <li class="breadcrumb-item active">Paramètres</li>
-                    </ol>
-                </nav>
-            </div>
-
-            <!-- Messages d'alerte -->
-            <?php if ($error_message): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <?php echo htmlspecialchars($error_message); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
-
-            <?php if ($success_message): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <?php echo htmlspecialchars($success_message); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
-
-            <!-- Formulaire des paramètres -->
-            <form method="POST" action="<?php echo BASE_URL; ?>/administration/parametres" id="parametresForm">
-                <!-- Jeton CSRF -->
-                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
-
-                <?php foreach ($parametres as $categorie => $params): ?>
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-folder me-2"></i>
-                                <?php echo htmlspecialchars(ucfirst($categorie)); ?>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                                <?php foreach ($params as $param): ?>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="param_<?php echo $param['parametre_id']; ?>" class="form-label">
-                                                <?php echo htmlspecialchars($param['description'] ?: $param['cle']); ?>
-                                                <?php if (!$param['modifiable']): ?>
-                                                    <i class="fas fa-lock text-muted ms-1" title="Paramètre non modifiable"></i>
-                                                <?php endif; ?>
-                                            </label>
-
-                                            <?php if ($param['type'] === 'boolean'): ?>
-                                                <!-- Case à cocher pour les booléens -->
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input"
-                                                           type="checkbox"
-                                                           id="param_<?php echo $param['parametre_id']; ?>"
-                                                           name="parametres[<?php echo $param['cle']; ?>]"
-                                                           value="1"
-                                                           <?php echo $param['valeur'] ? 'checked' : ''; ?>
-                                                           <?php echo !$param['modifiable'] ? 'disabled' : ''; ?>>
-                                                    <label class="form-check-label" for="param_<?php echo $param['parametre_id']; ?>">
-                                                        <?php echo $param['valeur'] ? 'Activé' : 'Désactivé'; ?>
-                                                    </label>
-                                                </div>
-
-                                            <?php elseif ($param['type'] === 'json' || $param['type'] === 'array'): ?>
-                                                <!-- Zone de texte pour JSON/Array -->
-                                                <textarea class="form-control"
-                                                          id="param_<?php echo $param['parametre_id']; ?>"
-                                                          name="parametres[<?php echo $param['cle']; ?>]"
-                                                          rows="3"
-                                                          <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>
-                                                          placeholder='<?php echo $param['type'] === 'json' ? '{"clé": "valeur"}' : '["valeur1", "valeur2"]'; ?>'><?php echo htmlspecialchars($param['valeur']); ?></textarea>
-
-                                            <?php elseif (strpos($param['cle'], 'mot_de_passe') !== false || strpos($param['cle'], 'password') !== false): ?>
-                                                <!-- Champ mot de passe -->
-                                                <input type="password"
-                                                       class="form-control"
-                                                       id="param_<?php echo $param['parametre_id']; ?>"
-                                                       name="parametres[<?php echo $param['cle']; ?>]"
-                                                       value="<?php echo htmlspecialchars($param['valeur']); ?>"
-                                                       <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
-
-                                            <?php elseif (strpos($param['cle'], 'email') !== false): ?>
-                                                <!-- Champ email -->
-                                                <input type="email"
-                                                       class="form-control"
-                                                       id="param_<?php echo $param['parametre_id']; ?>"
-                                                       name="parametres[<?php echo $param['cle']; ?>]"
-                                                       value="<?php echo htmlspecialchars($param['valeur']); ?>"
-                                                       <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
-
-                                            <?php elseif (strpos($param['cle'], 'telephone') !== false || strpos($param['cle'], 'phone') !== false): ?>
-                                                <!-- Champ téléphone -->
-                                                <input type="tel"
-                                                       class="form-control"
-                                                       id="param_<?php echo $param['parametre_id']; ?>"
-                                                       name="parametres[<?php echo $param['cle']; ?>]"
-                                                       value="<?php echo htmlspecialchars($param['valeur']); ?>"
-                                                       <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
-
-                                            <?php elseif (strpos($param['cle'], 'url') !== false): ?>
-                                                <!-- Champ URL -->
-                                                <input type="url"
-                                                       class="form-control"
-                                                       id="param_<?php echo $param['parametre_id']; ?>"
-                                                       name="parametres[<?php echo $param['cle']; ?>]"
-                                                       value="<?php echo htmlspecialchars($param['valeur']); ?>"
-                                                       <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
-
-                                            <?php elseif ($param['type'] === 'integer' || is_numeric($param['valeur'])): ?>
-                                                <!-- Champ numérique -->
-                                                <input type="number"
-                                                       class="form-control"
-                                                       id="param_<?php echo $param['parametre_id']; ?>"
-                                                       name="parametres[<?php echo $param['cle']; ?>]"
-                                                       value="<?php echo htmlspecialchars($param['valeur']); ?>"
-                                                       <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
-
-                                            <?php elseif (strlen($param['valeur']) > 100): ?>
-                                                <!-- Zone de texte pour valeurs longues -->
-                                                <textarea class="form-control"
-                                                          id="param_<?php echo $param['parametre_id']; ?>"
-                                                          name="parametres[<?php echo $param['cle']; ?>]"
-                                                          rows="3"
-                                                          <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>><?php echo htmlspecialchars($param['valeur']); ?></textarea>
-
-                                            <?php else: ?>
-                                                <!-- Champ texte standard -->
-                                                <input type="text"
-                                                       class="form-control"
-                                                       id="param_<?php echo $param['parametre_id']; ?>"
-                                                       name="parametres[<?php echo $param['cle']; ?>]"
-                                                       value="<?php echo htmlspecialchars($param['valeur']); ?>"
-                                                       <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
-                                            <?php endif; ?>
-
-                                            <small class="form-text text-muted">
-                                                Clé: <code><?php echo htmlspecialchars($param['cle']); ?></code>
-                                                | Type: <?php echo htmlspecialchars($param['type']); ?>
-                                                | Modifiable: <?php echo $param['modifiable'] ? 'Oui' : 'Non'; ?>
-                                            </small>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-
-                <!-- Boutons d'action -->
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <a href="<?php echo BASE_URL; ?>/administration" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>
-                                Retour
-                            </a>
-                            <div>
-                                <button type="button" class="btn btn-outline-primary me-2" onclick="resetToDefaults()">
-                                    <i class="fas fa-undo me-1"></i>
-                                    Valeurs par défaut
-                                </button>
-                                <button type="submit" class="btn btn-primary" id="btnSave">
-                                    <i class="fas fa-save me-2"></i>
-                                    Enregistrer les modifications
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </main>
+<!-- Contenu principal -->
+<div class="row">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">
+            <i class="fas fa-cogs me-2"></i>
+            Paramètres système
+        </h1>
+       
     </div>
+
+    <!-- Messages d'alerte -->
+    <?php if ($error_message): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <?php echo htmlspecialchars($error_message); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($success_message): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <?php echo htmlspecialchars($success_message); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Formulaire des paramètres -->
+    <form method="POST" action="<?php echo BASE_URL; ?>/administration/parametres" id="parametresForm">
+        <!-- Jeton CSRF -->
+        <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+
+        <?php foreach ($parametres as $categorie => $params): ?>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-folder me-2"></i>
+                        <?php echo htmlspecialchars(ucfirst($categorie)); ?>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <?php foreach ($params as $param): ?>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="param_<?php echo $param['parametre_id']; ?>" class="form-label">
+                                        <?php echo htmlspecialchars($param['description'] ?: $param['cle']); ?>
+                                        <?php if (!$param['modifiable']): ?>
+                                            <i class="fas fa-lock text-muted ms-1" title="Paramètre non modifiable"></i>
+                                        <?php endif; ?>
+                                    </label>
+
+                                    <?php if ($param['type'] === 'boolean'): ?>
+                                        <!-- Case à cocher pour les booléens -->
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input"
+                                                    type="checkbox"
+                                                    id="param_<?php echo $param['parametre_id']; ?>"
+                                                    name="parametres[<?php echo $param['cle']; ?>]"
+                                                    value="1"
+                                                    <?php echo $param['valeur'] ? 'checked' : ''; ?>
+                                                    <?php echo !$param['modifiable'] ? 'disabled' : ''; ?>>
+                                            <label class="form-check-label" for="param_<?php echo $param['parametre_id']; ?>">
+                                                <?php echo $param['valeur'] ? 'Activé' : 'Désactivé'; ?>
+                                            </label>
+                                        </div>
+
+                                    <?php elseif ($param['type'] === 'json' || $param['type'] === 'array'): ?>
+                                        <!-- Zone de texte pour JSON/Array -->
+                                        <textarea class="form-control"
+                                                    id="param_<?php echo $param['parametre_id']; ?>"
+                                                    name="parametres[<?php echo $param['cle']; ?>]"
+                                                    rows="3"
+                                                    <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>
+                                                    placeholder='<?php echo $param['type'] === 'json' ? '{"clé": "valeur"}' : '["valeur1", "valeur2"]'; ?>'><?php echo htmlspecialchars($param['valeur']); ?></textarea>
+
+                                    <?php elseif (strpos($param['cle'], 'mot_de_passe') !== false || strpos($param['cle'], 'password') !== false): ?>
+                                        <!-- Champ mot de passe -->
+                                        <input type="password"
+                                                class="form-control"
+                                                id="param_<?php echo $param['parametre_id']; ?>"
+                                                name="parametres[<?php echo $param['cle']; ?>]"
+                                                value="<?php echo htmlspecialchars($param['valeur']); ?>"
+                                                <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
+
+                                    <?php elseif (strpos($param['cle'], 'email') !== false): ?>
+                                        <!-- Champ email -->
+                                        <input type="email"
+                                                class="form-control"
+                                                id="param_<?php echo $param['parametre_id']; ?>"
+                                                name="parametres[<?php echo $param['cle']; ?>]"
+                                                value="<?php echo htmlspecialchars($param['valeur']); ?>"
+                                                <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
+
+                                    <?php elseif (strpos($param['cle'], 'telephone') !== false || strpos($param['cle'], 'phone') !== false): ?>
+                                        <!-- Champ téléphone -->
+                                        <input type="tel"
+                                                class="form-control"
+                                                id="param_<?php echo $param['parametre_id']; ?>"
+                                                name="parametres[<?php echo $param['cle']; ?>]"
+                                                value="<?php echo htmlspecialchars($param['valeur']); ?>"
+                                                <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
+
+                                    <?php elseif (strpos($param['cle'], 'url') !== false): ?>
+                                        <!-- Champ URL -->
+                                        <input type="url"
+                                                class="form-control"
+                                                id="param_<?php echo $param['parametre_id']; ?>"
+                                                name="parametres[<?php echo $param['cle']; ?>]"
+                                                value="<?php echo htmlspecialchars($param['valeur']); ?>"
+                                                <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
+
+                                    <?php elseif ($param['type'] === 'integer' || is_numeric($param['valeur'])): ?>
+                                        <!-- Champ numérique -->
+                                        <input type="number"
+                                                class="form-control"
+                                                id="param_<?php echo $param['parametre_id']; ?>"
+                                                name="parametres[<?php echo $param['cle']; ?>]"
+                                                value="<?php echo htmlspecialchars($param['valeur']); ?>"
+                                                <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
+
+                                    <?php elseif (strlen($param['valeur']) > 100): ?>
+                                        <!-- Zone de texte pour valeurs longues -->
+                                        <textarea class="form-control"
+                                                    id="param_<?php echo $param['parametre_id']; ?>"
+                                                    name="parametres[<?php echo $param['cle']; ?>]"
+                                                    rows="3"
+                                                    <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>><?php echo htmlspecialchars($param['valeur']); ?></textarea>
+
+                                    <?php else: ?>
+                                        <!-- Champ texte standard -->
+                                        <input type="text"
+                                                class="form-control"
+                                                id="param_<?php echo $param['parametre_id']; ?>"
+                                                name="parametres[<?php echo $param['cle']; ?>]"
+                                                value="<?php echo htmlspecialchars($param['valeur']); ?>"
+                                                <?php echo !$param['modifiable'] ? 'readonly' : ''; ?>>
+                                    <?php endif; ?>
+
+                                    <small class="form-text text-muted">
+                                        Clé: <code><?php echo htmlspecialchars($param['cle']); ?></code>
+                                        | Type: <?php echo htmlspecialchars($param['type']); ?>
+                                        | Modifiable: <?php echo $param['modifiable'] ? 'Oui' : 'Non'; ?>
+                                    </small>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+
+        <!-- Boutons d'action -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <a href="<?php echo BASE_URL; ?>/administration" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Retour
+                    </a>
+                    <div>
+                        <button type="button" class="btn btn-outline-primary me-2" onclick="resetToDefaults()">
+                            <i class="fas fa-undo me-1"></i>
+                            Valeurs par défaut
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btnSave">
+                            <i class="fas fa-save me-2"></i>
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
-<style>
-.card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.form-label {
-    font-weight: 500;
-    color: #495057;
-    margin-bottom: 0.5rem;
-}
-
-.form-control {
-    border-radius: 0.375rem;
-}
-
-.form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-.form-check-input:checked {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.btn {
-    border-radius: 0.375rem;
-}
-
-code {
-    background-color: #f8f9fa;
-    color: #e83e8c;
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-    font-size: 0.875em;
-}
-
-.form-text {
-    font-size: 0.875em;
-}
-</style>
 
 <script>
 $(document).ready(function() {
@@ -347,5 +283,3 @@ function resetToDefaults() {
     }
 }
 </script>
-
-<?php require_once __DIR__ . '/../templates/footer.php'; ?>

@@ -42,7 +42,7 @@ class BaseController {
                 'nom' => $_SESSION['user_nom'] ?? '',
                 'prenom' => $_SESSION['user_prenom'] ?? '',
                 'email' => $_SESSION['user_email'] ?? '',
-                'role' => $_SESSION['user_role'] ?? 'eleve',
+                'role' => $_SESSION['utilisateur_role'] ?? 'eleve',
                 'permissions' => $_SESSION['user_permissions'] ?? []
             ];
         }
@@ -155,7 +155,7 @@ class BaseController {
     protected function requireRole($role) {
         $this->requireAuth();
 
-        $user_role = $_SESSION['user_role'] ?? 'eleve';
+        $user_role = $_SESSION['utilisateur_role'] ?? 'eleve';
 
         if ($user_role !== $role) {
             $this->showError(403, 'Accès refusé', 'Vous n\'avez pas le rôle nécessaire pour accéder à cette page.');

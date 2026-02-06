@@ -18,7 +18,10 @@ function admin_utilisateurs() {
     global $adminModel;
 
     // Vérifier les permissions
-    if (!hasPermission('admin.users')) {
+    // if (!hasPermission('admin.users')) {
+    //     
+    // }
+    if(hasRole('superadmin') == false){
         afficher_erreur('Vous avez pas l\'autorisaion necessaire', 403);
     }
 
@@ -29,15 +32,73 @@ function admin_utilisateurs() {
 
     $result = $adminModel->getUtilisateurs($page, $search, $role, $statut);
 
-    render('administration/utilisateurs', [
+    $data = [
         'utilisateurs' => $result['utilisateurs'],
         'pagination' => $result['pagination'],
         'search' => $search,
         'role' => $role,
         'statut' => $statut,
         'roles' => $adminModel->getRoles()
-    ]);
+    ];
+
+    render('administration/utilisateurs', $data);
 }
+/**
+ *  creation de l'utilisateur
+ */
+
+function admin_creer_utilisateur( array $data): ?int
+{
+    $pdo = get_db_connection();
+
+    try {
+        // Générer un identifiant unique
+        $identifiant = generer_identifiant() ;
+
+        // Mot de passe par défaut (à changer)
+        $mot_de_passe = password_hash('Socle!', PASSWORD_DEFAULT);
+
+        $stmt = $pdo->prepare("
+            INSERT INTO " . TABLE_USER_ADMINS . " (
+                identifiant, email, mot_de_passe, nom, prenom, telephone, role, permissions
+            ) VALUES (?, ?, ?, ?, ?, ?, ? , '[]')
+        ");
+
+        $stmt->execute([
+            $identifiant,
+            $data['email'] ?? null,
+            $mot_de_passe,
+            $data['nom'],
+            $data['prenom'],
+            $data['telephone'],
+            $data['role']
+        ]);
+
+        return $pdo->lastInsertId();
+
+    } catch (PDOException $e) {
+        logError('Erreur création compte utilisateur', ['error' => $e->getMessage()]);
+        return null;
+    }
+}
+// focntion utiliteraire
+function generer_identifiant(): string
+{
+    $pdo = get_db_connection();
+    $prefixe = 'socle';
+    $unique_number = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+    $identifiant = "{$prefixe}-{$unique_number}";
+
+    // Vérifier l'unicité
+    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM " . TABLE_USER_ADMINS . " WHERE identifiant = ?");
+    $stmt->execute([$identifiant]);
+    if ($stmt->fetch(PDO::FETCH_ASSOC)['count'] > 0) {
+        return generer_identifiant(); // Regénérer si déjà existant
+    }
+    return $identifiant;
+}
+
 
 /**
  * Gestion des paramètres système
@@ -46,7 +107,7 @@ function admin_parametres() {
     global $adminModel;
 
     // Vérifier les permissions
-    if (!hasPermission('admin.settings')) {
+    if (!hasRole('superadmin')) {
         load_error_page(403);
     }
 
@@ -68,8 +129,8 @@ function admin_anneeScolaire() {
     global $adminModel;
 
     // Vérifier les permissions
-    if (!hasPermission('admin.settings')) {
-        redirect('dashboard', ['access' =>'Accès non autorisé', 'success' => 'error']);
+    if (!hasRole('superadmin')) {
+        renderError('403', ['access' =>'Accès non autorisé', 'success' => 'error']);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -81,6 +142,7 @@ function admin_anneeScolaire() {
     render('administration/annee-scolaire', [
         'annees' => $annees
     ]);
+
 }
 
 /**
@@ -121,7 +183,7 @@ function admin_backup() {
     global $adminModel;
 
     // Vérifier les permissions
-    if (!hasPermission('admin.backup')) {
+    if (!hasRole('superadmin')) {
         redirect('dashboard', ['Accès non autorisé', 'error']);
     }
 

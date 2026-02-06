@@ -767,7 +767,7 @@ function isLoggedIn(): bool
  */
 function hasRole(string $role): bool
 {
-    return isset($_SESSION['user_role']) && $_SESSION['user_role'] === $role;
+    return isset($_SESSION['utilisateur_role']) && $_SESSION['utilisateur_role'] === $role;
 }
 
 /**

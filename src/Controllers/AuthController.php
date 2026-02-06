@@ -65,6 +65,10 @@ function auth_processLogin() {
         $_SESSION['utilisateur_email'] = $user_data['email_real'];
         $_SESSION['utilisateur_role'] = $user_data['role'];
 
+        // enregistrer la dernière connexion
+        $stmt = $db->prepare("UPDATE user_admins SET dernier_login = NOW() WHERE user_id = ?");
+        $stmt->execute([$user_data['id']]);
+
         logAction('Connexion réussie', "Utilisateur: {$user_data['nom']}");
 
         // Rediriger vers le dashboard ou l'URL demandée

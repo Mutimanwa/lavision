@@ -99,7 +99,7 @@ $routes = [
     'administration/utilisateurs/ajout' => 'administration/utilisateurs/ajout.php',
     'administration/utilisateurs/modifier' => 'administration/utilisateurs/modifier.php',
     'administration/utilisateurs/detail' => 'administration/utilisateurs/detail.php',
-    'administration/annee-scolaire' => 'administration/annee-scolaire.php',
+    'administration/annee-scolaire' => 'administration/annee_scolaire.php',
     'administration/parametres' => 'administration/parametres.php',
     'administration/backup' => 'administration/backup.php',
 

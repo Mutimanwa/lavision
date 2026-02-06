@@ -18,9 +18,6 @@ function admin_utilisateurs() {
     global $adminModel;
 
     // Vérifier les permissions
-    // if (!hasPermission('admin.users')) {
-    //     
-    // }
     if(hasRole('superadmin') == false){
         afficher_erreur('Vous avez pas l\'autorisaion necessaire', 403);
     }
@@ -139,9 +136,13 @@ function admin_anneeScolaire() {
 
     $annees = $adminModel->getAnneesScolaires();
 
-    render('administration/annee-scolaire', [
+
+    $data = [
         'annees' => $annees
-    ]);
+    ];
+
+
+    render('administration/annee-scolaire', $data);
 
 }
 

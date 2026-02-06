@@ -5,7 +5,7 @@
  */
 
 // Récupérer les données du contexte
-$annees_scolaires = $annees_scolaires ?? [];
+$annees_scolaires = $annees ?? [];
 $annee_actuelle = $annee_actuelle ?? null;
 
 // Récupérer les messages d'erreur ou de succès
@@ -63,7 +63,7 @@ unset($_SESSION['error_message'], $_SESSION['success_message']);
                         <i class="fas fa-play-circle fa-2x text-primary"></i>
                     </div>
                     <h5 class="card-title">
-                        <?php echo $annee_actuelle ? htmlspecialchars($annee_actuelle['nom']) : 'Aucune'; ?>
+                        <?php echo $annee_actuelle ? htmlspecialchars($annee_actuelle['annee_libelle']) : 'Aucune'; ?>
                     </h5>
                     <p class="card-text">Année en cours</p>
                 </div>
@@ -96,7 +96,7 @@ unset($_SESSION['error_message'], $_SESSION['success_message']);
                     <h5 class="card-title">
                         <?php
                         $annees_cloturees = array_filter($annees_scolaires, function($a) {
-                            return $a['statut'] === 'cloturee';
+                            return $a['statut'] === 'inactive';
                         });
                         echo count($annees_cloturees);
                         ?>
@@ -143,12 +143,12 @@ unset($_SESSION['error_message'], $_SESSION['success_message']);
                         <?php else: ?>
                             <?php foreach ($annees_scolaires as $annee): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($annee['annee_scolaire_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($annee['annee_id']); ?></td>
                                     <td>
-                                        <strong><?php echo htmlspecialchars($annee['nom']); ?></strong>
+                                        <strong><?php echo htmlspecialchars($annee['annee_libelle']); ?></strong>
                                         <?php if ($annee['statut'] === 'active'): ?>
                                             <span class="badge bg-success ms-2">En cours</span>
-                                        <?php elseif ($annee['statut'] === 'cloturee'): ?>
+                                        <?php elseif ($annee['statut'] === 'inactive'): ?>
                                             <span class="badge bg-secondary ms-2">Clôturée</span>
                                         <?php else: ?>
                                             <span class="badge bg-warning ms-2">Planifiée</span>
@@ -159,7 +159,7 @@ unset($_SESSION['error_message'], $_SESSION['success_message']);
                                     <td>
                                         <span class="badge bg-<?php
                                             echo $annee['statut'] === 'active' ? 'success' :
-                                                    ($annee['statut'] === 'cloturee' ? 'secondary' : 'warning');
+                                                    ($annee['statut'] === 'inactive' ? 'secondary' : 'warning');
                                         ?>">
                                             <?php echo ucfirst($annee['statut']); ?>
                                         </span>
@@ -169,28 +169,28 @@ unset($_SESSION['error_message'], $_SESSION['success_message']);
                                         <div class="btn-group" role="group">
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-primary"
-                                                    onclick="editAnnee(<?php echo $annee['annee_scolaire_id']; ?>)"
+                                                    onclick="editAnnee(<?php echo $annee['annee_id']; ?>)"
                                                     title="Modifier">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <?php if ($annee['statut'] === 'planifiee'): ?>
                                                 <button type="button"
                                                         class="btn btn-sm btn-outline-success"
-                                                        onclick="activateAnnee(<?php echo $annee['annee_scolaire_id']; ?>)"
+                                                        onclick="activateAnnee(<?php echo $annee['annee_id']; ?>)"
                                                         title="Activer">
                                                     <i class="fas fa-play"></i>
                                                 </button>
                                             <?php elseif ($annee['statut'] === 'active'): ?>
                                                 <button type="button"
                                                         class="btn btn-sm btn-outline-warning"
-                                                        onclick="closeAnnee(<?php echo $annee['annee_scolaire_id']; ?>)"
+                                                        onclick="closeAnnee(<?php echo $annee['annee_id']; ?>)"
                                                         title="Clôturer">
                                                     <i class="fas fa-stop"></i>
                                                 </button>
                                             <?php endif; ?>
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-danger"
-                                                    onclick="deleteAnnee(<?php echo $annee['annee_scolaire_id']; ?>)"
+                                                    onclick="deleteAnnee(<?php echo $annee['annee_id']; ?>)"
                                                     title="Supprimer">
                                                 <i class="fas fa-trash"></i>
                                             </button>

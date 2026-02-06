@@ -326,7 +326,6 @@ class AdminModel
         if (!$backup) {
             return false;
         }
-
         // Ici nous lancerions le processus de restauration réel
         // Pour l'instant, on simule le succès
         logAction('admin', 'Restauration de sauvegarde', ['backup_id' => $backup_id]);

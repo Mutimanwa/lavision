@@ -1,4 +1,0 @@
-[2026-01-26 14:16:04] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion DB établie - Description: Etablissement de la connexion à la base de données - Context: {"host":"localhost","base":"gestion_academique_ecole","charset":"utf8mb4"}
-[2026-01-26 14:16:15] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion DB établie - Description: Etablissement de la connexion à la base de données - Context: {"host":"localhost","base":"gestion_academique_ecole","charset":"utf8mb4"}
-[2026-01-26 14:16:18] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion DB établie - Description: Etablissement de la connexion à la base de données - Context: {"host":"localhost","base":"gestion_academique_ecole","charset":"utf8mb4"}
-[2026-01-26 14:19:33] ACTION - IP: 127.0.0.1 - User: system - Action: Connexion DB établie - Description: Etablissement de la connexion à la base de données - Context: {"host":"localhost","base":"gestion_academique_ecole","charset":"utf8mb4"}

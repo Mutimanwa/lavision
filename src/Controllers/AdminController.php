@@ -206,7 +206,7 @@ function admin_restore() {
     global $adminModel;
 
     // Vérifier les permissions
-    if (!hasPermission('admin.backup')) {
+    if (!hasRole('superadmin')) {
         redirect('/dashboard', ['Accès non autorisé', 'error']);
     }
 

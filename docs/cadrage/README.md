@@ -27,6 +27,7 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Exemples de recette](03_EXEMPLES_DE_RECETTE.md) | recalculer des cas concrets avec les utilisateurs | entrées et résultats attendus acceptés |
 | [Permissions et confidentialité](04_PERMISSIONS_ET_CONFIDENTIALITE.md) | vérifier qui voit et modifie chaque information | matrice et scénarios de refus validés |
 | [Registre des décisions](05_REGISTRE_DES_DECISIONS.md) | tracer les choix et les points ouverts | décisions datées, attribuées et révisables |
+| [Questionnaire de l’établissement](06_QUESTIONNAIRE_ETABLISSEMENT.md) | répondre progressivement aux informations nécessaires | structure scolaire, concours, barèmes et règles propres au pilote |
 
 ## 3. Ateliers proposés
 
@@ -63,6 +64,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | --- | --- | --- |
 | Processus critiques documentés | Préparé | validation des propriétaires métier |
 | Catalogue de règles configurable | Préparé | valeurs, portées et contraintes validées |
+| Questionnaire de l’établissement pilote | Préparé ; premiers éléments à confirmer | réponses sur les cycles, le concours d’État, les sections/options et les barèmes par cours |
 | Exemples académiques chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemples financiers chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemple de paie | Trame uniquement | exemple validé par un expert local |

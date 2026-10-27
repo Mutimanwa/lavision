@@ -26,18 +26,20 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 
 | ID | Question à trancher | Propriétaire attendu | Preuve nécessaire | État |
 | --- | --- | --- | --- | --- |
-| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Ouvert |
-| ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | Ouvert |
+| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Proposé : trimestres + séquences |
+| ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | Ouvert : variations par cours/section/option à préciser |
 | ACA-003 | Coefficients et agrégation des évaluations/matières | pédagogie | bulletin recalculé | Ouvert |
-| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Ouvert |
+| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Proposé : moyenne provisoire ; publication à préciser |
 | ACA-005 | Précision, mode et étapes d’arrondi | pédagogie | cas de frontière | Ouvert |
-| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Ouvert |
+| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Proposé : compétition `1, 1, 3` |
 | ACA-007 | Seuil, notes éliminatoires, compensation et appréciations | direction | exemples de décision | Ouvert |
 | ACA-008 | Calcul annuel et règles de passage/redoublement | direction | exemple annuel | Ouvert |
 | ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Ouvert |
 | ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Ouvert |
 | ACA-011 | Appel, statuts, retards, justificatifs et alertes d’assiduité | vie scolaire | cas quotidien et par séance | Ouvert |
 | ACA-012 | Contenu exact des bulletins et procès-verbaux | pédagogie/direction | modèles anonymisés | Ouvert |
+| ACA-013 | Parcours 7E/8E, concours d’État, résultat et certificat | direction/scolarité | chronologie et documents officiels anonymisés | À confirmer |
+| ACA-014 | Organisation des sections, options et programmes de cours | scolarité/pédagogie | exemples réels de sections/options et programmes | À confirmer |
 
 ## 4. Décisions financières ouvertes
 

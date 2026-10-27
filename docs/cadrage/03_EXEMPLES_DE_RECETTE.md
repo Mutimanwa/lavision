@@ -250,7 +250,7 @@ Joindre une version anonymisée ou inventorier les champs sans copier de donnée
 | --- | --- | --- | --- | --- | --- |
 | Demande/dossier d’inscription | secrétariat | non | non | non | en attente |
 | Bulletin périodique | pédagogie | non | non | non | en attente |
-| Bulletin annuel/relevé | pédagogie | non | non | non | en attente |
+| Bulletin annuel/relevé | pédagogie | oui : 1ère/2e vierge et 5e HP rempli | oui | contrôles 5e HP effectués, écarts à arbitrer | en attente |
 | Procès-verbal de délibération | direction | non | non | non | en attente |
 | Attestation/diplôme | direction | non | non | non | en attente |
 | Facture et échéancier | finance | non | non | non | en attente |
@@ -260,6 +260,8 @@ Joindre une version anonymisée ou inventorier les champs sans copier de donnée
 | Bulletin de paie | RH/expert | non | non | non | en attente |
 
 Pour chaque modèle, relever : titre, identifiants, mentions obligatoires, langue, signatures, cachets, pied de page, règles de pagination, destinataires, format papier, durée de conservation et procédure de rectification.
+
+Les structures reçues sont détaillées dans les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md) et [5e HP](09_ANALYSE_BULLETIN_5E_HP.md). Les valeurs réelles ne deviennent des fixtures de réussite qu’après arbitrage des écarts et validation métier ; les incohérences peuvent en revanche préparer des tests de détection et de blocage.
 
 ## 13. Fiche d’acceptation d’un exemple
 

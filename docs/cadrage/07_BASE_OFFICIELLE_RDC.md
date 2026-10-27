@@ -119,6 +119,8 @@ Le programme 8e EB de mathématiques présente un régime pédagogique avec les 
 
 **Attention :** un pourcentage du volume horaire n’est pas automatiquement le coefficient utilisé pour calculer une moyenne. Les sources consultées jusqu’ici ne suffisent pas à définir les maxima de notes, les cotes par cours ou les formules des bulletins. Ces informations doivent être relevées sur les bulletins et instructions officielles applicables.
 
+Les deux modèles fournis illustrent cette variabilité : le bulletin vierge 1ère/2e utilise des maxima de période de 20, 30 ou 60, tandis que le bulletin rempli 5e HP de 2016–2017 utilise 10, 20, 40, 50 ou 100 et prévoit une branche sans examen semestriel. Ces observations ne constituent pas un barème national actuel ; elles imposent seulement une configuration par programme et par branche.
+
 Le même programme distingue :
 
 - l’évaluation prédictive, notamment pour l’orientation ;
@@ -158,7 +160,7 @@ Les programmes nationaux doivent pouvoir servir de **modèles importables ou rep
 9. Quel document récent confirme la dénomination du certificat ou brevet de fin d’Éducation de Base ?
 10. Quelles données d’identification nationale doivent réellement être conservées et qui peut y accéder ?
 
-Un modèle vierge de bulletin 1ère/2e secondaire fourni par l’utilisateur fait l’objet d’une [analyse séparée](08_ANALYSE_BULLETIN_1E_2E.md). Il confirme la structure à deux semestres et quatre périodes, mais ne remplace pas une instruction officielle sur les calculs et le repêchage.
+Les modèles fournis par l’utilisateur font l’objet d’analyses séparées : [bulletin 1ère/2e secondaire](08_ANALYSE_BULLETIN_1E_2E.md) et [bulletin 5e HP](09_ANALYSE_BULLETIN_5E_HP.md). Ils confirment la structure à deux semestres et quatre périodes ainsi que la variabilité des programmes, mais ne remplacent pas une instruction officielle actuelle sur les calculs, les arrondis, les notes manquantes et le repêchage.
 
 ## 8. Sources officielles consultées
 

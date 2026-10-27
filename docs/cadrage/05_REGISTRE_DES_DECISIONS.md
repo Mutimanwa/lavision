@@ -1,6 +1,6 @@
 # Registre des décisions de cadrage
 
-**Version :** 0.3 — 27 octobre 2026
+**Version :** 0.4 — 27 octobre 2026
 **Statut :** registre actif pendant M0
 
 ## 1. Règle de tenue du registre
@@ -26,21 +26,21 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 
 | ID | Question à trancher | Propriétaire attendu | Preuve nécessaire | État |
 | --- | --- | --- | --- | --- |
-| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Base RDC et bulletin fourni : 2 semestres/4 périodes au secondaire ; 3 trimestres/6 périodes au primaire ; adoption locale à confirmer |
-| ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | Modèle 1ère/2e : maxima par période de 20, 30 ou 60 selon les branches ; autres classes à confirmer |
-| ACA-003 | Coefficients et agrégation des évaluations/matières | pédagogie | bulletin recalculé | Modèle sans coefficient séparé ; totaux par somme et pondération par maxima à confirmer sur exemple rempli |
-| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Proposé : moyenne provisoire ; publication à préciser |
-| ACA-005 | Précision, mode et étapes d’arrondi | pédagogie | cas de frontière | Ouvert |
-| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Proposé : compétition `1, 1, 3` |
-| ACA-007 | Seuil, notes éliminatoires, compensation et appréciations | direction | exemples de décision | Ouvert |
-| ACA-008 | Calcul annuel et règles de passage/redoublement | direction | exemple annuel | Modèle : T.G. = somme des deux semestres ; seuils et décisions à confirmer |
-| ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Ouvert |
+| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Base RDC et deux bulletins : 2 semestres/4 périodes au secondaire ; 3 trimestres/6 périodes au primaire ; adoption locale à confirmer |
+| ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | 1ère/2e : période sur 20/30/60 ; 5e HP : sur 10/20/40/50/100 ; programme actuel à confirmer |
+| ACA-003 | Coefficients et agrégation des évaluations/matières | pédagogie | bulletin recalculé | Pas de coefficient séparé visible ; 5e HP confirme des schémas avec et sans examen ; plusieurs écarts de report à arbitrer |
+| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Des tirets n’ajoutent pas de points dans certains totaux 5e HP, sans légende ; zéro/absence/dispense et publication à distinguer |
+| ACA-005 | Précision, mode et étapes d’arrondi | pédagogie | cas de frontière | Pourcentages 5e HP compatibles avec une troncature à une décimale ; hypothèse à confirmer compte tenu des écarts |
+| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Proposé : compétition `1, 1, 3` ; un rang annuel est visible en 5e HP, sans cas d’ex æquo |
+| ACA-007 | Seuil, notes éliminatoires, compensation et appréciations | direction | exemples de décision | Ouvert ; une décision après repêchage ne suffit pas à établir un seuil |
+| ACA-008 | Calcul annuel et règles de passage/redoublement | direction | exemple annuel | T.G. = somme des semestres sur plusieurs lignes, mais écarts 5e HP ; seuils et décisions à confirmer |
+| ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Ouvert ; définir aussi le contrôle des totaux incohérents avant publication |
 | ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Ouvert |
 | ACA-011 | Appel, statuts, retards, justificatifs et alertes d’assiduité | vie scolaire | cas quotidien et par séance | Ouvert |
-| ACA-012 | Contenu exact des bulletins et procès-verbaux | pédagogie/direction | modèles anonymisés | Ouvert |
+| ACA-012 | Contenu exact des bulletins et procès-verbaux | pédagogie/direction | modèles anonymisés | Formulaires `IGE/P.S/005` et `IGE/P.S/019` inventoriés ; version actuelle et procès-verbaux à confirmer |
 | ACA-013 | Parcours 7E/8E, TENASOSP/EXETAT, résultat et certification | direction/scolarité | base RDC sourcée + documents récents anonymisés | Base nationale identifiée ; processus local et document exact à confirmer |
-| ACA-014 | Organisation des sections, options et programmes de cours | scolarité/pédagogie | exemples réels de sections/options et programmes | À confirmer |
-| ACA-015 | Première/deuxième délibération et repêchage | direction/pédagogie | exemples de décisions et instructions applicables | Colonnes et décisions présentes sur le modèle ; seuils et calcul du repêchage encore ouverts |
+| ACA-014 | Organisation des sections, options et programmes de cours | scolarité/pédagogie | exemples réels de sections/options et programmes | 5e HP = Humanités pédagogiques selon l’utilisateur ; formulaire Pédagogie générale ; libellés et catalogue local à confirmer |
+| ACA-015 | Première/deuxième délibération et repêchage | direction/pédagogie | exemples de décisions et instructions applicables | Exemple 5e HP avec pourcentages et passage ; branches, seuil, effet sur le T.G. et décision finale à clarifier |
 
 ## 4. Décisions financières ouvertes
 

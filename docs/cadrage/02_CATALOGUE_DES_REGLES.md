@@ -63,16 +63,17 @@ Ces principes ont été explicitement retenus pour LaVision et ne sont pas remis
 | `academic.grading.scale_max` | décimal exact | programme, matière | `20` dans le prototype ; autres barèmes à prévoir | pédagogie |
 | `academic.grading.input_increment` | décimal exact | programme | pas de limite de pas explicite dans le prototype | pédagogie |
 | `academic.grading.conversion_mode` | énumération | programme | aucune conversion ; définir si plusieurs barèmes coexistent | pédagogie |
-| `academic.subject.coefficient` | décimal positif borné | programme, matière | coefficient propre à chaque matière | pédagogie |
+| `academic.subject.coefficient` | décimal positif borné | programme, matière | aucun coefficient séparé visible sur les deux bulletins ; ne pas doubler la pondération portée par les maxima | pédagogie |
 | `academic.evaluation.weight` | décimal positif borné | type d’évaluation | absent du prototype | pédagogie |
+| `academic.evaluation.term_schema` | énumération + paramètres fixes | programme, matière | schémas « périodes + examen » et « périodes sans examen » observés ; valeurs à valider | pédagogie |
 | `academic.average.subject_aggregation` | énumération | programme | moyenne pondérée des notes par matière à préciser | pédagogie |
-| `academic.average.report_aggregation` | énumération | niveau, programme | somme `note × coefficient / coefficients` dans le prototype | pédagogie |
-| `academic.average.missing_policy` | énumération | niveau, programme | note absente différente de zéro ; dossier incomplet | pédagogie |
-| `academic.average.exemption_policy` | énumération | programme | absent du prototype | pédagogie |
+| `academic.average.report_aggregation` | énumération | niveau, programme | moyenne pondérée dans le prototype ; bulletins à base de sommes de points et de maxima à prendre en charge | pédagogie |
+| `academic.average.missing_policy` | énumération | niveau, programme | note absente différente de zéro ; les tirets du bulletin 5e HP exigent des statuts explicites | pédagogie |
+| `academic.average.exemption_policy` | énumération | programme | absent du prototype ; ne pas réduire un maximum sans règle validée | pédagogie |
 | `academic.average.provisional_display` | booléen | niveau | moyenne provisoire visible sur dossier incomplet dans le moteur actuel | pédagogie |
 | `academic.rounding.calculation_precision` | entier borné | établissement | deux décimales dans le prototype | pédagogie |
-| `academic.rounding.display_precision` | entier borné | document | deux décimales dans le prototype | pédagogie |
-| `academic.rounding.mode` | énumération | établissement | arrondi arithmétique du prototype à confirmer | pédagogie |
+| `academic.rounding.display_precision` | entier borné | document | deux décimales dans le prototype ; une décimale observée en 5e HP | pédagogie |
+| `academic.rounding.mode` | énumération | établissement | arrondi arithmétique du prototype ; troncature candidate à confirmer pour le bulletin 5e HP | pédagogie |
 | `academic.rounding.stage` | énumération | niveau, programme | à définir : ligne, matière, période ou résultat final | pédagogie |
 | `academic.rank.tie_policy` | énumération | niveau | rang de compétition `1, 1, 3` dans le prototype | pédagogie |
 | `academic.rank.incomplete_policy` | énumération | niveau | aucun rang définitif pour un dossier incomplet | pédagogie |
@@ -95,6 +96,8 @@ Ces principes ont été explicitement retenus pour LaVision et ne sont pas remis
 - dénominateur nul interdit et traité par une règle explicite ;
 - bornes des appréciations ordonnées, sans chevauchement ni trou non intentionnel ;
 - poids d’agrégation compatibles avec les périodes réellement définies ;
+- chaque branche utilise un schéma explicite ; une branche sans examen ne doit ni exiger ni recevoir une note d’examen ;
+- totaux de semestre, T.G., totaux généraux et maxima généraux réconciliés avant publication, sans correction silencieuse des écarts ;
 - aucune règle de compensation ne doit produire une note ou une décision hors domaine ;
 - le résultat simulé doit être reproductible avec la même version et les mêmes entrées.
 

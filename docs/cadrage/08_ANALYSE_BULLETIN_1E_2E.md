@@ -223,3 +223,5 @@ Pour transformer ce modèle en règles de calcul validées, il faut encore obten
 - les conditions et le calcul du repêchage ;
 - la confirmation que les 14 branches et leurs maxima correspondent bien au programme actuellement suivi ;
 - un modèle équivalent pour une option des humanités afin de comparer les maxima.
+
+Le bulletin de 5e HP reçu ensuite répond à ce dernier besoin de comparaison : voir [l’analyse du bulletin 5e HP](09_ANALYSE_BULLETIN_5E_HP.md). Il confirme la variabilité des maxima et l’existence d’une branche sans examen, mais ne remplace pas les preuves encore attendues pour la 1ère/2e.

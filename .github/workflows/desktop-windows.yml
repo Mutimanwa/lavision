@@ -5,6 +5,16 @@ on:
   push:
     tags:
       - "v*"
+    paths:
+      - ".github/workflows/desktop-windows.yml"
+      - "next.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "postcss.config.mjs"
+      - "public/**"
+      - "src/**"
+      - "src-tauri/**"
+      - "tsconfig.json"
 
 permissions:
   contents: read

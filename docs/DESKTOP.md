@@ -53,8 +53,8 @@ Les noms exacts peuvent varier selon la langue et l’architecture du bundle. L�
 
 Le workflow `.github/workflows/desktop-windows.yml` est disponible :
 
-- automatiquement pour un tag `v*` ;
-- manuellement via **Actions → Windows Desktop → Run workflow**.
+- automatiquement pour un tag `v*` ou une modification du frontend/Tauri ;
+- manuellement via **Actions → Windows Desktop → Run workflow** une fois le workflow présent sur la branche principale.
 
 Les bundles NSIS et MSI sont conservés comme artefacts de workflow. Aucun binaire `.exe` n’est stocké dans Git.
 

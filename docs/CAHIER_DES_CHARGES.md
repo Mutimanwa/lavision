@@ -1,9 +1,9 @@
 # Cahier des charges — LaVision
 
-**Produit :** LaVision, plateforme intégrée de gestion scolaire  
-**Version du document :** 1.0  
-**Date :** 27 octobre 2026  
-**Statut :** proposition détaillée à valider avec la direction, le secrétariat, la finance et les enseignants  
+**Produit :** LaVision, plateforme intégrée de gestion scolaire
+**Version du document :** 1.0
+**Date :** 27 octobre 2026
+**Statut :** proposition détaillée à valider avec la direction, le secrétariat, la finance et les enseignants
 **Périmètre :** web, desktop Tauri, API, données, sécurité et exploitation
 
 ---

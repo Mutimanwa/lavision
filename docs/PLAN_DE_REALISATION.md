@@ -1,7 +1,7 @@
 # Plan de réalisation — LaVision
 
-**Version :** 1.0 — 27 octobre 2026  
-**Document associé :** [Cahier des charges](CAHIER_DES_CHARGES.md)  
+**Version :** 1.0 — 27 octobre 2026
+**Document associé :** [Cahier des charges](CAHIER_DES_CHARGES.md)
 **Backlog GitHub :** [Index des 37 issues](BACKLOG.md) · [Vue GitHub](https://github.com/Mutimanwa/lavision/issues)
 
 > Les durées sont des estimations de cadrage, pas des engagements contractuels. Elles supposent une équipe pluridisciplinaire et des utilisateurs métier disponibles pour répondre et tester.
@@ -45,9 +45,9 @@ Avec une seule personne développeuse, le périmètre complet doit être forteme
 | M6 — Recette et mise en production | 4–6 sem. | noyau durci, desktop, sauvegardes et bascule | recette signée et restauration réussie |
 | M7 — Services annexes et hors ligne | 8–12 sem. | modules optionnels et synchronisation évoluée | activation indépendante par service |
 
-**Noyau en production :** environ 31 à 40 semaines avec l’équipe cible et les validations disponibles.  
-**Suite complète :** environ 9 à 12 mois si certains travaux M7 sont parallélisés.  
-**Charge brute du backlog :** environ 285 à 422 jours-personnes, incluant développement et recette mais pas les temps d’attente. Cette charge ne se convertit pas directement en durée calendaire.  
+**Noyau en production :** environ 31 à 40 semaines avec l’équipe cible et les validations disponibles.
+**Suite complète :** environ 9 à 12 mois si certains travaux M7 sont parallélisés.
+**Charge brute du backlog :** environ 285 à 422 jours-personnes, incluant développement et recette mais pas les temps d’attente. Cette charge ne se convertit pas directement en durée calendaire.
 Le calendrier est revu à la fin de M0 et de chaque jalon.
 
 ## 4. Backlog détaillé

@@ -119,6 +119,7 @@ Les artefacts sont générés sous `src-tauri/target/release/bundle/` (NSIS `.ex
 - [Backlog GitHub — 38 issues](docs/BACKLOG.md)
 - [Dossier de cadrage métier M0](docs/cadrage/README.md) — ateliers, règles à valider et exemples de recette
 - [Questionnaire de l’établissement pilote](docs/cadrage/06_QUESTIONNAIRE_ETABLISSEMENT.md)
+- [Base officielle RDC pour le cadrage académique](docs/cadrage/07_BASE_OFFICIELLE_RDC.md)
 - [Audit du projet initial](docs/AUDIT.md)
 - [Architecture et modèle métier](docs/ARCHITECTURE.md)
 - [Déploiement web](docs/DEPLOIEMENT.md)

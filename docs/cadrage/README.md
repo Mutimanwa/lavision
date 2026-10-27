@@ -28,6 +28,7 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Permissions et confidentialité](04_PERMISSIONS_ET_CONFIDENTIALITE.md) | vérifier qui voit et modifie chaque information | matrice et scénarios de refus validés |
 | [Registre des décisions](05_REGISTRE_DES_DECISIONS.md) | tracer les choix et les points ouverts | décisions datées, attribuées et révisables |
 | [Questionnaire de l’établissement](06_QUESTIONNAIRE_ETABLISSEMENT.md) | répondre progressivement aux informations nécessaires | structure scolaire, concours, barèmes et règles propres au pilote |
+| [Base officielle RDC](07_BASE_OFFICIELLE_RDC.md) | distinguer le référentiel national des décisions locales | cycles, TENASOSP/EXETAT, calendrier et programmes sourcés |
 
 ## 3. Ateliers proposés
 
@@ -64,7 +65,8 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | --- | --- | --- |
 | Processus critiques documentés | Préparé | validation des propriétaires métier |
 | Catalogue de règles configurable | Préparé | valeurs, portées et contraintes validées |
-| Questionnaire de l’établissement pilote | Préparé ; premiers éléments à confirmer | réponses sur les cycles, le concours d’État, les sections/options et les barèmes par cours |
+| Questionnaire de l’établissement pilote | Préparé ; premiers éléments à confirmer | réponses locales sur les sections/options, les barèmes par cours et les documents |
+| Base officielle RDC | Consultée et sourcée | confirmation de son adoption par le pilote et des instructions applicables à chaque année |
 | Exemples académiques chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemples financiers chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemple de paie | Trame uniquement | exemple validé par un expert local |

@@ -1,6 +1,6 @@
 # Registre des décisions de cadrage
 
-**Version :** 0.1 — 27 octobre 2026
+**Version :** 0.2 — 27 octobre 2026
 **Statut :** registre actif pendant M0
 
 ## 1. Règle de tenue du registre
@@ -26,7 +26,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 
 | ID | Question à trancher | Propriétaire attendu | Preuve nécessaire | État |
 | --- | --- | --- | --- | --- |
-| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Proposé : trimestres + séquences |
+| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Base RDC : 2 semestres/4 périodes au secondaire et 3 trimestres/6 périodes au primaire ; adoption locale à confirmer |
 | ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | Ouvert : variations par cours/section/option à préciser |
 | ACA-003 | Coefficients et agrégation des évaluations/matières | pédagogie | bulletin recalculé | Ouvert |
 | ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Proposé : moyenne provisoire ; publication à préciser |
@@ -38,8 +38,9 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Ouvert |
 | ACA-011 | Appel, statuts, retards, justificatifs et alertes d’assiduité | vie scolaire | cas quotidien et par séance | Ouvert |
 | ACA-012 | Contenu exact des bulletins et procès-verbaux | pédagogie/direction | modèles anonymisés | Ouvert |
-| ACA-013 | Parcours 7E/8E, concours d’État, résultat et certificat | direction/scolarité | chronologie et documents officiels anonymisés | À confirmer |
+| ACA-013 | Parcours 7E/8E, TENASOSP/EXETAT, résultat et certification | direction/scolarité | base RDC sourcée + documents récents anonymisés | Base nationale identifiée ; processus local et document exact à confirmer |
 | ACA-014 | Organisation des sections, options et programmes de cours | scolarité/pédagogie | exemples réels de sections/options et programmes | À confirmer |
+| ACA-015 | Première/deuxième délibération et repêchage | direction/pédagogie | exemples de décisions et instructions applicables | Ouvert |
 
 ## 4. Décisions financières ouvertes
 

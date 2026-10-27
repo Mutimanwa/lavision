@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.1 — 27 octobre 2026
+**Version :** 0.2 — 27 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -19,11 +19,13 @@ Ces éléments proviennent du premier échange. Ils sont reformulés pour vérif
 
 | Élément compris | Statut | Clarification encore nécessaire |
 | --- | --- | --- |
-| Les classes 7E et 8E précèdent un concours d’État ; sa réussite conduit à un certificat puis au choix d’une section et d’une option. | à confirmer | niveau exact concerné, déroulement, résultat, certificat et chronologie |
-| Le barème ou la pondération peut dépendre du cours, notamment selon la section et l’option. | à confirmer | distinguer note maximale, coefficient, pourcentage et moyenne de synthèse |
-| L’année utilise des trimestres et des séquences. | proposition sélectionnée | nombre de séquences et manière de les agréger |
+| La première description évoquait un concours d’État après 7E/8E, puis un certificat et le choix d’une section/option. | reformulé après consultation des sources RDC | les sources identifient le TENASOSP à la fin de 8E ; l’EXETAT est une étape distincte en fin d’humanités |
+| Le barème ou la pondération peut dépendre du cours, notamment selon la section et l’option. | à confirmer | distinguer note maximale, coefficient, pourcentage du volume horaire et moyenne de synthèse |
+| Le choix initial était trimestres + séquences ; le calendrier RDC 2026–2027 retient 2 semestres et 4 périodes pour le secondaire. | base officielle à confirmer pour le pilote | préciser le découpage par niveau et le sens local de « séquence » |
 | Une note manquante permet une moyenne provisoire. | proposition sélectionnée | dénominateur, visibilité et blocage éventuel de la publication |
 | Les ex æquo utilisent le rang de compétition `1, 1, 3`. | proposition sélectionnée | moyenne arrondie ou non et comportement annuel |
+
+La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs questions de structure et d’épreuves nationales. Les réponses restantes doivent surtout préciser l’application locale, les options offertes et les règles figurant sur les bulletins.
 
 ## Bloc 1 — Structure scolaire, cycles, sections et options
 
@@ -50,27 +52,27 @@ Ces éléments proviennent du premier échange. Ils sont reformulés pour vérif
 | Q-STR-17 | Quelles langues sont utilisées pour les intitulés officiels des cycles, sections, options et cours ? | |
 | Q-STR-18 | Existe-t-il un référentiel officiel ou interne qui décrit déjà cette structure ? Lequel et quelle version ? | |
 
-## Bloc 2 — Concours d’État, certificat et passage vers une section
+## Bloc 2 — Épreuves nationales, certification et passage vers une section
 
-**Ces questions précisent le parcours décrit sans présumer d’une intégration externe.**
+**Ces questions distinguent le TENASOSP de l’EXETAT et ne présument pas d’une intégration externe.**
 
 | ID | Question | Réponse |
 | --- | --- | --- |
-| Q-ETAT-01 | Quel est le nom officiel du concours ou examen d’État concerné ? | |
-| Q-ETAT-02 | Qui y participe : les élèves de 7E, de 8E ou d’une autre classe ? | |
-| Q-ETAT-03 | Quelles conditions l’établissement doit-il vérifier avant l’inscription au concours ? | |
+| Q-ETAT-01 | Quelles épreuves nationales concernent l’établissement : ENAFEP, TENASOSP, EXETAT ou autres ? | |
+| Q-ETAT-02 | Pour chaque épreuve, quelle classe présente les candidats ? La source RDC situe le TENASOSP à la fin de 8E. | |
+| Q-ETAT-03 | Quelles conditions l’établissement doit-il vérifier avant l’inscription à chaque épreuve ? | |
 | Q-ETAT-04 | Qui inscrit les candidats et quelles pièces sont nécessaires ? | |
-| Q-ETAT-05 | Quelles données le concours exige-t-il : identité, numéro unique, école d’origine, cours, notes ou autres ? | |
+| Q-ETAT-05 | Quelles données chaque épreuve exige-t-elle : identité, numéro unique, école d’origine, cours, notes ou autres ? | |
 | Q-ETAT-06 | LaVision doit-il seulement enregistrer la candidature, saisir un résultat officiel, importer un fichier ou échanger avec un système externe ? | |
 | Q-ETAT-07 | Qui communique le résultat officiel et sous quelle forme ? | |
 | Q-ETAT-08 | Quels résultats sont possibles : réussite, échec, ajournement, rattrapage ou autre ? | |
-| Q-ETAT-09 | L’établissement calcule-t-il un résultat du concours ou se contente-t-il de reproduire une décision officielle externe ? | |
-| Q-ETAT-10 | Quel certificat est délivré en cas de réussite, par quelle autorité et avec quel nom officiel ? | |
-| Q-ETAT-11 | Qui prépare, signe et remet le certificat ? Existe-t-il un numéro ou registre officiel ? | |
+| Q-ETAT-09 | L’établissement calcule-t-il un résultat national ou se contente-t-il de reproduire une décision officielle externe ? | |
+| Q-ETAT-10 | Quel certificat, brevet ou diplôme est délivré pour chaque épreuve, par quelle autorité et avec quel nom officiel ? | |
+| Q-ETAT-11 | Qui prépare, signe et remet le document ? Existe-t-il un numéro ou registre officiel ? | |
 | Q-ETAT-12 | Que se passe-t-il en cas d’échec, d’absence ou de réclamation ? | |
-| Q-ETAT-13 | Le choix de la section et de l’option intervient-il avant ou après la publication du certificat ? | |
-| Q-ETAT-14 | Le résultat du concours influence-t-il les sections ou options accessibles ? Selon quelles règles ? | |
-| Q-ETAT-15 | Le résultat du concours doit-il apparaître sur le bulletin scolaire interne ou rester dans un dossier distinct ? | |
+| Q-ETAT-13 | Le choix de la section et de l’option intervient-il avant ou après la publication du résultat ou du certificat ? | |
+| Q-ETAT-14 | Le résultat du TENASOSP influence-t-il les sections ou options accessibles ? Selon quelles règles ? | |
+| Q-ETAT-15 | Le résultat national doit-il apparaître sur le bulletin scolaire interne ou rester dans un dossier distinct ? | |
 | Q-ETAT-16 | Quels documents officiels anonymisés peuvent servir de modèles pour ce parcours ? | |
 
 ## Bloc 3 — Cours, évaluations, barèmes et pondérations
@@ -85,8 +87,8 @@ Ces éléments proviennent du premier échange. Ils sont reformulés pour vérif
 | Q-EVAL-04 | La note maximale est-elle propre à chaque évaluation, à chaque cours ou à chaque programme ? | |
 | Q-EVAL-05 | Les notes sont-elles saisies sur leur barème brut puis converties ? Si oui, vers quel barème et avec quelle formule déterminée ? | |
 | Q-EVAL-06 | Le coefficient d’un cours peut-il changer selon la section, l’option, la période ou l’année ? | |
-| Q-EVAL-07 | Combien de trimestres et de séquences compte une année ? Leur nombre est-il identique pour toutes les classes ? | |
-| Q-EVAL-08 | Que représente une séquence : une période, une évaluation unique ou un ensemble d’évaluations ? | |
+| Q-EVAL-07 | Le calendrier RDC 2026–2027 prévoit 2 semestres/4 périodes au secondaire et 3 trimestres/6 périodes au primaire. Quel découpage chaque niveau de l’école applique-t-il ? | |
+| Q-EVAL-08 | Que représente localement une « séquence » : séance didactique de 50 minutes, période du calendrier, évaluation ou ensemble d’évaluations ? | |
 | Q-EVAL-09 | Quels types d’évaluations existent : interrogations, devoirs, travaux pratiques, examens ou autres ? | |
 | Q-EVAL-10 | Comment obtient-on la note d’une séquence pour un cours ? Donner un exemple chiffré. | |
 | Q-EVAL-11 | Comment obtient-on la note trimestrielle d’un cours à partir des séquences et de l’examen éventuel ? | |
@@ -122,6 +124,7 @@ Ces éléments proviennent du premier échange. Ils sont reformulés pour vérif
 | Q-DEC-12 | Comment gérer un élève arrivé ou parti en cours d’année dans les moyennes et le classement ? | |
 | Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | |
 | Q-DEC-14 | Une rectification produit-elle une nouvelle version du document et comment les destinataires sont-ils informés ? | |
+| Q-DEC-15 | Quelles règles s’appliquent à la première délibération, au repêchage et à la deuxième délibération prévus dans le calendrier secondaire ? | |
 
 ## Bloc 5 — Bulletins et autres documents académiques
 
@@ -245,4 +248,4 @@ Ces éléments proviennent du premier échange. Ils sont reformulés pour vérif
 3. **Avant chaque domaine :** Q-ASS, Q-FIN et Q-RH avec leurs propriétaires respectifs.
 4. **Avant l’architecture finale et la mise en production :** Q-SEC et Q-OPS.
 
-Pour le prochain échange, il suffit de répondre d’abord à **Q-STR-01 à Q-STR-10**, puis à **Q-ETAT-01 à Q-ETAT-05**. Les réponses permettront de dessiner le référentiel exact avant de détailler les formules de calcul.
+Pour le prochain échange, commencer par confirmer l’adoption de la base RDC et répondre aux seuls points locaux : **Q-STR-04 à Q-STR-16**, **Q-EVAL-01 à Q-EVAL-08**, **Q-DEC-15** et **Q-DOC-10**. Les réponses générales déjà publiées par le Ministère ne doivent pas être redemandées sans nécessité.

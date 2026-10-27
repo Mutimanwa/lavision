@@ -1,6 +1,6 @@
 # Backlog GitHub — LaVision
 
-**37 issues ouvertes — #2 à #38**
+**38 issues ouvertes — #2 à #39**
 Généré à partir des issues réelles du dépôt le 27 octobre 2026.
 
 Le [plan de réalisation](PLAN_DE_REALISATION.md) décrit les dépendances, les conditions de sortie et la stratégie. Le jalon, le domaine, la priorité et l’estimation figurent aussi dans le corps de chaque issue.
@@ -32,6 +32,8 @@ Le [plan de réalisation](PLAN_DE_REALISATION.md) décrit les dépendances, les 
   `P0-critique` · `socle` · 5–8 jours-personnes · état : OPEN
 - **[#9 — Mettre en place les environnements Docker, la CI/CD et l’observabilité](https://github.com/Mutimanwa/lavision/issues/9)**
   `P0-critique` · `devops` · 6–9 jours-personnes · état : OPEN
+- **[#39 — Créer le moteur de règles scolaires configurables et versionnées](https://github.com/Mutimanwa/lavision/issues/39)**
+  `P0-critique` · `socle` · 7–11 jours-personnes · état : OPEN
 
 ## M2 — Élèves et pédagogie
 

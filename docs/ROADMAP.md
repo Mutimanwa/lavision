@@ -4,7 +4,7 @@ La planification opérationnelle est désormais centralisée dans les documents 
 
 - **[Cahier des charges complet](CAHIER_DES_CHARGES.md)** : périmètre fonctionnel, règles, données, sécurité et architecture cible ;
 - **[Plan de réalisation](PLAN_DE_REALISATION.md)** : jalons, estimations, dépendances, équipe et critères de sortie ;
-- **[Backlog GitHub](BACKLOG.md)** : liens directs vers les 37 issues #2 à #38.
+- **[Backlog GitHub](BACKLOG.md)** : liens directs vers les 38 issues #2 à #39.
 
 ## Socle déjà réalisé
 
@@ -21,7 +21,7 @@ Ces acquis restent un prototype local. Ils ne remplacent pas les prérequis de s
 | Jalon | Finalité | Issues |
 | --- | --- | --- |
 | M0 — Cadrage et architecture | règles métier, ADR, permissions et confidentialité | #2–#4 |
-| M1 — Socle production et sécurité | API, PostgreSQL, authentification, RBAC et environnements | #5–#9 |
+| M1 — Socle production et sécurité | API, PostgreSQL, authentification, RBAC, règles configurables et environnements | #5–#9 et #39 |
 | M2 — Élèves et pédagogie | inscription à proclamation sur données centralisées | #10–#14 |
 | M3 — Finances scolaires | facturation, paiements, caisse, impayés et contrôle | #15–#20 |
 | M4 — Personnel et paie | employés, contrats, congés, présences et paie | #21–#24 |
@@ -31,7 +31,7 @@ Ces acquis restent un prototype local. Ils ne remplacent pas les prérequis de s
 
 ## Versions cibles
 
-- `0.2` : socle API et sécurité sur staging ;
+- `0.2` : socle API, sécurité et règles configurables sur staging ;
 - `0.3` : élèves et pédagogie centralisés ;
 - `0.4` : finance scolaire ;
 - `0.5` : personnel et paie validée ;

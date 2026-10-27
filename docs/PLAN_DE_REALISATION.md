@@ -1,8 +1,8 @@
 # Plan de réalisation — LaVision
 
-**Version :** 1.0 — 27 octobre 2026
+**Version :** 1.1 — 27 octobre 2026
 **Document associé :** [Cahier des charges](CAHIER_DES_CHARGES.md)
-**Backlog GitHub :** [Index des 37 issues](BACKLOG.md) · [Vue GitHub](https://github.com/Mutimanwa/lavision/issues)
+**Backlog GitHub :** [Index des 38 issues](BACKLOG.md) · [Vue GitHub](https://github.com/Mutimanwa/lavision/issues)
 
 > Les durées sont des estimations de cadrage, pas des engagements contractuels. Elles supposent une équipe pluridisciplinaire et des utilisateurs métier disponibles pour répondre et tester.
 
@@ -37,7 +37,7 @@ Avec une seule personne développeuse, le périmètre complet doit être forteme
 | Jalon | Durée indicative | Résultat | Condition de sortie |
 | --- | ---: | --- | --- |
 | M0 — Cadrage et architecture | 2–3 sem. | processus, règles et architecture validés | décisions signées et exemples métier disponibles |
-| M1 — Socle production et sécurité | 4–5 sem. | API, PostgreSQL, comptes, RBAC et environnements | accès serveur testés et staging déployé |
+| M1 — Socle production et sécurité | 5–6 sem. | API, PostgreSQL, comptes, RBAC et environnements | accès serveur testés et staging déployé |
 | M2 — Élèves et pédagogie | 6–8 sem. | inscription à proclamation sur données centralisées | parcours scolarité validé par le secrétariat et les enseignants |
 | M3 — Finances scolaires | 6–8 sem. | facturation, caisse, impayés et rapports | scénarios financiers et invariants validés |
 | M4 — Personnel et paie | 5–6 sem. | dossiers, congés, présences et paie | paie d’exemple validée par RH/expert local |
@@ -45,9 +45,9 @@ Avec une seule personne développeuse, le périmètre complet doit être forteme
 | M6 — Recette et mise en production | 4–6 sem. | noyau durci, desktop, sauvegardes et bascule | recette signée et restauration réussie |
 | M7 — Services annexes et hors ligne | 8–12 sem. | modules optionnels et synchronisation évoluée | activation indépendante par service |
 
-**Noyau en production :** environ 31 à 40 semaines avec l’équipe cible et les validations disponibles.
+**Noyau en production :** environ 32 à 41 semaines avec l’équipe cible et les validations disponibles.
 **Suite complète :** environ 9 à 12 mois si certains travaux M7 sont parallélisés.
-**Charge brute du backlog :** environ 285 à 422 jours-personnes, incluant développement et recette mais pas les temps d’attente. Cette charge ne se convertit pas directement en durée calendaire.
+**Charge brute du backlog :** environ 292 à 433 jours-personnes, incluant développement et recette mais pas les temps d’attente. Cette charge ne se convertit pas directement en durée calendaire.
 Le calendrier est revu à la fin de M0 et de chaque jalon.
 
 ## 4. Backlog détaillé
@@ -78,9 +78,10 @@ Les estimations sont exprimées en jours-personnes de développement/recette, ho
 | Implémenter l’authentification, les sessions et la MFA des profils sensibles | P0 | 7–10 j | comptes et sessions sécurisés |
 | Appliquer le RBAC, les portées et le journal d’audit côté serveur | P0 | 8–12 j | permissions centralisées et audit |
 | Créer les référentiels d’établissement, années scolaires et périodes | P0 | 5–8 j | configuration structurée et historisée |
+| Créer le moteur de règles scolaires configurables et versionnées | P0 | 7–11 j | règles par établissement, simulation et historique préservé |
 | Mettre en place les environnements Docker, la CI/CD et l’observabilité | P0 | 6–9 j | staging reproductible et supervision initiale |
 
-**Sortie :** un utilisateur ne peut effectuer que les opérations autorisées par l’API ; la base, les migrations et les logs sont exploitables sur staging.
+**Sortie :** un utilisateur ne peut effectuer que les opérations autorisées par l’API ; la base, les migrations et les logs sont exploitables sur staging. Les règles métier sont configurables par établissement et leurs versions publiées sont immuables.
 
 ### M2 — Élèves et pédagogie
 
@@ -159,7 +160,7 @@ Les estimations sont exprimées en jours-personnes de développement/recette, ho
 M0 Cadrage
    │
    ▼
-M1 API + sécurité + référentiels
+M1 API + sécurité + règles configurables
    │
    ▼
 M2 Élèves + pédagogie
@@ -244,7 +245,7 @@ Chaque jalon comprend :
 
 | Version | Contenu |
 | --- | --- |
-| `0.2` | socle API et sécurité sur staging |
+| `0.2` | socle API, sécurité et règles configurables sur staging |
 | `0.3` | élèves et pédagogie centralisés |
 | `0.4` | finance scolaire |
 | `0.5` | personnel et paie validée |

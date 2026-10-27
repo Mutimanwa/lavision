@@ -1,7 +1,7 @@
 # Cahier des charges — LaVision
 
 **Produit :** LaVision, plateforme intégrée de gestion scolaire
-**Version du document :** 1.0
+**Version du document :** 1.1
 **Date :** 27 octobre 2026
 **Statut :** proposition détaillée à valider avec la direction, le secrétariat, la finance et les enseignants
 **Périmètre :** web, desktop Tauri, API, données, sécurité et exploitation
@@ -106,6 +106,33 @@ Ces hypothèses structurent la conception mais doivent être confirmées pendant
 - une année clôturée n’est plus modifiable sans réouverture autorisée ;
 - les référentiels utilisés par des documents ne sont pas supprimés physiquement ;
 - chaque modification de paramètre sensible indique l’auteur, la date et l’ancienne valeur.
+
+### 5.1.1 Moteur de règles métier configurables
+
+Les règles peuvent varier d’un établissement à un autre. Elles doivent donc être administrées depuis **Paramètres → Configuration scolaire**, sans modification du code source.
+
+**Paramètres concernés**
+
+- académique : barème, coefficients, arrondis, seuils, appréciations, calcul annuel, ex æquo et règles de passage ;
+- assiduité : types d’appel, tolérances, justificatifs et seuils d’alerte ;
+- finance : devise, échéanciers, pénalités, remises, numérotation et seuils d’approbation ;
+- personnel : temps de travail, congés, variables de paie et circuits de validation ;
+- documents : modèles, mentions obligatoires et règles de publication.
+
+**Exigences de conception**
+
+- un catalogue de paramètres typés et bornés, validé par l’API ;
+- des valeurs par défaut et des modèles de configuration pour faciliter l’installation ;
+- une configuration par établissement, avec héritage et adaptations par année, niveau ou programme lorsque pertinent ;
+- des statuts brouillon, publié et archivé, ainsi que des dates d’effet ;
+- une simulation sur des exemples avant publication ;
+- des permissions distinctes pour les règles académiques, financières et RH ;
+- un historique complet et la possibilité de dupliquer une configuration existante ;
+- aucune exécution de code ou de formule arbitraire fournie par un utilisateur.
+
+**Versioning et historique**
+
+Une règle publiée est immutable. Toute modification crée une nouvelle version qui ne s’applique qu’à partir de sa date d’effet. Les bulletins, proclamations, factures et paies conservent la référence de la version utilisée. Un changement de configuration ne doit jamais modifier silencieusement un document officiel déjà publié.
 
 ### 5.2 Utilisateurs, rôles et sécurité
 
@@ -384,6 +411,7 @@ Ces services sont planifiés après les modules indispensables et peuvent être 
 ### 7.1 Entités principales
 
 - `Organization`, `Site`, `AcademicYear`, `Period` ;
+- `RuleSet`, `RuleVersion`, `RuleValue`, `RulePublication` ;
 - `User`, `Role`, `Permission`, `UserScope`, `Session` ;
 - `Student`, `Guardian`, `StudentGuardian`, `Enrollment`, `StudentDocument` ;
 - `Program`, `Level`, `Subject`, `SchoolClass`, `ClassAssignment` ;
@@ -402,6 +430,7 @@ Ces services sont planifiés après les modules indispensables et peuvent être 
 - archivage logique des données référencées ;
 - montants et taux en décimales exactes ;
 - version optimiste des documents sensibles pour éviter les écrasements concurrents ;
+- version de règle obligatoire sur chaque calcul ou document officiel concerné ;
 - aucune moyenne, aucun solde et aucune paie ne doit être accepté comme vérité envoyée par le navigateur sans recalcul serveur.
 
 ## 8. Architecture technique cible
@@ -598,7 +627,7 @@ Sauf décision contraire explicite :
 
 1. établissement pilote et volumes réels ;
 2. langues, devises et sites ;
-3. périodes, barèmes, coefficients et règles de passage ;
+3. catalogue des périodes, barèmes, coefficients et règles de passage, avec les limites de leurs adaptations par établissement ;
 4. modèles officiels de bulletins et proclamations ;
 5. tarifs, bourses, remises et règles de remboursement ;
 6. canaux de paiement et processus de caisse ;

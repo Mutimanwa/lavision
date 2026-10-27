@@ -638,6 +638,8 @@ Sauf décision contraire explicite :
 11. fournisseurs d’hébergement, e-mail, SMS et stockage ;
 12. budget, équipe et date cible de mise en service.
 
+Le [dossier de cadrage métier](cadrage/README.md) fournit les supports d’atelier, les exemples à recalculer et le registre dans lequel consigner ces décisions.
+
 ## 16. Critère global de réussite
 
 LaVision sera considéré comme prêt pour une première production lorsque les parcours élèves, pédagogie, finance et personnel retenus auront été validés sur staging par les utilisateurs concernés, que les tests de sécurité et de restauration seront concluants, et que la direction disposera d’un plan de bascule, de formation et de support.

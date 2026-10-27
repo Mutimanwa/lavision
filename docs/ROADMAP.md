@@ -16,6 +16,8 @@ La planification opérationnelle est désormais centralisée dans les documents 
 
 Ces acquis restent un prototype local. Ils ne remplacent pas les prérequis de sécurité, de base centralisée et de recette du plan.
 
+**Prochaine étape :** conduire les ateliers M0 à partir du [dossier de cadrage métier](cadrage/README.md), faire valider les exemples et les permissions, puis finaliser les ADR avant l’initialisation de l’API.
+
 ## Cible par jalons
 
 | Jalon | Finalité | Issues |

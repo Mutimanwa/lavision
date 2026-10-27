@@ -117,6 +117,7 @@ Les artefacts sont générés sous `src-tauri/target/release/bundle/` (NSIS `.ex
 - [Cahier des charges complet](docs/CAHIER_DES_CHARGES.md)
 - [Plan de réalisation](docs/PLAN_DE_REALISATION.md)
 - [Backlog GitHub — 38 issues](docs/BACKLOG.md)
+- [Dossier de cadrage métier M0](docs/cadrage/README.md) — ateliers, règles à valider et exemples de recette
 - [Audit du projet initial](docs/AUDIT.md)
 - [Architecture et modèle métier](docs/ARCHITECTURE.md)
 - [Déploiement web](docs/DEPLOIEMENT.md)

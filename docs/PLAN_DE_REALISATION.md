@@ -70,6 +70,8 @@ Les estimations sont exprimées en jours-personnes de développement/recette, ho
 
 **Sortie :** aucune règle critique ne reste implicite ; les modèles de documents et les cas limites sont disponibles.
 
+Le [dossier de cadrage métier](cadrage/README.md) prépare les ateliers de l’issue #2 et la matrice de l’issue #4 : processus, catalogue de règles, exemples chiffrés et registre des décisions. Il s’agit d’un support de validation, pas d’une validation déjà acquise.
+
 ### M1 — Socle production et sécurité
 
 | Issue | Priorité | Estimation | Résultat attendu |

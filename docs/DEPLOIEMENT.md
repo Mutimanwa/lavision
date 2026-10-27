@@ -39,7 +39,7 @@ Pour un déploiement public, placer le conteneur derrière le reverse proxy de l
 
 Le workflow `.github/workflows/ci.yml` exécute les tests, le lint et le build, puis conserve `out/` comme artefact temporaire. Il peut servir d’étape de validation avant n’importe quel déploiement.
 
-Le workflow Windows desktop est séparé afin de ne pas ralentir chaque validation web.
+Le job Windows desktop dépend de la réussite des contrôles web et publie ses installateurs dans le même pipeline.
 
 ## 5. Aperçu de développement
 

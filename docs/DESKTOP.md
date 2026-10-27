@@ -51,10 +51,10 @@ Les noms exacts peuvent varier selon la langue et l’architecture du bundle. L�
 
 ## Build Windows dans GitHub Actions
 
-Le workflow `.github/workflows/desktop-windows.yml` est disponible :
+Le job **Windows Desktop** du workflow `.github/workflows/ci.yml` est disponible :
 
-- automatiquement pour un tag `v*` ou une modification du frontend/Tauri ;
-- manuellement via **Actions → Windows Desktop → Run workflow** une fois le workflow présent sur la branche principale.
+- automatiquement après la réussite de la CI web, sur les pushes et Pull Requests ;
+- manuellement via **Actions → Web CI → Run workflow** une fois le workflow présent sur la branche principale.
 
 Les bundles NSIS et MSI sont conservés comme artefacts de workflow. Aucun binaire `.exe` n’est stocké dans Git.
 

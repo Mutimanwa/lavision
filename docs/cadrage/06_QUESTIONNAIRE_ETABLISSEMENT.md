@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.2 — 27 octobre 2026
+**Version :** 0.3 — 27 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -24,8 +24,9 @@ Ces éléments proviennent du premier échange. Ils sont reformulés pour vérif
 | Le choix initial était trimestres + séquences ; le calendrier RDC 2026–2027 retient 2 semestres et 4 périodes pour le secondaire. | base officielle à confirmer pour le pilote | préciser le découpage par niveau et le sens local de « séquence » |
 | Une note manquante permet une moyenne provisoire. | proposition sélectionnée | dénominateur, visibilité et blocage éventuel de la publication |
 | Les ex æquo utilisent le rang de compétition `1, 1, 3`. | proposition sélectionnée | moyenne arrondie ou non et comportement annuel |
+| Un modèle vierge de bulletin 1ère/2e secondaire a été fourni. | structure analysée | bulletin rempli, arrondis, pourcentage, décisions et repêchage à confirmer |
 
-La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs questions de structure et d’épreuves nationales. Les réponses restantes doivent surtout préciser l’application locale, les options offertes et les règles figurant sur les bulletins.
+La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs questions de structure et d’épreuves nationales. L’[analyse du bulletin fourni](08_ANALYSE_BULLETIN_1E_2E.md) répond partiellement à Q-EVAL-04, Q-EVAL-06, Q-EVAL-07, Q-EVAL-11, Q-EVAL-13, Q-EVAL-15 et Q-DEC-15. Les réponses restantes doivent surtout préciser l’application locale, les options offertes et les règles figurant sur les bulletins.
 
 ## Bloc 1 — Structure scolaire, cycles, sections et options
 
@@ -248,4 +249,4 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 3. **Avant chaque domaine :** Q-ASS, Q-FIN et Q-RH avec leurs propriétaires respectifs.
 4. **Avant l’architecture finale et la mise en production :** Q-SEC et Q-OPS.
 
-Pour le prochain échange, commencer par confirmer l’adoption de la base RDC et répondre aux seuls points locaux : **Q-STR-04 à Q-STR-16**, **Q-EVAL-01 à Q-EVAL-08**, **Q-DEC-15** et **Q-DOC-10**. Les réponses générales déjà publiées par le Ministère ne doivent pas être redemandées sans nécessité.
+Pour le prochain échange, utiliser le bulletin fourni et obtenir en priorité : un exemplaire rempli anonymisé, les règles de pourcentage/arrondi/rang, les conditions et le calcul du repêchage (**Q-DEC-15**), ainsi qu’un modèle pour une option des humanités. Confirmer aussi que les branches et maxima relevés correspondent au programme actuel. Les réponses générales déjà publiées par le Ministère ne doivent pas être redemandées sans nécessité.

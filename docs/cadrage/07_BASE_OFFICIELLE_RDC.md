@@ -158,6 +158,8 @@ Les programmes nationaux doivent pouvoir servir de **modèles importables ou rep
 9. Quel document récent confirme la dénomination du certificat ou brevet de fin d’Éducation de Base ?
 10. Quelles données d’identification nationale doivent réellement être conservées et qui peut y accéder ?
 
+Un modèle vierge de bulletin 1ère/2e secondaire fourni par l’utilisateur fait l’objet d’une [analyse séparée](08_ANALYSE_BULLETIN_1E_2E.md). Il confirme la structure à deux semestres et quatre périodes, mais ne remplace pas une instruction officielle sur les calculs et le repêchage.
+
 ## 8. Sources officielles consultées
 
 - [Accueil du MINEDU-NC](https://edu-nc.gouv.cd/)

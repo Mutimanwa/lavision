@@ -29,6 +29,7 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Registre des décisions](05_REGISTRE_DES_DECISIONS.md) | tracer les choix et les points ouverts | décisions datées, attribuées et révisables |
 | [Questionnaire de l’établissement](06_QUESTIONNAIRE_ETABLISSEMENT.md) | répondre progressivement aux informations nécessaires | structure scolaire, concours, barèmes et règles propres au pilote |
 | [Base officielle RDC](07_BASE_OFFICIELLE_RDC.md) | distinguer le référentiel national des décisions locales | cycles, TENASOSP/EXETAT, calendrier et programmes sourcés |
+| [Analyse du bulletin 1ère/2e secondaire](08_ANALYSE_BULLETIN_1E_2E.md) | relever les maxima, totaux et champs du modèle fourni | formules vérifiées et règles de repêchage restant à documenter |
 
 ## 3. Ateliers proposés
 
@@ -67,7 +68,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | Catalogue de règles configurable | Préparé | valeurs, portées et contraintes validées |
 | Questionnaire de l’établissement pilote | Préparé ; premiers éléments à confirmer | réponses locales sur les sections/options, les barèmes par cours et les documents |
 | Base officielle RDC | Consultée et sourcée | confirmation de son adoption par le pilote et des instructions applicables à chaque année |
-| Exemples académiques chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
+| Exemples académiques chiffrés | Préparé ; modèle vierge 1ère/2e secondaire analysé | bulletin rempli anonymisé et résultats recalculés avec l’établissement |
 | Exemples financiers chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemple de paie | Trame uniquement | exemple validé par un expert local |
 | Matrice des permissions | Proposition | validation et scénarios de test associés |

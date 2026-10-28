@@ -3,8 +3,8 @@ import "@fontsource-variable/dm-sans";
 import "./globals.css";
 import "./master-layout.css";
 import "./component-library.css";
-import { AppShell } from "@/components/app-shell";
-import { SchoolProvider } from "@/components/school-provider";
+import { AppShell } from "@/components/layout/app-shell";
+import { SchoolProvider } from "@/features/school/context/school-provider";
 
 export const metadata: Metadata = {
   title: {

@@ -22,11 +22,62 @@ Inscription ──► Dossier élève ──► Affectation à une classe
 
 ## Frontend
 
-- **App Router** : une route par module métier ;
+- **App Router** : une route par module métier, organisée dans le groupe `(school)` et ses sous-groupes `(dashboard)`, `(people)`, `(academic)` et `(configuration)` ; les parenthèses ne modifient pas les URL ;
+- **pages `app` minimales** : métadonnées, limites de chargement et appel de la page de feature, sans logique métier ;
 - **composants clients** : formulaires et interactions, préfixés par `use client` ;
 - **SchoolProvider** : état partagé et opérations de modification ;
 - **Tailwind CSS** : thème et utilitaires, complétés par des classes de composants métier dans `globals.css` ;
 - **export statique** : aucune route serveur n’est nécessaire pour le prototype, ce qui permet le même artefact sur le web et dans Tauri.
+
+## Organisation par features
+
+Le code suit un découpage par responsabilité plutôt qu’un regroupement de tous les écrans dans `components` :
+
+```text
+src/
+├── app/(school)/                 # points d’entrée Next.js et groupes de routes
+├── components/
+│   ├── forms/                    # contrôles de formulaire réutilisables
+│   ├── layout/                   # shell et navigation communs
+│   └── ui/                       # primitives UI et tableau générique
+├── features/
+│   ├── dashboard/pages/
+│   ├── students/pages/
+│   ├── enrollments/pages/
+│   ├── classes/pages/
+│   ├── grades/pages/
+│   ├── reports/pages/
+│   ├── attendance/pages/
+│   ├── proclamation/pages/
+│   ├── settings/pages/
+│   └── school/
+│       ├── context/              # provider et contrat du contexte
+│       ├── hooks/                # useSchool
+│       ├── services/             # persistance locale
+│       └── data/                 # données fictives de démonstration
+└── lib/                          # types, calculs purs et utilitaires transverses
+```
+
+Une feature suit ce contrat lorsque ses besoins augmentent :
+
+```text
+features/<feature>/
+├── pages/                        # écrans appelés par app/
+├── components/                   # composants utilisés uniquement par cette feature
+├── hooks/                        # logique d’interface réutilisable dans la feature
+├── services/                     # accès aux données et effets externes
+└── data/                         # constantes ou données locales à la feature
+```
+
+Les dossiers sont créés uniquement lorsqu’ils contiennent du code ; il n’y a pas de dossiers vides ni de feature `auth` fictive. Une future authentification utilisera le même modèle dans `features/auth`.
+
+Règles de dépendance :
+
+1. `components` ne contient que du code réellement partagé et ne dépend d’aucune page métier ;
+2. une page de feature peut consommer `components`, `lib` et la feature transverse `school` ;
+3. un composant propre à un seul module reste dans `features/<feature>/components` ou dans sa page ;
+4. les calculs académiques restent des fonctions pures dans `lib`, sans dépendance à React ou à Next.js ;
+5. les routes groupées ne doivent jamais modifier les URL publiques existantes.
 
 ## Modèle de données
 
@@ -58,7 +109,7 @@ Les tests couvrent la pondération, les notes nulles, les absences de notes, les
 
 ## Persistance actuelle
 
-`SchoolProvider` lit et écrit la clé `lavision.school.v1` dans `localStorage`.
+`SchoolProvider` délègue la lecture et l’écriture de la clé `lavision.school.v1` au service `features/school/services/school-storage.ts`, qui encapsule `localStorage` et la validation de la sauvegarde.
 
 Avantages :
 

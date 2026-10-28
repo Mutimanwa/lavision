@@ -57,19 +57,35 @@ npm run tauri build  # bundles desktop de la plateforme
 
 ```text
 src/
-├── app/                    # routes Next.js App Router
-├── components/             # shell et modules métier
-└── lib/
-    ├── academic.ts         # moyennes, bulletins, rangs et décisions
-    ├── academic.test.ts    # tests du calcul académique
-    ├── seed.ts             # données fictives de démonstration
-    └── types.ts            # contrat du modèle de données
+├── app/(school)/           # routes groupées, sans changement des URL
+│   ├── (dashboard)/        # tableau de bord
+│   ├── (people)/           # élèves et inscriptions
+│   ├── (academic)/         # classes, notes, bulletins, présences, proclamation
+│   └── (configuration)/    # paramètres
+├── components/             # uniquement les composants partagés
+│   ├── forms/              # champs et contrôles de formulaire
+│   ├── layout/             # shell, navigation et identité visuelle
+│   └── ui/                 # primitives, tableaux, menus et feedback
+├── features/               # pages et logique propres à chaque module
+│   ├── dashboard/
+│   ├── students/
+│   ├── enrollments/
+│   ├── classes/
+│   ├── grades/
+│   ├── reports/
+│   ├── attendance/
+│   ├── proclamation/
+│   ├── settings/
+│   └── school/             # contexte, hook, stockage et données partagées
+└── lib/                    # contrats, calculs purs et utilitaires transverses
 public/                     # icône et ressources statiques
 src-tauri/                  # application Rust/Tauri
 legacy/                     # prototype PHP/HTML initial, conservé comme référence
 docs/                       # audit, architecture et guides de livraison
 .github/workflows/          # contrôles web et build Windows
 ```
+
+Chaque feature peut contenir `pages`, `components`, `hooks`, `services` et `data` selon ses besoins. Les dossiers ne sont créés que lorsqu’ils ont un contenu réel. Voir [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) pour les règles de dépendance.
 
 ## Règles académiques
 

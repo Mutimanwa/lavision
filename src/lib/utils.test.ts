@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSeedState } from "./seed";
+import { createSeedState } from "@/features/school/data/seed";
 import { isAppState } from "./utils";
 
 describe("validation des sauvegardes", () => {

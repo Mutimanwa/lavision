@@ -181,6 +181,7 @@ export function EnrollmentForm() {
       <PageHeader
         eyebrow="Gestion des élèves"
         title="Nouvelle inscription"
+        icon={<GraduationCap size={20} />}
         description="Créez un dossier complet en quelques étapes. Les champs marqués d’un astérisque sont obligatoires."
       />
       <div className="enrollment-layout">

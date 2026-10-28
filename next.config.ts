@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   devIndicators: false,
+  allowedDevOrigins: ["*.e2b.app"],
 };
 
 export default nextConfig;

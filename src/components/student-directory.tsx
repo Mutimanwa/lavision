@@ -9,7 +9,6 @@ import {
   Edit3,
   Eye,
   FileText,
-  Filter,
   Mail,
   MapPin,
   Phone,
@@ -19,7 +18,9 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useSchool } from "./school-provider";
-import { Avatar, Badge, EmptyState, FormField, Modal, PageHeader, TableMenu, TablePagination } from "./ui";
+import { Avatar, Badge, FormField, Modal, PageHeader, TableMenu } from "./ui";
+import { SchoolDataTable, type DataTableColumn } from "./data-table";
+import { FilterSelect, SelectForm } from "./form-controls";
 import {
   formatAverage,
   getAppreciation,
@@ -28,7 +29,7 @@ import {
   getStudentReport,
 } from "@/lib/academic";
 import { downloadCsv, formatDate } from "@/lib/utils";
-import type { StudentStatus } from "@/lib/types";
+import type { Student, StudentStatus } from "@/lib/types";
 
 const STUDENTS_PER_PAGE = 6;
 
@@ -40,6 +41,7 @@ export function StudentDirectory() {
   const [classFilter, setClassFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [localSelectedId, setLocalSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [editDraft, setEditDraft] = useState({
@@ -107,11 +109,11 @@ export function StudentDirectory() {
     setEditing(false);
   };
 
-  const exportStudents = () => {
+  const exportStudents = (rows: Student[] = filteredStudents) => {
     downloadCsv(
       [
         ["Matricule", "Prénom", "Nom", "Sexe", "Classe", "Statut", "Date d’inscription", "Responsable", "Téléphone"],
-        ...filteredStudents.map((student) => [
+        ...rows.map((student) => [
           student.matricule,
           student.firstName,
           student.lastName,
@@ -143,15 +145,42 @@ export function StudentDirectory() {
       ).find((item) => item.studentId === selectedStudent.id)
     : null;
 
+  const columns: DataTableColumn<Student>[] = [
+    {
+      header: "Élève",
+      render: (student) => (
+        <button className="student-cell student-cell-button" type="button" onClick={() => setLocalSelectedId(student.id)}>
+          <Avatar student={student} />
+          <span><strong>{getFullName(student)}</strong><small>{student.matricule}</small></span>
+        </button>
+      ),
+    },
+    {
+      header: "Classe",
+      render: (student) => <Badge tone="blue">{state.classes.find((schoolClass) => schoolClass.id === student.classId)?.name ?? "Non affecté"}</Badge>,
+    },
+    {
+      header: "Responsable légal",
+      hideOnMobile: true,
+      render: (student) => <div className="guardian-cell"><strong>{student.guardian.name}</strong><small>{student.guardian.phone}</small></div>,
+    },
+    { header: "Inscription", hideOnMobile: true, render: (student) => formatDate(student.enrolledAt) },
+    {
+      header: "Statut",
+      render: (student) => <Badge tone={student.status === "Actif" ? "green" : student.status === "En attente" ? "amber" : "neutral"} dot>{student.status}</Badge>,
+    },
+  ];
+
   return (
     <>
       <PageHeader
         eyebrow="Scolarité"
         title="Répertoire des élèves"
+        icon={<UsersRound size={20} />}
         description={`${state.students.length} dossiers pour l’année ${state.settings.academicYear}. Recherchez, filtrez et consultez chaque parcours.`}
         actions={
           <>
-            <button className="button button-secondary" type="button" onClick={exportStudents}><Download size={17} /> Exporter CSV</button>
+            <button className="button button-secondary" type="button" onClick={() => exportStudents()}><Download size={17} /> Exporter CSV</button>
             <Link className="button button-primary" href="/inscriptions/"><UserRoundPlus size={17} /> Nouvelle inscription</Link>
           </>
         }
@@ -165,51 +194,61 @@ export function StudentDirectory() {
       </section>
 
       <section className="card directory-card">
-        <div className="filter-toolbar">
-          <div className="filter-search"><Search size={18} /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Nom, matricule ou responsable…" aria-label="Rechercher dans les élèves" /></div>
-          <div className="filter-select"><Filter size={16} /><select value={classFilter} onChange={(event) => { setClassFilter(event.target.value); setPage(1); }} aria-label="Filtrer par classe"><option value="all">Toutes les classes</option>{state.classes.map((schoolClass) => <option value={schoolClass.id} key={schoolClass.id}>{schoolClass.name}</option>)}</select></div>
-          <select value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setPage(1); }} aria-label="Filtrer par statut"><option value="all">Tous les statuts</option><option value="Actif">Actifs</option><option value="En attente">En attente</option><option value="Inactif">Inactifs</option></select>
-          <span className="filter-result-count">{filteredStudents.length} résultat{filteredStudents.length > 1 ? "s" : ""}</span>
-        </div>
-
-        {filteredStudents.length ? (
-          <div className="table-wrap">
-            <table className="data-table student-directory-table">
-              <thead><tr><th>Élève</th><th>Classe</th><th>Responsable légal</th><th>Inscription</th><th>Statut</th><th className="table-actions-heading">Actions</th></tr></thead>
-              <tbody>
-                {paginatedStudents.map((student) => {
-                  const schoolClass = state.classes.find((item) => item.id === student.classId);
-                  return (
-                    <tr key={student.id}>
-                      <td><button className="student-cell student-cell-button" type="button" onClick={() => setLocalSelectedId(student.id)}><Avatar student={student} /><span><strong>{getFullName(student)}</strong><small>{student.matricule}</small></span></button></td>
-                      <td><Badge tone="blue">{schoolClass?.name ?? "Non affecté"}</Badge></td>
-                      <td><div className="guardian-cell"><strong>{student.guardian.name}</strong><small>{student.guardian.phone}</small></div></td>
-                      <td>{formatDate(student.enrolledAt)}</td>
-                      <td><Badge tone={student.status === "Actif" ? "green" : student.status === "En attente" ? "amber" : "neutral"} dot>{student.status}</Badge></td>
-                      <td className="table-actions-heading">
-                        <TableMenu label={`Actions pour ${getFullName(student)}`}>
-                          <button type="button" onClick={() => setLocalSelectedId(student.id)}><Eye size={16} /> Voir le dossier</button>
-                          <Link href={`/bulletins/?eleve=${student.id}`}><FileText size={16} /> Voir le bulletin</Link>
-                        </TableMenu>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <EmptyState icon={<Search size={28} />} title="Aucun dossier trouvé" description="Modifiez les filtres ou lancez une nouvelle recherche." action={<button className="button button-secondary" type="button" onClick={() => { setQuery(""); setClassFilter("all"); setStatusFilter("all"); setPage(1); }}>Réinitialiser les filtres</button>} />
-        )}
-        {filteredStudents.length > 0 && (
-          <TablePagination
-            page={currentPage}
-            pageCount={pageCount}
-            pageSize={STUDENTS_PER_PAGE}
-            totalItems={filteredStudents.length}
-            onPageChange={setPage}
-          />
-        )}
+        <SchoolDataTable
+          data={paginatedStudents}
+          selectionData={filteredStudents}
+          columns={columns}
+          page={currentPage}
+          pageCount={pageCount}
+          pageSize={STUDENTS_PER_PAGE}
+          totalItems={filteredStudents.length}
+          onPageChange={setPage}
+          searchQuery={query}
+          onSearchChange={(value) => { setQuery(value); setPage(1); setSelectedIds(new Set()); }}
+          searchPlaceholder="Nom, matricule ou responsable…"
+          toolbar={(
+            <>
+              <FilterSelect
+                ariaLabel="Filtrer par classe"
+                placeholder="Toutes les classes"
+                value={classFilter}
+                options={[{ value: "all", label: "Toutes les classes" }, ...state.classes.map((schoolClass) => ({ value: schoolClass.id, label: schoolClass.name }))]}
+                onChange={(value) => { setClassFilter(value); setPage(1); setSelectedIds(new Set()); }}
+              />
+              <FilterSelect
+                ariaLabel="Filtrer par statut"
+                placeholder="Tous les statuts"
+                value={statusFilter}
+                options={[
+                  { value: "all", label: "Tous les statuts" },
+                  { value: "Actif", label: "Actifs" },
+                  { value: "En attente", label: "En attente" },
+                  { value: "Inactif", label: "Inactifs" },
+                ]}
+                onChange={(value) => { setStatusFilter(value); setPage(1); setSelectedIds(new Set()); }}
+              />
+              <span className="filter-result-count">{filteredStudents.length} résultat{filteredStudents.length > 1 ? "s" : ""}</span>
+            </>
+          )}
+          selectable
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
+          bulkActions={[{ key: "export", label: "Exporter la sélection", icon: <Download size={15} /> }]}
+          onBulkAction={(action, rows) => { if (action === "export") exportStudents(rows); }}
+          emptyState={{
+            icon: <Search size={25} />,
+            title: "Aucun dossier trouvé",
+            description: "Modifiez les filtres ou lancez une nouvelle recherche.",
+            action: <button className="button button-secondary" type="button" onClick={() => { setQuery(""); setClassFilter("all"); setStatusFilter("all"); setPage(1); setSelectedIds(new Set()); }}>Réinitialiser les filtres</button>,
+          }}
+          getRowLabel={(student) => getFullName(student)}
+          renderActions={(student) => (
+            <TableMenu label={`Actions pour ${getFullName(student)}`}>
+              <button type="button" onClick={() => setLocalSelectedId(student.id)}><Eye size={16} /> Voir le dossier</button>
+              <Link href={`/bulletins/?eleve=${student.id}`}><FileText size={16} /> Voir le bulletin</Link>
+            </TableMenu>
+          )}
+        />
       </section>
 
       <Modal open={Boolean(selectedStudent)} onClose={closeDetails} title="Dossier élève" description={selectedStudent?.matricule} size="large">
@@ -245,8 +284,8 @@ export function StudentDirectory() {
         <div className="form-grid">
           <FormField label="Prénom" htmlFor="edit-firstName" required><input id="edit-firstName" value={editDraft.firstName} onChange={(event) => setEditDraft({ ...editDraft, firstName: event.target.value })} /></FormField>
           <FormField label="Nom" htmlFor="edit-lastName" required><input id="edit-lastName" value={editDraft.lastName} onChange={(event) => setEditDraft({ ...editDraft, lastName: event.target.value })} /></FormField>
-          <FormField label="Classe" htmlFor="edit-class" required><select id="edit-class" value={editDraft.classId} onChange={(event) => setEditDraft({ ...editDraft, classId: event.target.value })}>{state.classes.map((schoolClass) => <option value={schoolClass.id} key={schoolClass.id}>{schoolClass.name}</option>)}</select></FormField>
-          <FormField label="Statut" htmlFor="edit-status" required><select id="edit-status" value={editDraft.status} onChange={(event) => setEditDraft({ ...editDraft, status: event.target.value as StudentStatus })}><option>Actif</option><option>En attente</option><option>Inactif</option></select></FormField>
+          <SelectForm id="edit-class" label="Classe" required value={editDraft.classId} options={state.classes.map((schoolClass) => ({ value: schoolClass.id, label: schoolClass.name }))} onChange={(value) => setEditDraft({ ...editDraft, classId: value })} />
+          <SelectForm id="edit-status" label="Statut" required value={editDraft.status} options={[{ value: "Actif", label: "Actif" }, { value: "En attente", label: "En attente" }, { value: "Inactif", label: "Inactif" }]} onChange={(value) => setEditDraft({ ...editDraft, status: value as StudentStatus })} />
           <FormField label="Téléphone du responsable" htmlFor="edit-phone" className="form-field-full"><input id="edit-phone" value={editDraft.guardianPhone} onChange={(event) => setEditDraft({ ...editDraft, guardianPhone: event.target.value })} /></FormField>
         </div>
       </Modal>

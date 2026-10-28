@@ -14,7 +14,8 @@ import {
   Upload,
 } from "lucide-react";
 import { useSchool } from "./school-provider";
-import { FormField, Modal, Notice, PageHeader } from "./ui";
+import { Modal, Notice, PageHeader } from "./ui";
+import { InputForm, SelectForm } from "./form-controls";
 import { downloadJson, isAppState } from "@/lib/utils";
 import { TERMS, type SchoolSettings, type Term } from "@/lib/types";
 
@@ -64,7 +65,7 @@ export function SettingsManager() {
 
   return (
     <>
-      <PageHeader eyebrow="Administration" title="Paramètres" description="Configurez l’établissement, les règles académiques et la conservation de vos données." actions={<button className="button button-primary" type="button" onClick={save} disabled={!dirty}><Save size={17} /> Enregistrer les paramètres</button>} />
+      <PageHeader eyebrow="Administration" title="Paramètres" icon={<Settings size={20} />} description="Configurez l’établissement, les règles académiques et la conservation de vos données." actions={<button className="button button-primary" type="button" onClick={save} disabled={!dirty}><Save size={17} /> Enregistrer les paramètres</button>} />
       {message && <Notice tone="success" title={message}>Les changements sont disponibles dans tous les modules.</Notice>}
       {error && <Notice tone="warning" title="Action impossible">{error}</Notice>}
       {!hydrated && <Notice>Chargement de la sauvegarde locale…</Notice>}
@@ -73,11 +74,21 @@ export function SettingsManager() {
         <div className="settings-main">
           <section className="card settings-section">
             <header className="settings-section-header"><span><Building2 size={21} /></span><div><h2>Établissement</h2><p>Ces informations apparaissent sur les bulletins et les proclamations.</p></div></header>
-            <div className="form-grid"><FormField label="Nom de l’établissement" htmlFor="schoolName" required className="form-field-full"><input id="schoolName" value={current.schoolName} onChange={(event) => update("schoolName", event.target.value)} /></FormField><FormField label="Nom de la direction" htmlFor="directionName"><input id="directionName" value={current.directionName} onChange={(event) => update("directionName", event.target.value)} /></FormField><FormField label="Année scolaire" htmlFor="academicYear" required><input id="academicYear" value={current.academicYear} onChange={(event) => update("academicYear", event.target.value)} placeholder="2026–2027" /></FormField><FormField label="Téléphone" htmlFor="schoolPhone"><input id="schoolPhone" value={current.phone} onChange={(event) => update("phone", event.target.value)} /></FormField><FormField label="Adresse e-mail" htmlFor="schoolEmail"><input id="schoolEmail" type="email" value={current.email} onChange={(event) => update("email", event.target.value)} /></FormField><FormField label="Adresse" htmlFor="schoolAddress" className="form-field-full"><input id="schoolAddress" value={current.address} onChange={(event) => update("address", event.target.value)} /></FormField></div>
+            <div className="form-grid">
+              <InputForm id="schoolName" label="Nom de l’établissement" required containerClassName="form-field-full" value={current.schoolName} onChange={(event) => update("schoolName", event.target.value)} />
+              <InputForm id="directionName" label="Nom de la direction" value={current.directionName} onChange={(event) => update("directionName", event.target.value)} />
+              <InputForm id="academicYear" label="Année scolaire" required value={current.academicYear} onChange={(event) => update("academicYear", event.target.value)} placeholder="2026–2027" />
+              <InputForm id="schoolPhone" label="Téléphone" type="tel" value={current.phone} onChange={(event) => update("phone", event.target.value)} />
+              <InputForm id="schoolEmail" label="Adresse e-mail" type="email" value={current.email} onChange={(event) => update("email", event.target.value)} />
+              <InputForm id="schoolAddress" label="Adresse" containerClassName="form-field-full" value={current.address} onChange={(event) => update("address", event.target.value)} />
+            </div>
           </section>
           <section className="card settings-section">
             <header className="settings-section-header"><span><Settings size={21} /></span><div><h2>Règles académiques</h2><p>Définissez la période de travail et la règle d’admission par défaut.</p></div></header>
-            <div className="form-grid"><FormField label="Période active" htmlFor="currentTerm" hint="Utilisée par défaut sur le tableau de bord."><select id="currentTerm" value={current.currentTerm} onChange={(event) => update("currentTerm", event.target.value as Term)}>{TERMS.map((term) => <option key={term}>{term}</option>)}</select></FormField><FormField label="Seuil de réussite /20" htmlFor="passMark" hint="Un dossier doit aussi être complet pour être admis."><input id="passMark" type="number" min="0" max="20" step="0.5" value={current.passMark} onChange={(event) => update("passMark", Number(event.target.value))} /></FormField></div>
+            <div className="form-grid">
+              <SelectForm id="currentTerm" label="Période active" helperText="Utilisée par défaut sur le tableau de bord." value={current.currentTerm} options={TERMS.map((term) => ({ value: term, label: term }))} onChange={(value) => update("currentTerm", value as Term)} />
+              <InputForm id="passMark" label="Seuil de réussite /20" helperText="Un dossier doit aussi être complet pour être admis." type="number" min="0" max="20" step="0.5" value={current.passMark} onChange={(event) => update("passMark", Number(event.target.value))} />
+            </div>
             <Notice title="Moyennes pondérées">Les coefficients se règlent dans le module Classes & matières. La moyenne de chaque bulletin est arrondie à deux décimales.</Notice>
           </section>
         </div>

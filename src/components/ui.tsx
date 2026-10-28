@@ -1,7 +1,24 @@
 "use client";
 
-import { useEffect, useId, type ReactNode } from "react";
-import { AlertCircle, CheckCircle2, ChevronLeft, ChevronRight, Info, MoreVertical, X } from "lucide-react";
+import {
+  Children,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
+import { createPortal } from "react-dom";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  MoreHorizontal,
+  X,
+} from "lucide-react";
 import type { Student } from "@/lib/types";
 import { getInitials } from "@/lib/academic";
 
@@ -10,17 +27,24 @@ export function PageHeader({
   title,
   description,
   actions,
+  icon,
+  size = "default",
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   actions?: ReactNode;
+  icon?: ReactNode;
+  size?: "default" | "large";
 }) {
   return (
-    <header className="page-header">
-      <div>
+    <header className={`page-header page-header-${size}`}>
+      <div className="page-header-copy">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h1>{title}</h1>
+        <div className="page-header-title-row">
+          {icon && <span className="page-header-icon" aria-hidden="true">{icon}</span>}
+          <h1>{title}</h1>
+        </div>
         {description && <p className="page-description">{description}</p>}
       </div>
       {actions && <div className="page-actions">{actions}</div>}
@@ -47,24 +71,109 @@ export function Badge({
   );
 }
 
+const emptySubscribe = () => () => {};
+const useIsClient = () => useSyncExternalStore(emptySubscribe, () => true, () => false);
+const MENU_WIDTH = 208;
+
 export function TableMenu({ label, children }: { label: string; children: ReactNode }) {
+  const mounted = useIsClient();
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ top: -9999, left: -9999 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const toggleMenu = () => {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+    const trigger = triggerRef.current;
+    if (!trigger) return;
+    const rect = trigger.getBoundingClientRect();
+    const estimatedHeight = Children.count(children) * 40 + 14;
+    let top = rect.bottom + 6;
+    if (top + estimatedHeight > window.innerHeight - 8) {
+      top = Math.max(8, rect.top - estimatedHeight - 6);
+    }
+    const desiredLeft = rect.right - MENU_WIDTH;
+    const left = Math.min(
+      Math.max(8, desiredLeft),
+      Math.max(8, window.innerWidth - MENU_WIDTH - 8),
+    );
+    setPosition({ top, left });
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (triggerRef.current?.contains(target) || menuRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    const close = () => setOpen(false);
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [open]);
+
   return (
-    <details className="table-menu">
-      <summary className="table-menu-trigger" aria-label={label}>
-        <MoreVertical size={18} />
-      </summary>
-      <div
-        className="table-menu-content"
-        onClick={(event) => {
-          if ((event.target as HTMLElement).closest("a, button")) {
-            event.currentTarget.parentElement?.removeAttribute("open");
-          }
-        }}
+    <div className="table-menu">
+      <button
+        ref={triggerRef}
+        className="table-menu-trigger"
+        type="button"
+        aria-label={label}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={toggleMenu}
       >
-        {children}
-      </div>
-    </details>
+        <MoreHorizontal size={18} />
+      </button>
+      {mounted && open && createPortal(
+        <div
+          ref={menuRef}
+          className="table-menu-content"
+          role="menu"
+          aria-label={label}
+          style={{ top: position.top, left: position.left, width: MENU_WIDTH }}
+          onClick={(event) => {
+            if ((event.target as HTMLElement).closest("a, button")) setOpen(false);
+          }}
+        >
+          {children}
+        </div>,
+        document.body,
+      )}
+    </div>
   );
+}
+
+function paginationItems(currentPage: number, pageCount: number): Array<number | string> {
+  if (pageCount <= 5) return Array.from({ length: pageCount }, (_, index) => index + 1);
+  const pages: Array<number | string> = [1];
+  let start = Math.max(2, currentPage - 1);
+  let end = Math.min(pageCount - 1, currentPage + 1);
+  if (currentPage <= 3) end = 4;
+  if (currentPage >= pageCount - 2) start = pageCount - 3;
+  if (start > 2) pages.push("start-ellipsis");
+  for (let value = start; value <= end; value += 1) pages.push(value);
+  if (end < pageCount - 1) pages.push("end-ellipsis");
+  pages.push(pageCount);
+  return pages;
 }
 
 export function TablePagination({
@@ -73,39 +182,58 @@ export function TablePagination({
   pageSize,
   totalItems,
   onPageChange,
+  selectedCount = 0,
 }: {
   page: number;
   pageCount: number;
   pageSize: number;
   totalItems: number;
   onPageChange: (page: number) => void;
+  selectedCount?: number;
 }) {
   const safePageCount = Math.max(1, pageCount);
-  const start = totalItems ? (page - 1) * pageSize + 1 : 0;
-  const end = Math.min(totalItems, page * pageSize);
+  const currentPage = Math.min(Math.max(1, page), safePageCount);
+  const start = totalItems ? (currentPage - 1) * pageSize + 1 : 0;
+  const end = Math.min(totalItems, currentPage * pageSize);
 
   return (
     <div className="table-pagination" aria-label="Pagination du tableau">
-      <span>{start}–{end} sur {totalItems} dossier{totalItems > 1 ? "s" : ""}</span>
       <div className="table-pagination-controls">
         <button
           type="button"
-          onClick={() => onPageChange(page - 1)}
-          disabled={page <= 1}
+          className="table-pagination-arrow"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage <= 1}
           aria-label="Page précédente"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={15} />
         </button>
-        <span className="table-pagination-current" aria-current="page">{page} / {safePageCount}</span>
+        {paginationItems(currentPage, safePageCount).map((item) => (
+          typeof item === "number" ? (
+            <button
+              key={item}
+              type="button"
+              className={item === currentPage ? "table-pagination-current" : "table-pagination-page"}
+              onClick={() => onPageChange(item)}
+              aria-label={`Page ${item}`}
+              aria-current={item === currentPage ? "page" : undefined}
+            >
+              {item}
+            </button>
+          ) : <span className="table-pagination-ellipsis" key={item}>…</span>
+        ))}
         <button
           type="button"
-          onClick={() => onPageChange(page + 1)}
-          disabled={page >= safePageCount}
+          className="table-pagination-next"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= safePageCount}
           aria-label="Page suivante"
         >
-          <ChevronRight size={16} />
+          <ChevronRight size={15} />
         </button>
       </div>
+      <span className="table-pagination-range">{start}–{end} sur {totalItems} dossier{totalItems > 1 ? "s" : ""}</span>
+      {selectedCount > 0 && <span className="table-pagination-selected">{selectedCount} sélectionné{selectedCount > 1 ? "s" : ""}</span>}
     </div>
   );
 }
@@ -148,6 +276,7 @@ export function Modal({
   children,
   footer,
   size = "medium",
+  closeOnBackdrop = true,
 }: {
   open: boolean;
   onClose: () => void;
@@ -156,8 +285,10 @@ export function Modal({
   children: ReactNode;
   footer?: ReactNode;
   size?: "small" | "medium" | "large";
+  closeOnBackdrop?: boolean;
 }) {
   const titleId = useId();
+  const descriptionId = useId();
 
   useEffect(() => {
     if (!open) return;
@@ -176,20 +307,21 @@ export function Modal({
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" onMouseDown={onClose}>
+    <div className="modal-backdrop" onMouseDown={closeOnBackdrop ? onClose : undefined}>
       <section
         className={`modal modal-${size}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={description ? descriptionId : undefined}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="modal-header">
           <div>
             <h2 id={titleId}>{title}</h2>
-            {description && <p>{description}</p>}
+            {description && <p id={descriptionId}>{description}</p>}
           </div>
-          <button className="icon-button" type="button" onClick={onClose} aria-label="Fermer">
+          <button className="icon-button" type="button" onClick={onClose} aria-label="Fermer la fenêtre">
             <X size={20} />
           </button>
         </header>
@@ -265,7 +397,7 @@ export function FormField({
         {label} {required && <span aria-hidden="true">*</span>}
       </label>
       {children}
-      {error ? <small className="field-error">{error}</small> : hint ? <small>{hint}</small> : null}
+      {error ? <small className="field-error" role="alert">{error}</small> : hint ? <small>{hint}</small> : null}
     </div>
   );
 }

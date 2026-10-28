@@ -83,6 +83,7 @@ export function Dashboard() {
   return (
     <>
       <PageHeader
+        size="large"
         title={`Ravi de vous revoir, ${directionFirstName} !`}
         description={`Gérez l’activité de votre établissement. Année scolaire ${state.settings.academicYear}`}
         actions={(

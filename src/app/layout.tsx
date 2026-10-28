@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/dm-sans";
 import "./globals.css";
 import "./master-layout.css";
+import "./component-library.css";
 import { AppShell } from "@/components/app-shell";
 import { SchoolProvider } from "@/components/school-provider";
 

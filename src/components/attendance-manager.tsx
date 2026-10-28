@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useSchool } from "./school-provider";
 import { Avatar, Badge, Notice, PageHeader } from "./ui";
+import { SelectForm } from "./form-controls";
 import { getFullName } from "@/lib/academic";
 import { downloadCsv, formatDate, toInputDate } from "@/lib/utils";
 import type { AttendanceStatus } from "@/lib/types";
@@ -75,12 +76,12 @@ export function AttendanceManager() {
 
   return (
     <>
-      <PageHeader eyebrow="Vie scolaire" title="Présences & appel" description="Enregistrez l’appel quotidien et consultez l’assiduité reprise dans les bulletins." actions={<><button className="button button-secondary" type="button" onClick={() => downloadCsv([["Matricule", "Élève", "Date", "Statut"], ...students.map((student) => [student.matricule, getFullName(student), date, STATUS_OPTIONS.find((item) => item.value === currentStatus(student.id))?.label ?? "Non pointé"])], `appel-${schoolClass?.name ?? "classe"}-${date}.csv`)}><Download size={17} /> Exporter</button><button className="button button-primary" type="button" onClick={save} disabled={!students.length}><Save size={17} /> Enregistrer l’appel</button></>} />
+      <PageHeader eyebrow="Vie scolaire" title="Présences & appel" icon={<CalendarCheck2 size={20} />} description="Enregistrez l’appel quotidien et consultez l’assiduité reprise dans les bulletins." actions={<><button className="button button-secondary" type="button" onClick={() => downloadCsv([["Matricule", "Élève", "Date", "Statut"], ...students.map((student) => [student.matricule, getFullName(student), date, STATUS_OPTIONS.find((item) => item.value === currentStatus(student.id))?.label ?? "Non pointé"])], `appel-${schoolClass?.name ?? "classe"}-${date}.csv`)}><Download size={17} /> Exporter</button><button className="button button-primary" type="button" onClick={save} disabled={!students.length}><Save size={17} /> Enregistrer l’appel</button></>} />
       {message && <Notice tone="success" title={message}>Les totaux d’assiduité des bulletins ont été mis à jour.</Notice>}
       {error && <Notice tone="warning" title="Appel incomplet">{error}</Notice>}
       <div className="attendance-layout">
         <section className="card attendance-card">
-          <div className="attendance-controls"><label><span>Classe</span><select value={classId} onChange={(event) => { setClassId(event.target.value); setMessage(""); setError(""); }}>{state.classes.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label><label><span>Date de l’appel</span><input type="date" value={date} max={toInputDate()} onChange={(event) => { setDate(event.target.value); setMessage(""); setError(""); }} /></label><button className="button button-soft" type="button" onClick={markAllPresent} disabled={!students.length}><CheckCheck size={17} /> Tous présents</button></div>
+          <div className="attendance-controls"><SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={(value) => { setClassId(value); setMessage(""); setError(""); }} /><label><span>Date de l’appel</span><input type="date" value={date} max={toInputDate()} onChange={(event) => { setDate(event.target.value); setMessage(""); setError(""); }} /></label><button className="button button-soft" type="button" onClick={markAllPresent} disabled={!students.length}><CheckCheck size={17} /> Tous présents</button></div>
           <div className="attendance-overview"><div><small>Statuts renseignés</small><strong>{marked}<span> / {students.length}</span></strong></div><div><small>Présents</small><strong>{present}</strong></div><div><small>Absents</small><strong>{absent}</strong></div><div><small>Retards</small><strong>{late}</strong></div></div>
           <div className="attendance-list">
             <div className="attendance-list-head"><span>Élève</span><span>Statut de présence</span></div>

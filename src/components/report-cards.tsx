@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useSchool } from "./school-provider";
 import { Badge, EmptyState, Notice, PageHeader } from "./ui";
+import { SearchSelectForm, SelectForm } from "./form-controls";
 import {
   formatAverage,
   getAppreciation,
@@ -75,11 +76,11 @@ export function ReportCards() {
   return (
     <>
       <div className="no-print">
-        <PageHeader eyebrow="Évaluations" title="Bulletins scolaires" description="Consultez un bulletin calculé automatiquement, puis imprimez-le ou enregistrez-le en PDF." actions={<><button className="button button-secondary" type="button" onClick={exportReport} disabled={!selectedStudent}><Download size={17} /> Exporter CSV</button><button className="button button-primary" type="button" onClick={() => window.print()} disabled={!selectedStudent}><Printer size={17} /> Imprimer / PDF</button></>} />
+        <PageHeader eyebrow="Évaluations" title="Bulletins scolaires" icon={<GraduationCap size={20} />} description="Consultez un bulletin calculé automatiquement, puis imprimez-le ou enregistrez-le en PDF." actions={<><button className="button button-secondary" type="button" onClick={exportReport} disabled={!selectedStudent}><Download size={17} /> Exporter CSV</button><button className="button button-primary" type="button" onClick={() => window.print()} disabled={!selectedStudent}><Printer size={17} /> Imprimer / PDF</button></>} />
         <section className="card bulletin-toolbar">
-          <label><span>Classe</span><select value={classId} onChange={(event) => changeClass(event.target.value)}>{state.classes.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
-          <label><span>Élève</span><select value={selectedStudent?.id ?? ""} onChange={(event) => setLocalStudentId(event.target.value)}>{classStudents.map((student) => <option value={student.id} key={student.id}>{getFullName(student)} · {student.matricule}</option>)}</select></label>
-          <label><span>Période</span><select value={term} onChange={(event) => setTerm(event.target.value as Term)}>{TERMS.map((item) => <option key={item}>{item}</option>)}</select></label>
+          <SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={changeClass} />
+          <SearchSelectForm label="Élève" value={selectedStudent?.id ?? ""} options={classStudents.map((student) => ({ value: student.id, label: getFullName(student), description: student.matricule }))} onChange={setLocalStudentId} searchPlaceholder="Nom ou matricule…" dropdownLabel="Élèves actifs" />
+          <SelectForm label="Période" value={term} options={TERMS.map((item) => ({ value: item, label: item }))} onChange={(value) => setTerm(value as Term)} />
           <div className="bulletin-navigation"><button className="icon-button" type="button" disabled={currentIndex <= 0} onClick={() => setLocalStudentId(classStudents[currentIndex - 1]?.id ?? "")} aria-label="Élève précédent"><ArrowLeft size={18} /></button><span>{currentIndex + 1} / {classStudents.length}</span><button className="icon-button" type="button" disabled={currentIndex >= classStudents.length - 1} onClick={() => setLocalStudentId(classStudents[currentIndex + 1]?.id ?? "")} aria-label="Élève suivant"><ArrowRight size={18} /></button></div>
         </section>
         {report && !report.isComplete && <Notice tone="warning" title="Bulletin provisoire">{report.totalSubjects - report.gradedCount} matière(s) n’ont pas encore de note. La moyenne affichée utilise uniquement les matières évaluées et aucun rang définitif n’est attribué.</Notice>}

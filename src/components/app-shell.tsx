@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Award,
   Bell,
   BookOpenCheck,
   CalendarCheck2,
-  CalendarDays,
+  CheckCircle2,
   ChevronDown,
   CircleHelp,
   ClipboardCheck,
@@ -20,7 +20,6 @@ import {
   NotebookPen,
   Search,
   Settings,
-  ShieldCheck,
   SlidersHorizontal,
   Sparkles,
   UserRoundPlus,
@@ -31,6 +30,7 @@ import {
 import { useSchool } from "./school-provider";
 import { Logo } from "./logo";
 import { Avatar, Modal } from "./ui";
+import { HeaderDropdown } from "./header-dropdown";
 import { getFullName } from "@/lib/academic";
 
 interface NavItem {
@@ -164,7 +164,7 @@ function GlobalSearch() {
 
   return (
     <div className="global-search">
-      <Search size={18} />
+      <Search size={17} />
       <input
         ref={inputRef}
         type="search"
@@ -180,7 +180,7 @@ function GlobalSearch() {
           <X size={15} />
         </button>
       ) : (
-        <kbd>Ctrl K</kbd>
+        <kbd><span>CTRL</span><span>K</span></kbd>
       )}
       {focused && query.trim() && (
         <div className="search-results">
@@ -202,65 +202,186 @@ function GlobalSearch() {
   );
 }
 
+interface SchoolNotification {
+  id: string;
+  title: string;
+  message: string;
+  meta: string;
+  href: string;
+  tone: "warning" | "info";
+  icon: LucideIcon;
+}
+
 function Notifications() {
   const { state } = useSchool();
+  const [open, setOpen] = useState(false);
+  const [readIds, setReadIds] = useState<Set<string>>(new Set());
+  const containerRef = useRef<HTMLDivElement>(null);
   const pending = state.students.filter((student) => student.status === "En attente").length;
   const activeStudentIds = new Set(state.students.filter((student) => student.status === "Actif").map((student) => student.id));
   const expected = activeStudentIds.size * state.subjects.length;
   const currentGrades = state.grades.filter((grade) => grade.term === state.settings.currentTerm && activeStudentIds.has(grade.studentId)).length;
   const missing = Math.max(0, expected - currentGrades);
+  const notifications: SchoolNotification[] = [];
+
+  if (pending > 0) {
+    notifications.push({
+      id: `inscriptions-${pending}`,
+      title: `${pending} inscription${pending > 1 ? "s" : ""} à valider`,
+      message: "Des dossiers provisoires attendent une vérification par la scolarité.",
+      meta: "Scolarité",
+      href: "/eleves/",
+      tone: "warning",
+      icon: UserRoundPlus,
+    });
+  }
+  if (missing > 0) {
+    notifications.push({
+      id: `notes-${state.settings.currentTerm}-${missing}`,
+      title: `${missing} note${missing > 1 ? "s" : ""} à compléter`,
+      message: "La grille de saisie de la période active contient encore des cellules vides.",
+      meta: state.settings.currentTerm,
+      href: "/notes/",
+      tone: "info",
+      icon: NotebookPen,
+    });
+  }
+
+  const unreadCount = notifications.filter((notification) => !readIds.has(notification.id)).length;
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", closeOutside);
+    return () => document.removeEventListener("mousedown", closeOutside);
+  }, [open]);
+
+  const content = (
+    <>
+      <div className="header-popup-heading">
+        <div><strong>Notifications</strong>{unreadCount > 0 && <span>{unreadCount} nouvelle{unreadCount > 1 ? "s" : ""}</span>}</div>
+        {unreadCount > 0 && (
+          <button type="button" onClick={() => setReadIds(new Set(notifications.map((notification) => notification.id)))}>
+            Tout marquer comme lu
+          </button>
+        )}
+      </div>
+      <div className="header-notification-list">
+        {notifications.length ? notifications.map((notification) => {
+          const Icon = notification.icon;
+          const unread = !readIds.has(notification.id);
+          return (
+            <Link
+              href={notification.href}
+              key={notification.id}
+              className={`school-notification ${unread ? "unread" : ""}`}
+              onClick={() => {
+                setReadIds((current) => new Set([...current, notification.id]));
+                setOpen(false);
+              }}
+            >
+              <span className={`school-notification-icon ${notification.tone}`}><Icon size={16} /></span>
+              <span className="school-notification-copy">
+                <span><strong>{notification.title}</strong>{unread && <i />}</span>
+                <p>{notification.message}</p>
+                <small>{notification.meta}</small>
+              </span>
+            </Link>
+          );
+        }) : (
+          <div className="header-notification-empty"><CheckCircle2 size={25} /><strong>Tout est à jour</strong><p>Aucune action urgente dans les modules de scolarité.</p></div>
+        )}
+      </div>
+      <div className="header-popup-footer"><Link href="/" onClick={() => setOpen(false)}>Voir le tableau de bord</Link></div>
+    </>
+  );
 
   return (
-    <details className="popover notification-popover">
-      <summary className="icon-button" aria-label="Ouvrir les notifications">
-        <Bell size={19} />
-        {(pending > 0 || missing > 0) && <span className="notification-dot" />}
-      </summary>
-      <div className="popover-content">
-        <div className="popover-title">
-          <strong>À traiter</strong>
-          <span className="badge badge-neutral">{state.settings.currentTerm}</span>
-        </div>
-        <Link href="/eleves/" className="notification-item">
-          <span className="notification-icon notification-icon-amber"><UserRoundPlus size={18} /></span>
-          <span>
-            <strong>{pending || "Aucune"} inscription{pending > 1 ? "s" : ""} en attente</strong>
-            <small>Vérifier les dossiers provisoires</small>
-          </span>
-        </Link>
-        <Link href="/notes/" className="notification-item">
-          <span className="notification-icon notification-icon-blue"><NotebookPen size={18} /></span>
-          <span>
-            <strong>{missing || "Aucune"} note{missing > 1 ? "s" : ""} à compléter</strong>
-            <small>Grille de saisie de la période active</small>
-          </span>
-        </Link>
-        <Link href="/parametres/" className="notification-item">
-          <span className="notification-icon notification-icon-green"><ShieldCheck size={18} /></span>
-          <span>
-            <strong>Données enregistrées localement</strong>
-            <small>Exportez une sauvegarde depuis les paramètres</small>
-          </span>
-        </Link>
-      </div>
-    </details>
+    <div className="header-popup-container" ref={containerRef}>
+      <button
+        type="button"
+        className="icon-button header-circle-button"
+        onClick={() => setOpen((current) => !current)}
+        aria-label="Ouvrir les notifications"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        <Bell size={18} />
+        {unreadCount > 0 && <span className="header-notification-badge">{unreadCount}</span>}
+      </button>
+      <HeaderDropdown open={open} onClose={() => setOpen(false)} title="Notifications" width="wide">
+        {content}
+      </HeaderDropdown>
+    </div>
   );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const { state, hydrated } = useSchool();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
-  const basePath = pathname === "/" ? "/" : `/${pathname.split("/").filter(Boolean)[0] ?? ""}`;
-  const pageTitle = PAGE_TITLES[basePath] ?? "LaVision";
-  const directionInitials = state.settings.directionName
+function UserPopup({ onHelp }: { onHelp: () => void }) {
+  const { state } = useSchool();
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const initials = state.settings.directionName
     .split(/\s+/)
     .filter(Boolean)
     .map((part) => part[0])
     .slice(0, 2)
     .join("")
     .toUpperCase() || "LV";
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", closeOutside);
+    return () => document.removeEventListener("mousedown", closeOutside);
+  }, [open]);
+
+  const content = (
+    <>
+      <div className="user-popup-summary">
+        <span className="profile-avatar">{initials}</span>
+        <div><strong>{state.settings.directionName}</strong><small>{state.settings.email}</small><span>Admin / Direction</span></div>
+      </div>
+      <div className="user-popup-school"><strong>{state.settings.schoolName}</strong><small>Année {state.settings.academicYear}</small></div>
+      <nav className="user-popup-links" aria-label="Liens du compte">
+        <Link href="/parametres/" onClick={() => setOpen(false)}><SlidersHorizontal size={16} /> Configuration de l’école</Link>
+        <Link href="/classes/" onClick={() => setOpen(false)}><BookOpenCheck size={16} /> Classes & matières</Link>
+        <Link href="/proclamation/" onClick={() => setOpen(false)}><Award size={16} /> Proclamations</Link>
+        <button type="button" onClick={() => { setOpen(false); onHelp(); }}><CircleHelp size={16} /> Centre d’aide</button>
+      </nav>
+      <div className="user-popup-note"><Database size={14} /> Prototype · données enregistrées localement</div>
+    </>
+  );
+
+  return (
+    <div className="header-popup-container" ref={containerRef}>
+      <button
+        type="button"
+        className="user-popup-trigger"
+        onClick={() => setOpen((current) => !current)}
+        aria-label="Ouvrir le menu du profil"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        <span className="profile-avatar">{initials}</span>
+      </button>
+      <HeaderDropdown open={open} onClose={() => setOpen(false)} title="Mon compte">
+        {content}
+      </HeaderDropdown>
+    </div>
+  );
+}
+
+export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const { state, hydrated } = useSchool();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const basePath = pathname === "/" ? "/" : `/${pathname.split("/").filter(Boolean)[0] ?? ""}`;
+  const pageTitle = PAGE_TITLES[basePath] ?? "LaVision";
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -270,17 +391,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="app-layout">
       <aside className="sidebar">
-        <div className="sidebar-header"><Link href="/" aria-label="Accueil LaVision"><Logo /></Link></div>
         <NavigationSections />
         <div className="sidebar-bottom">
           <Link href="/parametres/" className={pathname === "/parametres/" ? "active" : ""}>
             <Settings size={18} /><span>Paramètres</span>
           </Link>
-          <div className="school-year-card">
-            <span className="school-year-icon"><CalendarDays size={18} /></span>
-            <div><small>Année scolaire</small><strong>{state.settings.academicYear}</strong></div>
-            <span className="live-dot" />
-          </div>
         </div>
       </aside>
 
@@ -289,7 +404,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button className="mobile-overlay" type="button" onClick={() => setMobileOpen(false)} aria-label="Fermer le menu" />
           <aside className="mobile-sidebar">
             <div className="sidebar-header">
-              <Link href="/" onClick={() => setMobileOpen(false)} aria-label="Accueil LaVision"><Logo /></Link>
+              <span className="mobile-navigation-title">Navigation</span>
               <button className="sidebar-close" type="button" onClick={() => setMobileOpen(false)} aria-label="Fermer le menu">
                 <X size={20} />
               </button>
@@ -297,10 +412,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <NavigationSections onNavigate={() => setMobileOpen(false)} />
             <div className="sidebar-bottom">
               <Link href="/parametres/" onClick={() => setMobileOpen(false)}><Settings size={18} /><span>Paramètres</span></Link>
-              <div className="school-year-card">
-                <span className="school-year-icon"><CalendarDays size={18} /></span>
-                <div><small>Année scolaire</small><strong>{state.settings.academicYear}</strong></div>
-              </div>
             </div>
           </aside>
         </div>
@@ -310,43 +421,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <header className="topbar">
           <div className="topbar-left">
             <button className="icon-button mobile-menu" type="button" onClick={() => setMobileOpen(true)} aria-label="Ouvrir le menu">
-              <Menu size={21} />
+              <Menu size={20} />
             </button>
+            <Link className="topbar-brand" href="/" aria-label="Accueil LaVision"><Logo /></Link>
             <GlobalSearch />
           </div>
           <div className="topbar-actions">
-            <span className="environment-badge"><Database size={13} /> {hydrated ? "Données locales" : "Chargement"}</span>
-            <Link className="icon-button topbar-action" href="/presences/" aria-label="Ouvrir les présences">
+            <Notifications />
+            <Link className="icon-button header-circle-button topbar-action" href="/presences/" aria-label="Ouvrir les présences">
               <CalendarCheck2 size={18} />
             </Link>
-            <Notifications />
-            <details className="popover profile-popover">
-              <summary className="profile-summary">
-                <span className="profile-avatar">{directionInitials}</span>
-                <span className="profile-copy">
-                  <strong>{state.settings.directionName}</strong>
-                  <small>Admin / Direction</small>
-                </span>
-                <ChevronDown size={14} />
-              </summary>
-              <div className="popover-content">
-                <div className="profile-popover-school">
-                  <span className="profile-popover-logo"><Logo compact /></span>
-                  <span><strong>{state.settings.schoolName}</strong><small>{state.settings.academicYear}</small></span>
-                </div>
-                <Link href="/parametres/"><SlidersHorizontal size={17} /> Configuration de l’école</Link>
-                <Link href="/classes/"><BookOpenCheck size={17} /> Classes & matières</Link>
-                <Link href="/proclamation/"><Award size={17} /> Proclamations</Link>
-                <button type="button" onClick={() => setHelpOpen(true)}><CircleHelp size={17} /> Centre d’aide</button>
-                <div className="profile-popover-note"><Database size={14} /> Prototype de démonstration</div>
-              </div>
-            </details>
+            <UserPopup onHelp={() => setHelpOpen(true)} />
           </div>
         </header>
         <main className="page-content" id="main-content">{children}</main>
         <footer className="app-footer">
           <span>{pageTitle} · {state.settings.academicYear}</span>
-          <span><span className="live-dot" /> Données enregistrées sur cet appareil</span>
+          <span><span className="live-dot" /> {hydrated ? "Données enregistrées sur cet appareil" : "Chargement de la sauvegarde locale"}</span>
         </footer>
       </div>
 

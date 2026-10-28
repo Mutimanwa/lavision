@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useSchool } from "./school-provider";
 import { Badge, FormField, Modal, Notice, PageHeader } from "./ui";
+import { SelectForm } from "./form-controls";
 import { formatAverage, getClassRanking, round } from "@/lib/academic";
 
 export function ClassManager() {
@@ -44,6 +45,7 @@ export function ClassManager() {
       <PageHeader
         eyebrow="Organisation pédagogique"
         title="Classes & matières"
+        icon={<BookOpenCheck size={20} />}
         description="Gérez les capacités, les professeurs principaux et les coefficients utilisés dans les bulletins."
         actions={<button className="button button-primary" type="button" onClick={() => setClassModal(true)}><Plus size={17} /> Nouvelle classe</button>}
       />
@@ -83,7 +85,7 @@ export function ClassManager() {
       <Notice title="Règle de calcul">La moyenne générale est la somme de chaque note multipliée par son coefficient, divisée par la somme des coefficients des matières notées. La proclamation exige néanmoins un dossier complet.</Notice>
 
       <Modal open={classModal} onClose={() => setClassModal(false)} title="Ouvrir une nouvelle classe" description="Elle sera immédiatement proposée dans les inscriptions." footer={<><button className="button button-secondary" type="button" onClick={() => setClassModal(false)}>Annuler</button><button className="button button-primary" type="button" onClick={submitClass}><Plus size={16} /> Créer la classe</button></>}>
-        <div className="form-grid"><FormField label="Nom de la classe" htmlFor="class-name" required><input id="class-name" value={classDraft.name} onChange={(event) => setClassDraft({ ...classDraft, name: event.target.value })} placeholder="Ex. 3e A" /></FormField><FormField label="Niveau" htmlFor="class-level" required><select id="class-level" value={classDraft.level} onChange={(event) => setClassDraft({ ...classDraft, level: event.target.value })}><option>6e</option><option>5e</option><option>4e</option><option>3e</option><option>2nde</option><option>1ère</option><option>Tle</option></select></FormField><FormField label="Salle" htmlFor="class-room"><input id="class-room" value={classDraft.room} onChange={(event) => setClassDraft({ ...classDraft, room: event.target.value })} placeholder="Ex. Salle C02" /></FormField><FormField label="Capacité" htmlFor="class-capacity" required><input id="class-capacity" type="number" min="1" max="100" value={classDraft.capacity} onChange={(event) => setClassDraft({ ...classDraft, capacity: Number(event.target.value) })} /></FormField><FormField label="Professeur principal" htmlFor="class-teacher" required className="form-field-full"><input id="class-teacher" value={classDraft.headTeacher} onChange={(event) => setClassDraft({ ...classDraft, headTeacher: event.target.value })} placeholder="Nom et prénom" /></FormField></div>
+        <div className="form-grid"><FormField label="Nom de la classe" htmlFor="class-name" required><input id="class-name" value={classDraft.name} onChange={(event) => setClassDraft({ ...classDraft, name: event.target.value })} placeholder="Ex. 3e A" /></FormField><SelectForm id="class-level" label="Niveau" required value={classDraft.level} options={["6e", "5e", "4e", "3e", "2nde", "1ère", "Tle"].map((level) => ({ value: level, label: level }))} onChange={(value) => setClassDraft({ ...classDraft, level: value })} /><FormField label="Salle" htmlFor="class-room"><input id="class-room" value={classDraft.room} onChange={(event) => setClassDraft({ ...classDraft, room: event.target.value })} placeholder="Ex. Salle C02" /></FormField><FormField label="Capacité" htmlFor="class-capacity" required><input id="class-capacity" type="number" min="1" max="100" value={classDraft.capacity} onChange={(event) => setClassDraft({ ...classDraft, capacity: Number(event.target.value) })} /></FormField><FormField label="Professeur principal" htmlFor="class-teacher" required className="form-field-full"><input id="class-teacher" value={classDraft.headTeacher} onChange={(event) => setClassDraft({ ...classDraft, headTeacher: event.target.value })} placeholder="Nom et prénom" /></FormField></div>
       </Modal>
 
       <Modal open={subjectModal} onClose={() => setSubjectModal(false)} title="Ajouter une matière" description="La matière sera intégrée à tous les nouveaux bulletins." footer={<><button className="button button-secondary" type="button" onClick={() => setSubjectModal(false)}>Annuler</button><button className="button button-primary" type="button" onClick={submitSubject}><BookOpenCheck size={16} /> Ajouter la matière</button></>}>

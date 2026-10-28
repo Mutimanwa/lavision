@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useSchool } from "./school-provider";
 import { Avatar, Badge, EmptyState, Notice, PageHeader } from "./ui";
+import { SelectForm } from "./form-controls";
 import { formatAverage, getAppreciation, getFullName, round } from "@/lib/academic";
 import { downloadCsv } from "@/lib/utils";
 import { TERMS, type Term } from "@/lib/types";
@@ -79,13 +80,13 @@ export function Gradebook() {
 
   return (
     <>
-      <PageHeader eyebrow="Évaluations" title="Saisie des notes" description="Sélectionnez une classe et une matière, puis enregistrez toutes les notes en une seule opération." actions={<><button className="button button-secondary" type="button" onClick={exportGrades}><Download size={17} /> Exporter</button><button className="button button-primary" type="button" onClick={save} disabled={!students.length}><Save size={17} /> Enregistrer les notes</button></>} />
+      <PageHeader eyebrow="Évaluations" title="Saisie des notes" icon={<ClipboardList size={20} />} description="Sélectionnez une classe et une matière, puis enregistrez toutes les notes en une seule opération." actions={<><button className="button button-secondary" type="button" onClick={exportGrades}><Download size={17} /> Exporter</button><button className="button button-primary" type="button" onClick={save} disabled={!students.length}><Save size={17} /> Enregistrer les notes</button></>} />
 
       <section className="card gradebook-selector-card">
         <div className="gradebook-selectors">
-          <label><span>Classe</span><select value={classId} onChange={(event) => { setClassId(event.target.value); setMessage(""); setError(""); setDirty(false); }}>{state.classes.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></label>
-          <label><span>Matière</span><select value={subjectId} onChange={(event) => { setSubjectId(event.target.value); setMessage(""); setError(""); setDirty(false); }}>{state.subjects.map((item) => <option value={item.id} key={item.id}>{item.name} (coef. {item.coefficient})</option>)}</select></label>
-          <label><span>Période</span><select value={term} onChange={(event) => { setTerm(event.target.value as Term); setMessage(""); setError(""); setDirty(false); }}>{TERMS.map((item) => <option key={item}>{item}</option>)}</select></label>
+          <SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={(value) => { setClassId(value); setMessage(""); setError(""); setDirty(false); }} />
+          <SelectForm label="Matière" value={subjectId} options={state.subjects.map((item) => ({ value: item.id, label: item.name, description: `Coefficient ${item.coefficient}` }))} onChange={(value) => { setSubjectId(value); setMessage(""); setError(""); setDirty(false); }} />
+          <SelectForm label="Période" value={term} options={TERMS.map((item) => ({ value: item, label: item }))} onChange={(value) => { setTerm(value as Term); setMessage(""); setError(""); setDirty(false); }} />
         </div>
         <div className="gradebook-completion"><div><span>Progression de la saisie</span><strong>{numericValues.length}/{students.length} notes</strong></div><div className="progress-track"><span style={{ width: `${completion}%` }} /></div></div>
       </section>

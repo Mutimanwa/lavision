@@ -22,6 +22,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | DEC-005 | Bulletins, proclamations, factures et paies conservent la version exacte des règles utilisée. | Validé — exigence de conception du 27/10/2026 | aucune réécriture silencieuse de l’historique officiel |
 | DEC-006 | La v1 n’est pas élargie avec de nouveaux modules ; la suite du cadrage précise et valide les règles du périmètre existant. | Validé — arbitrage produit du 27/10/2026 | les ateliers ne créent pas de nouvelles fonctionnalités majeures |
 | DEC-007 | Toutes les règles métier variables du périmètre doivent être personnalisables de manière avancée et pouvoir changer au fil du temps, y compris lorsque leurs valeurs sont encore inconnues pendant le cadrage. | Validé — arbitrage produit du 28/10/2026 | catalogue exhaustif, portées, versions datées, simulation et état explicite « à configurer » ; aucune valeur inventée ni repli silencieux ; voir [spécification](10_CONFIGURATION_METIER_AVANCEE.md) |
+| DEC-008 | Les espaces de travail sont adaptés aux rôles, avec activation progressive des menus et guide de première utilisation contextualisé, non bloquant et rechargeable. | Validé — demande produit du 28/10/2026 | navigation calculée selon permissions, portées et prérequis ; activation séparée de la progression personnelle ; voir [spécification des interfaces](11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md) |
 
 ## 3. Décisions académiques ouvertes
 
@@ -89,6 +90,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | OPS-001 | Volumes, postes, sites, connectivité et pics d’utilisation | direction/administrateur | mesures de l’établissement pilote | Ouvert |
 | OPS-002 | Disponibilité, sauvegardes et objectifs de reprise adaptés au budget | direction/administrateur | arbitrage documenté | Ouvert |
 | OPS-003 | Canaux externes réellement disponibles et contrats nécessaires | direction/administrateur | fournisseurs et conditions | Ouvert |
+| UX-001 | Interfaces, responsables d’activation et premiers parcours propres à chaque rôle | direction + représentants des domaines | parcours et maquettes validés | Orientation DEC-008 validée ; matrice et prérequis détaillés proposés dans le document 11, validation par rôle restante |
 
 ## 7. Questions transverses du moteur de règles
 

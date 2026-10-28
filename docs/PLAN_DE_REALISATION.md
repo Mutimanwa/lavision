@@ -66,11 +66,11 @@ Les estimations sont exprimées en jours-personnes de développement/recette, ho
 | --- | --- | ---: | --- |
 | Cadrer les processus et règles métier avec l’établissement pilote | P0 | 8–12 j | processus et exemples signés |
 | Valider l’architecture cible et rédiger les ADR | P0 | 4–6 j | architecture et choix techniques traçables |
-| Définir les personas, la matrice des permissions et la politique de confidentialité | P0 | 5–8 j | rôles, portées et règles de conservation validés |
+| Définir les personas, la matrice des permissions et la politique de confidentialité | P0 | 5–8 j | rôles, portées, interfaces et règles de conservation validés |
 
 **Sortie :** aucune règle critique ne reste implicite ; les modèles de documents et les cas limites sont disponibles.
 
-Le [dossier de cadrage métier](cadrage/README.md) prépare les ateliers de l’issue #2 et la matrice de l’issue #4 : processus, catalogue de règles, exemples chiffrés et registre des décisions. Il s’agit d’un support de validation, pas d’une validation déjà acquise.
+Le [dossier de cadrage métier](cadrage/README.md) prépare les ateliers de l’issue #2 et la matrice de l’issue #4 : processus, catalogue de règles, exemples chiffrés, interfaces par rôle, activation guidée et registre des décisions. Il s’agit d’un support de validation, pas d’une validation déjà acquise.
 
 ### M1 — Socle production et sécurité
 

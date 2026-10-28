@@ -171,6 +171,18 @@ La spécification détaillée des parcours, états, contrôles et critères d’
 
 Les rôles sont combinables et complétés par des permissions sensibles ainsi que par des portées explicites. Le **professeur principal** est une responsabilité additionnelle de l’enseignant sur sa classe principale, pas un rôle isolé. Un rôle ne donne jamais implicitement accès à tous les établissements ou à tous les élèves. Le catalogue détaillé et les scénarios de refus figurent dans [Permissions et confidentialité](cadrage/04_PERMISSIONS_ET_CONFIDENTIALITE.md).
 
+**Interfaces et activation progressive**
+
+- espaces de travail et tableaux de bord adaptés aux rôles, avec des composants partagés plutôt que des applications dupliquées ;
+- sélecteur d’espace limité aux rôles et sites réellement attribués lorsque l’utilisateur cumule plusieurs fonctions ;
+- modules désactivés, en configuration ou actifs, avec menus et explications correspondants ;
+- activation fondée sur les permissions et les prérequis réels, jamais sur la seule complétion d’un guide ;
+- guide de première utilisation adapté au rôle, non bloquant, reprenable et rechargeable depuis l’aide ;
+- checklist de configuration partagée par l’établissement, distincte de la progression personnelle ;
+- accès direct, recherches et exports toujours contrôlés par l’API, même si un menu est masqué.
+
+La matrice des interfaces, les prérequis et les scénarios UX sont détaillés dans [Interfaces par rôle et activation progressive](cadrage/11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md).
+
 ### 5.3 Admissions, élèves et familles
 
 **Fonctions attendues**

@@ -1,7 +1,7 @@
 # Dossier de cadrage métier M0
 
 **Projet :** lavision
-**Version :** 0.2 — 28 octobre 2026
+**Version :** 0.3 — 28 octobre 2026
 **Issues concernées :** [#2](https://github.com/Mutimanwa/lavision/issues/2), [#4](https://github.com/Mutimanwa/lavision/issues/4) et préparation de [#39](https://github.com/Mutimanwa/lavision/issues/39)
 **Statut :** dossier de travail à compléter avec l’établissement pilote
 
@@ -32,6 +32,7 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Analyse du bulletin 1ère/2e secondaire](08_ANALYSE_BULLETIN_1E_2E.md) | relever les maxima, totaux et champs du modèle fourni | formules vérifiées et règles de repêchage restant à documenter |
 | [Analyse du bulletin 5e HP](09_ANALYSE_BULLETIN_5E_HP.md) | comparer une option des humanités et contrôler un bulletin rempli | 22 branches, deux schémas d’agrégation, incohérences et questions ciblées documentés |
 | [Configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md) | permettre toutes les variations de règles dans le temps sans code arbitraire | parcours, héritage, versions, simulation, permissions, snapshots et critères d’acceptation |
+| [Interfaces par rôle et activation progressive](11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md) | définir les espaces de travail, menus et premiers pas de chaque rôle | matrice d’interfaces, prérequis d’activation, guide et scénarios UX validés |
 
 ## 3. Ateliers proposés
 
@@ -74,6 +75,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | Exemples financiers chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemple de paie | Trame uniquement | exemple validé par un expert local |
 | Matrice des permissions | Catalogue initial de 13 rôles et matrice proposée | validation de la direction, portées nominatives et scénarios de test associés |
+| Interfaces et activation guidée | Matrice des espaces par rôle, cycle d’activation et guide proposés | validation des parcours par rôle, responsables d’activation et maquettes correspondantes |
 | Modèles de documents officiels | Inventaire à compléter | documents anonymisés et champs relevés |
 | Décisions et points ouverts | Registre initialisé | responsables et dates de validation |
 

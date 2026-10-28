@@ -8,10 +8,13 @@ export function Logo({ compact = false }: { compact?: boolean }) {
         <span className="brand-spark" />
       </span>
       {!compact && (
-        <span className="brand-copy">
-          <strong>LaVision</strong>
-          <small>Gestion scolaire</small>
-        </span>
+        <>
+          <span className="brand-copy">
+            <strong>LaVision</strong>
+            <small>Gestion scolaire</small>
+          </span>
+          <span className="brand-tag">Edu</span>
+        </>
       )}
     </span>
   );

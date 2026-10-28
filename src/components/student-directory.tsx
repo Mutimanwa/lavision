@@ -19,7 +19,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useSchool } from "./school-provider";
-import { Avatar, Badge, EmptyState, FormField, Modal, PageHeader } from "./ui";
+import { Avatar, Badge, EmptyState, FormField, Modal, PageHeader, TableMenu, TablePagination } from "./ui";
 import {
   formatAverage,
   getAppreciation,
@@ -30,6 +30,8 @@ import {
 import { downloadCsv, formatDate } from "@/lib/utils";
 import type { StudentStatus } from "@/lib/types";
 
+const STUDENTS_PER_PAGE = 6;
+
 export function StudentDirectory() {
   const { state, updateStudent } = useSchool();
   const router = useRouter();
@@ -37,6 +39,7 @@ export function StudentDirectory() {
   const [query, setQuery] = useState("");
   const [classFilter, setClassFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [page, setPage] = useState(1);
   const [localSelectedId, setLocalSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [editDraft, setEditDraft] = useState({
@@ -65,6 +68,13 @@ export function StudentDirectory() {
       );
     });
   }, [classFilter, query, state.students, statusFilter]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredStudents.length / STUDENTS_PER_PAGE));
+  const currentPage = Math.min(page, pageCount);
+  const paginatedStudents = filteredStudents.slice(
+    (currentPage - 1) * STUDENTS_PER_PAGE,
+    currentPage * STUDENTS_PER_PAGE,
+  );
 
   const closeDetails = () => {
     setLocalSelectedId(null);
@@ -156,18 +166,18 @@ export function StudentDirectory() {
 
       <section className="card directory-card">
         <div className="filter-toolbar">
-          <div className="filter-search"><Search size={18} /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nom, matricule ou responsable…" aria-label="Rechercher dans les élèves" /></div>
-          <div className="filter-select"><Filter size={16} /><select value={classFilter} onChange={(event) => setClassFilter(event.target.value)} aria-label="Filtrer par classe"><option value="all">Toutes les classes</option>{state.classes.map((schoolClass) => <option value={schoolClass.id} key={schoolClass.id}>{schoolClass.name}</option>)}</select></div>
-          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} aria-label="Filtrer par statut"><option value="all">Tous les statuts</option><option value="Actif">Actifs</option><option value="En attente">En attente</option><option value="Inactif">Inactifs</option></select>
+          <div className="filter-search"><Search size={18} /><input type="search" value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Nom, matricule ou responsable…" aria-label="Rechercher dans les élèves" /></div>
+          <div className="filter-select"><Filter size={16} /><select value={classFilter} onChange={(event) => { setClassFilter(event.target.value); setPage(1); }} aria-label="Filtrer par classe"><option value="all">Toutes les classes</option>{state.classes.map((schoolClass) => <option value={schoolClass.id} key={schoolClass.id}>{schoolClass.name}</option>)}</select></div>
+          <select value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setPage(1); }} aria-label="Filtrer par statut"><option value="all">Tous les statuts</option><option value="Actif">Actifs</option><option value="En attente">En attente</option><option value="Inactif">Inactifs</option></select>
           <span className="filter-result-count">{filteredStudents.length} résultat{filteredStudents.length > 1 ? "s" : ""}</span>
         </div>
 
         {filteredStudents.length ? (
           <div className="table-wrap">
             <table className="data-table student-directory-table">
-              <thead><tr><th>Élève</th><th>Classe</th><th>Responsable légal</th><th>Inscription</th><th>Statut</th><th><span className="sr-only">Actions</span></th></tr></thead>
+              <thead><tr><th>Élève</th><th>Classe</th><th>Responsable légal</th><th>Inscription</th><th>Statut</th><th className="table-actions-heading">Actions</th></tr></thead>
               <tbody>
-                {filteredStudents.map((student) => {
+                {paginatedStudents.map((student) => {
                   const schoolClass = state.classes.find((item) => item.id === student.classId);
                   return (
                     <tr key={student.id}>
@@ -176,7 +186,12 @@ export function StudentDirectory() {
                       <td><div className="guardian-cell"><strong>{student.guardian.name}</strong><small>{student.guardian.phone}</small></div></td>
                       <td>{formatDate(student.enrolledAt)}</td>
                       <td><Badge tone={student.status === "Actif" ? "green" : student.status === "En attente" ? "amber" : "neutral"} dot>{student.status}</Badge></td>
-                      <td><div className="row-actions"><button className="icon-button" type="button" onClick={() => setLocalSelectedId(student.id)} aria-label={`Voir ${getFullName(student)}`}><Eye size={17} /></button><Link className="icon-button" href={`/bulletins/?eleve=${student.id}`} aria-label={`Bulletin de ${getFullName(student)}`}><FileText size={17} /></Link></div></td>
+                      <td className="table-actions-heading">
+                        <TableMenu label={`Actions pour ${getFullName(student)}`}>
+                          <button type="button" onClick={() => setLocalSelectedId(student.id)}><Eye size={16} /> Voir le dossier</button>
+                          <Link href={`/bulletins/?eleve=${student.id}`}><FileText size={16} /> Voir le bulletin</Link>
+                        </TableMenu>
+                      </td>
                     </tr>
                   );
                 })}
@@ -184,9 +199,17 @@ export function StudentDirectory() {
             </table>
           </div>
         ) : (
-          <EmptyState icon={<Search size={28} />} title="Aucun dossier trouvé" description="Modifiez les filtres ou lancez une nouvelle recherche." action={<button className="button button-secondary" type="button" onClick={() => { setQuery(""); setClassFilter("all"); setStatusFilter("all"); }}>Réinitialiser les filtres</button>} />
+          <EmptyState icon={<Search size={28} />} title="Aucun dossier trouvé" description="Modifiez les filtres ou lancez une nouvelle recherche." action={<button className="button button-secondary" type="button" onClick={() => { setQuery(""); setClassFilter("all"); setStatusFilter("all"); setPage(1); }}>Réinitialiser les filtres</button>} />
         )}
-        <footer className="table-footer"><span>Affichage de {filteredStudents.length} élève{filteredStudents.length > 1 ? "s" : ""}</span><span>Données locales · Export disponible</span></footer>
+        {filteredStudents.length > 0 && (
+          <TablePagination
+            page={currentPage}
+            pageCount={pageCount}
+            pageSize={STUDENTS_PER_PAGE}
+            totalItems={filteredStudents.length}
+            onPageChange={setPage}
+          />
+        )}
       </section>
 
       <Modal open={Boolean(selectedStudent)} onClose={closeDetails} title="Dossier élève" description={selectedStudent?.matricule} size="large">

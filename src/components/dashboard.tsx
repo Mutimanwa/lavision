@@ -1,226 +1,263 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import {
+  AlertTriangle,
   ArrowRight,
-  BookOpenCheck,
   CalendarCheck2,
+  CheckCircle2,
   ClipboardList,
-  FileCheck2,
+  Eye,
   FileText,
   GraduationCap,
+  Info,
+  Plus,
+  Search,
   TrendingUp,
   UserRoundPlus,
   UsersRound,
 } from "lucide-react";
 import { useSchool } from "./school-provider";
-import { Avatar, Badge, PageHeader } from "./ui";
-import {
-  formatAverage,
-  getClassRanking,
-  getFullName,
-  getStudentReport,
-  round,
-} from "@/lib/academic";
-import { capitalize, formatDate, formatLongDate } from "@/lib/utils";
+import { Avatar, Badge, PageHeader, TableMenu } from "./ui";
+import { formatAverage, getFullName, getStudentReport } from "@/lib/academic";
+import { toInputDate } from "@/lib/utils";
 
 export function Dashboard() {
   const { state } = useSchool();
-  const { settings } = state;
+  const [activityQuery, setActivityQuery] = useState("");
   const activeStudents = state.students.filter((student) => student.status === "Actif");
-  const reports = activeStudents.map((student) =>
-    getStudentReport(student.id, settings.currentTerm, state.subjects, state.grades),
-  );
-  const evaluated = reports.filter((report) => report.average !== null);
-  const generalAverage = evaluated.length
-    ? round(evaluated.reduce((sum, report) => sum + (report.average ?? 0), 0) / evaluated.length)
+  const pendingStudents = state.students.filter((student) => student.status === "En attente");
+  const activeStudentIds = new Set(activeStudents.map((student) => student.id));
+  const today = toInputDate();
+  const todayAttendance = state.attendance.filter((record) => record.date === today);
+
+  const reports = useMemo(() => activeStudents.map((student) => ({
+    student,
+    report: getStudentReport(student.id, state.settings.currentTerm, state.subjects, state.grades),
+  })), [activeStudents, state.grades, state.settings.currentTerm, state.subjects]);
+
+  const completeReports = reports.filter((item) => item.report.isComplete);
+  const passedReports = completeReports.filter((item) => (item.report.average ?? 0) >= state.settings.passMark);
+  const successRate = completeReports.length ? Math.round((passedReports.length / completeReports.length) * 100) : 0;
+  const gradeCount = state.grades.filter((grade) => grade.term === state.settings.currentTerm && activeStudentIds.has(grade.studentId)).length;
+  const remainingGrades = Math.max(0, activeStudents.length * state.subjects.length - gradeCount);
+  const incompleteBulletins = Math.max(0, activeStudents.length - completeReports.length);
+  const attendanceRate = todayAttendance.length
+    ? Math.round((todayAttendance.filter((record) => record.status === "present" || record.status === "retard").length / todayAttendance.length) * 100)
     : null;
-  const completeReports = reports.filter((report) => report.isComplete);
-  const admitted = completeReports.filter((report) => (report.average ?? 0) >= settings.passMark);
-  const successRate = completeReports.length
-    ? Math.round((admitted.length / completeReports.length) * 100)
-    : 0;
-  const gradeCount = activeStudents.reduce(
-    (count, student) =>
-      count +
-      state.grades.filter(
-        (grade) => grade.studentId === student.id && grade.term === settings.currentTerm,
-      ).length,
-    0,
-  );
-  const gradeCompletion = activeStudents.length && state.subjects.length
-    ? Math.round((gradeCount / (activeStudents.length * state.subjects.length)) * 100)
-    : 0;
 
   const classSummaries = state.classes.map((schoolClass) => {
-    const classStudents = activeStudents.filter((student) => student.classId === schoolClass.id);
-    const ranking = getClassRanking(
-      classStudents,
-      settings.currentTerm,
-      state.subjects,
-      state.grades,
-      settings.passMark,
-    );
-    const ranked = ranking.filter((item) => item.average !== null);
+    const classReports = reports.filter((item) => item.student.classId === schoolClass.id && item.report.average !== null);
+    const average = classReports.length
+      ? classReports.reduce((sum, item) => sum + (item.report.average ?? 0), 0) / classReports.length
+      : null;
     return {
       ...schoolClass,
-      studentCount: classStudents.length,
-      average: ranked.length
-        ? round(ranked.reduce((sum, item) => sum + (item.average ?? 0), 0) / ranked.length)
-        : null,
-      complete: ranking.filter((item) => item.report.isComplete).length,
+      students: reports.filter((item) => item.student.classId === schoolClass.id),
+      complete: reports.filter((item) => item.student.classId === schoolClass.id && item.report.isComplete).length,
+      average,
     };
   });
+  const topClasses = [...classSummaries]
+    .sort((a, b) => (b.average ?? -1) - (a.average ?? -1))
+    .slice(0, 4);
+  const scaleMax = Math.max(20, Math.ceil(Math.max(0, ...classSummaries.map((item) => item.average ?? 0)) / 5) * 5);
 
-  const recentStudents = [...state.students]
-    .sort((a, b) => b.enrolledAt.localeCompare(a.enrolledAt))
-    .slice(0, 5);
+  const recentStudents = useMemo(() => {
+    const normalized = activityQuery.trim().toLocaleLowerCase("fr");
+    return [...state.students]
+      .sort((a, b) => b.enrolledAt.localeCompare(a.enrolledAt))
+      .filter((student) => {
+        if (!normalized) return true;
+        const className = state.classes.find((schoolClass) => schoolClass.id === student.classId)?.name ?? "";
+        return `${getFullName(student)} ${student.matricule} ${className}`
+          .toLocaleLowerCase("fr")
+          .includes(normalized);
+      })
+      .slice(0, 6);
+  }, [activityQuery, state.classes, state.students]);
 
-  const today = new Date();
-  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  const todayAttendance = state.attendance.filter((record) => record.date === todayKey);
-  const presentToday = todayAttendance.filter((record) => record.status === "present" || record.status === "retard").length;
-  const attendanceRate = todayAttendance.length
-    ? Math.round((presentToday / todayAttendance.length) * 100)
-    : null;
+  const directionFirstName = state.settings.directionName.split(" ")[0] || "Direction";
 
   return (
     <>
       <PageHeader
-        eyebrow={capitalize(formatLongDate(new Date()))}
-        title={`Bonjour, ${settings.directionName.split(" ")[0]} 👋`}
-        description="Voici l’essentiel de votre établissement aujourd’hui."
-        actions={
+        title={`Ravi de vous revoir, ${directionFirstName} !`}
+        description={`Gérez l’activité de votre établissement. Année scolaire ${state.settings.academicYear}`}
+        actions={(
           <>
             <Link className="button button-secondary" href="/notes/"><ClipboardList size={17} /> Saisir les notes</Link>
-            <Link className="button button-primary" href="/inscriptions/"><UserRoundPlus size={17} /> Nouvelle inscription</Link>
+            <Link className="button button-primary" href="/inscriptions/"><Plus size={17} /> Nouvelle inscription</Link>
           </>
-        }
+        )}
       />
 
-      <section className="workflow-strip" aria-label="Progression de l’année scolaire">
-        <div className="workflow-intro">
-          <span className="workflow-icon"><GraduationCap size={22} /></span>
-          <div><strong>{settings.currentTerm}</strong><small>Année {settings.academicYear}</small></div>
-        </div>
-        <div className="workflow-step is-complete"><span><UserRoundPlus size={16} /></span><div><small>Étape 1</small><strong>Inscriptions</strong></div></div>
-        <ArrowRight className="workflow-arrow" size={16} />
-        <div className={`workflow-step ${gradeCompletion === 100 ? "is-complete" : "is-current"}`}><span><ClipboardList size={16} /></span><div><small>Étape 2 · {gradeCompletion} %</small><strong>Évaluations</strong></div></div>
-        <ArrowRight className="workflow-arrow" size={16} />
-        <div className={`workflow-step ${completeReports.length ? "is-complete" : ""}`}><span><FileText size={16} /></span><div><small>Étape 3</small><strong>Bulletins</strong></div></div>
-        <ArrowRight className="workflow-arrow" size={16} />
-        <div className={`workflow-step ${state.publications.length ? "is-complete" : ""}`}><span><GraduationCap size={16} /></span><div><small>Étape 4</small><strong>Proclamation</strong></div></div>
-      </section>
-
-      <section className="stats-grid" aria-label="Indicateurs principaux">
-        <article className="stat-card">
-          <div className="stat-card-top"><span className="stat-icon stat-icon-green"><UsersRound size={21} /></span><Badge tone="green">Année en cours</Badge></div>
-          <strong className="stat-value">{activeStudents.length}</strong>
-          <p>Élèves actifs</p>
-          <small>{state.students.filter((student) => student.status === "En attente").length} dossier(s) en attente</small>
+      <section className="stats-grid" aria-label="Indicateurs clés">
+        <article className="card stat-card">
+          <div className="stat-card-top"><span className="stat-icon stat-icon-green"><UsersRound size={19} /></span><Badge tone="green">{activeStudents.length} actifs</Badge></div>
+          <div className="stat-value">{state.students.length}</div>
+          <p>Élèves inscrits</p>
+          <small>{pendingStudents.length} dossier{pendingStudents.length > 1 ? "s" : ""} en attente</small>
         </article>
-        <article className="stat-card">
-          <div className="stat-card-top"><span className="stat-icon stat-icon-blue"><BookOpenCheck size={21} /></span><Badge tone="blue">{state.subjects.length} matières</Badge></div>
-          <strong className="stat-value">{state.classes.length}</strong>
+        <article className="card stat-card">
+          <div className="stat-card-top"><span className="stat-icon stat-icon-blue"><GraduationCap size={19} /></span><Badge tone="blue">{state.subjects.length} matières</Badge></div>
+          <div className="stat-value">{state.classes.length}</div>
           <p>Classes ouvertes</p>
-          <small>{activeStudents.length ? round(activeStudents.length / state.classes.length, 1) : 0} élèves par classe en moyenne</small>
+          <small>{activeStudents.length} élèves affectés</small>
         </article>
-        <article className="stat-card">
-          <div className="stat-card-top"><span className="stat-icon stat-icon-amber"><TrendingUp size={21} /></span><Badge tone="amber">/ 20</Badge></div>
-          <strong className="stat-value">{formatAverage(generalAverage)}</strong>
-          <p>Moyenne de l’établissement</p>
-          <small>{settings.currentTerm} · notes pondérées</small>
+        <article className="card stat-card">
+          <div className="stat-card-top"><span className="stat-icon stat-icon-amber"><ClipboardList size={19} /></span><Badge tone={remainingGrades ? "amber" : "green"}>{state.settings.currentTerm}</Badge></div>
+          <div className="stat-value">{gradeCount}</div>
+          <p>Notes enregistrées</p>
+          <small>{remainingGrades} valeur{remainingGrades > 1 ? "s" : ""} à compléter</small>
         </article>
-        <article className="stat-card">
-          <div className="stat-card-top"><span className="stat-icon stat-icon-purple"><FileCheck2 size={21} /></span><Badge tone="purple">{completeReports.length} bulletins</Badge></div>
-          <strong className="stat-value">{successRate}<span className="stat-unit">%</span></strong>
+        <article className="card stat-card">
+          <div className="stat-card-top"><span className="stat-icon stat-icon-purple"><TrendingUp size={19} /></span><Badge tone={successRate >= 70 ? "green" : "amber"}>Seuil {state.settings.passMark}/20</Badge></div>
+          <div className="stat-value">{successRate}<span className="stat-unit">%</span></div>
           <p>Taux de réussite</p>
-          <small>Seuil d’admission : {settings.passMark}/20</small>
+          <small>{completeReports.length} bulletin{completeReports.length > 1 ? "s" : ""} complet{completeReports.length > 1 ? "s" : ""}</small>
         </article>
       </section>
 
-      <div className="dashboard-grid">
+      <div className="dashboard-primary-grid">
         <section className="card performance-card">
           <header className="card-header">
-            <div><p className="eyebrow">Résultats scolaires</p><h2>Performance par classe</h2></div>
-            <Link className="text-link" href="/proclamation/">Voir le classement <ArrowRight size={15} /></Link>
+            <div><p className="eyebrow">Résultats scolaires</p><h2>Moyenne par classe</h2></div>
+            <Badge tone="neutral">{state.settings.currentTerm}</Badge>
           </header>
           <div className="performance-chart">
-            <div className="chart-scale"><span>20</span><span>15</span><span>10</span><span>5</span><span>0</span></div>
+            <div className="chart-scale"><span>{scaleMax}</span><span>{Math.round(scaleMax * 0.75)}</span><span>{Math.round(scaleMax * 0.5)}</span><span>{Math.round(scaleMax * 0.25)}</span><span>0</span></div>
             <div className="chart-plot">
-              <div className="chart-grid-lines"><i /><i /><i /><i /><i /></div>
+              <div className="chart-grid-lines" aria-hidden="true"><i /><i /><i /><i /><i /></div>
               <div className="chart-bars">
                 {classSummaries.map((item, index) => (
                   <div className="chart-bar-group" key={item.id}>
-                    <div className="chart-bar-value">{formatAverage(item.average)}</div>
-                    <div className="chart-bar-track">
-                      <div
-                        className={`chart-bar chart-bar-${index % 3}`}
-                        style={{ height: `${Math.max(3, ((item.average ?? 0) / 20) * 100)}%` }}
-                      />
-                    </div>
-                    <strong>{item.name}</strong>
-                    <small>{item.studentCount} élèves</small>
+                    <div className="chart-bar-value">{item.average === null ? "—" : formatAverage(item.average)}</div>
+                    <div className="chart-bar-track"><span className={`chart-bar chart-bar-${index % 4}`} style={{ height: `${Math.max(3, ((item.average ?? 0) / scaleMax) * 100)}%` }} /></div>
+                    <strong>{item.name.replace(" - Humanités", "")}</strong>
+                    <small>{item.students.length} élève{item.students.length > 1 ? "s" : ""}</small>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          <div className="chart-caption"><span><i className="legend-dot legend-green" />Moyenne générale sur 20</span><span>{settings.currentTerm}</span></div>
+          <footer className="chart-caption"><Info size={14} /><span>Moyenne calculée à partir des notes disponibles. Barème de passage : {state.settings.passMark}/20.</span></footer>
         </section>
 
-        <section className="card completion-card">
-          <header className="card-header"><div><p className="eyebrow">Avancement</p><h2>Saisie des notes</h2></div></header>
-          <div className="completion-ring-wrap">
-            <div className="completion-ring" style={{ "--progress": `${gradeCompletion * 3.6}deg` } as React.CSSProperties}>
-              <div><strong>{gradeCompletion}<span>%</span></strong><small>complété</small></div>
+        <aside className="card pending-card">
+          <header className="card-header"><div><p className="eyebrow">À traiter</p><h2>Actions en attente</h2></div></header>
+          <div className="pending-list">
+            <Link href="/inscriptions/">
+              <span className="pending-icon"><UserRoundPlus size={19} /></span>
+              <span className="pending-copy"><strong>Dossiers d’inscription</strong><small>Vérifier les admissions provisoires</small></span>
+              <span className="pending-count">{pendingStudents.length}</span>
+            </Link>
+            <Link href="/notes/">
+              <span className="pending-icon"><ClipboardList size={19} /></span>
+              <span className="pending-copy"><strong>Notes à compléter</strong><small>Période : {state.settings.currentTerm}</small></span>
+              <span className="pending-count">{remainingGrades}</span>
+            </Link>
+            <Link href="/bulletins/">
+              <span className="pending-icon"><FileText size={19} /></span>
+              <span className="pending-copy"><strong>Bulletins incomplets</strong><small>Contrôler les notes manquantes</small></span>
+              <span className="pending-count">{incompleteBulletins}</span>
+            </Link>
+          </div>
+        </aside>
+      </div>
+
+      <div className="dashboard-secondary-grid">
+        <section className="card class-performance-card">
+          <header className="card-header"><div><p className="eyebrow">Comparatif</p><h2>Performance des classes</h2></div><Link className="text-link" href="/proclamation/" aria-label="Voir les classements"><ArrowRight size={17} /></Link></header>
+          <div className="class-performance-list">
+            {topClasses.map((schoolClass, index) => (
+              <div className="class-performance-row" key={schoolClass.id}>
+                <span className="class-rank">{index + 1}</span>
+                <span className="class-avatar">{schoolClass.name.charAt(0)}</span>
+                <div className="class-performance-main">
+                  <div className="class-performance-label"><strong>{schoolClass.name}</strong><small>{schoolClass.students.length} élèves</small></div>
+                  <div className="progress-track"><span style={{ width: `${Math.min(100, ((schoolClass.average ?? 0) / 20) * 100)}%` }} /></div>
+                </div>
+                <strong className="class-average">{schoolClass.average === null ? "—" : formatAverage(schoolClass.average)}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="card dashboard-alerts-card">
+          <header className="card-header"><div><p className="eyebrow">Suivi</p><h2>Alertes et rappels</h2></div><Badge tone={remainingGrades || pendingStudents.length ? "amber" : "green"}>{remainingGrades + pendingStudents.length}</Badge></header>
+          <div className="dashboard-alert-list">
+            {remainingGrades > 0 ? (
+              <Link href="/notes/">
+                <span className="dashboard-alert-icon warning"><AlertTriangle size={16} /></span>
+                <span><strong>Saisie des notes incomplète</strong><small>{remainingGrades} notes restantes · {state.settings.currentTerm}</small></span>
+                <span className="dashboard-alert-tag">À faire</span>
+              </Link>
+            ) : (
+              <div className="dashboard-alert-static"><span className="dashboard-alert-icon success"><CheckCircle2 size={16} /></span><span><strong>Grille de notes complète</strong><small>Toutes les valeurs attendues sont saisies</small></span></div>
+            )}
+            {pendingStudents.length > 0 && (
+              <Link href="/eleves/">
+                <span className="dashboard-alert-icon warning"><UserRoundPlus size={16} /></span>
+                <span><strong>Dossiers élèves à valider</strong><small>{pendingStudents.length} inscription{pendingStudents.length > 1 ? "s" : ""} en attente</small></span>
+                <span className="dashboard-alert-tag">À faire</span>
+              </Link>
+            )}
+            <div className="dashboard-alert-static">
+              <span className="dashboard-alert-icon"><Info size={16} /></span>
+              <span><strong>Sauvegarde locale active</strong><small>Export JSON recommandé après chaque délibération</small></span>
             </div>
           </div>
-          <p className="completion-copy">{gradeCount} notes saisies sur {activeStudents.length * state.subjects.length} attendues pour les élèves actifs.</p>
-          <div className="completion-legend">
-            <span><i className="legend-dot legend-green" />Saisies <strong>{gradeCount}</strong></span>
-            <span><i className="legend-dot legend-muted" />Restantes <strong>{Math.max(0, activeStudents.length * state.subjects.length - gradeCount)}</strong></span>
-          </div>
-          <Link className="button button-soft button-full" href="/notes/">Compléter les notes <ArrowRight size={16} /></Link>
         </section>
 
-        <section className="card recent-card">
-          <header className="card-header">
-            <div><p className="eyebrow">Scolarité</p><h2>Inscriptions récentes</h2></div>
-            <Link className="text-link" href="/eleves/">Tous les élèves <ArrowRight size={15} /></Link>
-          </header>
-          <div className="table-wrap">
-            <table className="data-table recent-table">
-              <thead><tr><th>Élève</th><th>Classe</th><th>Date</th><th>Statut</th></tr></thead>
-              <tbody>
-                {recentStudents.map((student) => (
-                  <tr key={student.id}>
-                    <td><Link className="student-cell" href={`/eleves/?eleve=${student.id}`}><Avatar student={student} /><span><strong>{getFullName(student)}</strong><small>{student.matricule}</small></span></Link></td>
-                    <td>{state.classes.find((item) => item.id === student.classId)?.name ?? "—"}</td>
-                    <td>{formatDate(student.enrolledAt, { day: "numeric", month: "short" })}</td>
-                    <td><Badge tone={student.status === "Actif" ? "green" : student.status === "En attente" ? "amber" : "neutral"} dot>{student.status}</Badge></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <section className="card dashboard-quick-card">
+          <div className="quick-illustration" aria-hidden="true"><span><GraduationCap size={24} /></span><i /><span><UserRoundPlus size={23} /></span></div>
+          <h2>Développez votre établissement</h2>
+          <p>Créez un dossier complet et affectez immédiatement l’élève à sa nouvelle classe.</p>
+          <Link className="button button-primary button-full" href="/inscriptions/"><Plus size={16} /> Nouvelle inscription</Link>
+          <Link className="text-link" href="/presences/"><CalendarCheck2 size={14} /> {attendanceRate === null ? "Faire l’appel · à enregistrer" : `Faire l’appel · ${attendanceRate}% présents`}</Link>
         </section>
-
-        <div className="dashboard-side-stack">
-          <section className="card attendance-summary-card">
-            <header className="card-header"><div><p className="eyebrow">Aujourd’hui</p><h2>Présences</h2></div><span className="stat-icon stat-icon-green"><CalendarCheck2 size={20} /></span></header>
-            <div className="attendance-rate"><strong>{attendanceRate === null ? "—" : `${attendanceRate} %`}</strong><span>de présence</span></div>
-            <div className="progress-track"><span style={{ width: `${attendanceRate ?? 0}%` }} /></div>
-            <p>{todayAttendance.length ? `${presentToday} présents sur ${todayAttendance.length} élèves pointés.` : "L’appel n’a pas encore été enregistré aujourd’hui."}</p>
-            <Link className="text-link" href="/presences/">Faire l’appel <ArrowRight size={15} /></Link>
-          </section>
-          <section className="card quick-actions-card">
-            <header className="card-header"><div><p className="eyebrow">Raccourcis</p><h2>Actions rapides</h2></div></header>
-            <Link href="/bulletins/"><span className="quick-action-icon"><FileText size={18} /></span><span><strong>Consulter un bulletin</strong><small>Notes, moyenne et rang</small></span><ArrowRight size={16} /></Link>
-            <Link href="/proclamation/"><span className="quick-action-icon"><GraduationCap size={18} /></span><span><strong>Préparer la proclamation</strong><small>Classement et décisions</small></span><ArrowRight size={16} /></Link>
-          </section>
-        </div>
       </div>
+
+      <section className="card activity-card">
+        <div className="activity-heading">
+          <div><h2>Inscriptions récentes</h2><p>Retrouvez rapidement les derniers dossiers enregistrés.</p></div>
+          <Link className="text-link" href="/eleves/">Tous les élèves <ArrowRight size={14} /></Link>
+        </div>
+        <div className="table-panel-toolbar">
+          <div className="table-search"><Search size={16} /><input type="search" value={activityQuery} onChange={(event) => setActivityQuery(event.target.value)} placeholder="Rechercher un élève, un matricule…" aria-label="Rechercher dans les inscriptions récentes" /></div>
+          <small>{recentStudents.length} dossier{recentStudents.length > 1 ? "s" : ""} affiché{recentStudents.length > 1 ? "s" : ""}</small>
+        </div>
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead><tr><th>Élève</th><th>Classe</th><th>Date d’inscription</th><th>Statut</th><th className="table-actions-heading">Actions</th></tr></thead>
+            <tbody>
+              {recentStudents.map((student) => {
+                const schoolClass = state.classes.find((item) => item.id === student.classId);
+                return (
+                  <tr key={student.id}>
+                    <td><div className="student-cell"><Avatar student={student} size="small" /><div><strong>{getFullName(student)}</strong><small>{student.matricule}</small></div></div></td>
+                    <td><span className="badge badge-neutral">{schoolClass?.name ?? "Non affecté"}</span></td>
+                    <td>{new Intl.DateTimeFormat("fr-FR").format(new Date(`${student.enrolledAt}T12:00:00`))}</td>
+                    <td><Badge tone={student.status === "Actif" ? "green" : student.status === "En attente" ? "amber" : "red"} dot>{student.status}</Badge></td>
+                    <td className="table-actions-heading">
+                      <TableMenu label={`Actions pour ${getFullName(student)}`}>
+                        <Link href={`/eleves/?eleve=${student.id}`}><Eye size={16} /> Voir le dossier</Link>
+                        <Link href={`/bulletins/?eleve=${student.id}`}><FileText size={16} /> Voir le bulletin</Link>
+                      </TableMenu>
+                    </td>
+                  </tr>
+                );
+              })}
+              {recentStudents.length === 0 && (
+                <tr><td colSpan={5} className="table-empty-cell">Aucun dossier ne correspond à cette recherche.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        <footer className="table-footer"><span>{recentStudents.length} inscription{recentStudents.length > 1 ? "s" : ""} récente{recentStudents.length > 1 ? "s" : ""}</span><span>{state.settings.academicYear}</span></footer>
+      </section>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/dm-sans";
 import "./globals.css";
+import "./master-layout.css";
 import { AppShell } from "@/components/app-shell";
 import { SchoolProvider } from "@/components/school-provider";
 
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#173f35",
+    themeColor: "#242626",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, type ReactNode } from "react";
-import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronLeft, ChevronRight, Info, MoreVertical, X } from "lucide-react";
 import type { Student } from "@/lib/types";
 import { getInitials } from "@/lib/academic";
 
@@ -44,6 +44,69 @@ export function Badge({
       {dot && <span className="badge-dot" aria-hidden="true" />}
       {children}
     </span>
+  );
+}
+
+export function TableMenu({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <details className="table-menu">
+      <summary className="table-menu-trigger" aria-label={label}>
+        <MoreVertical size={18} />
+      </summary>
+      <div
+        className="table-menu-content"
+        onClick={(event) => {
+          if ((event.target as HTMLElement).closest("a, button")) {
+            event.currentTarget.parentElement?.removeAttribute("open");
+          }
+        }}
+      >
+        {children}
+      </div>
+    </details>
+  );
+}
+
+export function TablePagination({
+  page,
+  pageCount,
+  pageSize,
+  totalItems,
+  onPageChange,
+}: {
+  page: number;
+  pageCount: number;
+  pageSize: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+}) {
+  const safePageCount = Math.max(1, pageCount);
+  const start = totalItems ? (page - 1) * pageSize + 1 : 0;
+  const end = Math.min(totalItems, page * pageSize);
+
+  return (
+    <div className="table-pagination" aria-label="Pagination du tableau">
+      <span>{start}–{end} sur {totalItems} dossier{totalItems > 1 ? "s" : ""}</span>
+      <div className="table-pagination-controls">
+        <button
+          type="button"
+          onClick={() => onPageChange(page - 1)}
+          disabled={page <= 1}
+          aria-label="Page précédente"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <span className="table-pagination-current" aria-current="page">{page} / {safePageCount}</span>
+        <button
+          type="button"
+          onClick={() => onPageChange(page + 1)}
+          disabled={page >= safePageCount}
+          aria-label="Page suivante"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+    </div>
   );
 }
 

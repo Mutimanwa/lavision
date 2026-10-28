@@ -67,6 +67,7 @@ src/
 │   ├── layout/             # shell, navigation et identité visuelle
 │   └── ui/                 # primitives, tableaux, menus et feedback
 ├── features/               # pages et logique propres à chaque module
+│   ├── auth/               # catalogue des rôles pour le futur RBAC
 │   ├── dashboard/
 │   ├── students/
 │   ├── enrollments/

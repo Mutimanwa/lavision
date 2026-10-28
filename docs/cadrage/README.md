@@ -73,7 +73,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | Exemples académiques chiffrés | Modèles 1ère/2e et 5e HP analysés ; contrôles et écarts documentés | arbitrage des anomalies, règles de pourcentage/repêchage et exemples corrigés validés avec l’établissement |
 | Exemples financiers chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemple de paie | Trame uniquement | exemple validé par un expert local |
-| Matrice des permissions | Proposition | validation et scénarios de test associés |
+| Matrice des permissions | Catalogue initial de 13 rôles et matrice proposée | validation de la direction, portées nominatives et scénarios de test associés |
 | Modèles de documents officiels | Inventaire à compléter | documents anonymisés et champs relevés |
 | Décisions et points ouverts | Registre initialisé | responsables et dates de validation |
 

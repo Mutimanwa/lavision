@@ -41,6 +41,7 @@ src/
 │   ├── layout/                   # shell et navigation communs
 │   └── ui/                       # primitives UI et tableau générique
 ├── features/
+│   ├── auth/data/                  # catalogue initial des rôles
 │   ├── dashboard/pages/
 │   ├── students/pages/
 │   ├── enrollments/pages/
@@ -69,7 +70,7 @@ features/<feature>/
 └── data/                         # constantes ou données locales à la feature
 ```
 
-Les dossiers sont créés uniquement lorsqu’ils contiennent du code ; il n’y a pas de dossiers vides ni de feature `auth` fictive. Une future authentification utilisera le même modèle dans `features/auth`.
+Les dossiers sont créés uniquement lorsqu’ils contiennent du code. La feature `auth` contient déjà le catalogue fonctionnel des rôles dans `data` ; ses pages, ses services d’authentification et le RBAC serveur seront ajoutés pendant leur implémentation réelle, sans simuler une sécurité côté navigateur.
 
 Règles de dépendance :
 

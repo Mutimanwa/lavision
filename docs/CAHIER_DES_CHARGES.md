@@ -156,18 +156,20 @@ La spécification détaillée des parcours, états, contrôles et critères d’
 | Profil | Droits principaux |
 | --- | --- |
 | Administrateur technique | configuration, comptes, intégrations, supervision |
-| Direction | pilotage, validations, rapports, proclamation |
+| Direction | pilotage, validations déléguées, rapports, proclamation |
+| Responsable pédagogique | programmes, règles académiques et validation des notes |
 | Secrétariat / scolarité | admissions, inscriptions, dossiers, documents |
+| Vie scolaire | assiduité et discipline dans sa portée |
+| Enseignant | classes et matières assignées, notes et appels |
 | Comptable | frais, factures, créances, rapports financiers |
 | Caissier | encaissements et reçus dans sa session de caisse |
 | Responsable RH | personnel, contrats, congés, paie selon permission |
-| Enseignant | classes et matières assignées, notes et appels |
-| Professeur principal | suivi de sa classe et préparation du conseil |
+| Employé | consultation de ses propres documents professionnels publiés |
 | Parent / responsable | enfants rattachés, bulletins, factures et communications |
 | Élève | emploi du temps, devoirs, notes publiées et documents autorisés |
 | Auditeur / lecture seule | consultation des rapports et journaux autorisés |
 
-Un rôle ne donne jamais implicitement accès à tous les établissements ou à tous les élèves.
+Les rôles sont combinables et complétés par des permissions sensibles ainsi que par des portées explicites. Le **professeur principal** est une responsabilité additionnelle de l’enseignant sur sa classe principale, pas un rôle isolé. Un rôle ne donne jamais implicitement accès à tous les établissements ou à tous les élèves. Le catalogue détaillé et les scénarios de refus figurent dans [Permissions et confidentialité](cadrage/04_PERMISSIONS_ET_CONFIDENTIALITE.md).
 
 ### 5.3 Admissions, élèves et familles
 

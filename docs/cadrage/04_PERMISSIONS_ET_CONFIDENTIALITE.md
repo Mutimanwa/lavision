@@ -17,23 +17,35 @@
 
 Ces principes sont des propositions de sécurité. La matrice nominative et les portées réelles doivent être validées avant l’implémentation M1.
 
-## 2. Profils et portées à confirmer
+## 2. Catalogue initial des rôles et portées
 
-| Profil | Portée candidate | Besoin principal | Restriction importante proposée |
-| --- | --- | --- | --- |
-| Administrateur technique | établissements explicitement gérés | comptes, intégrations, supervision | pas d’accès métier automatique aux contenus sensibles |
-| Direction | établissement ou sites désignés | pilotage et validations | pas d’accès RH/paie détaillé sans permission explicite |
-| Secrétariat/scolarité | sites et niveaux affectés | admissions, dossiers administratifs, inscriptions | pas de paie ni de contenu médical détaillé |
-| Comptable | sites et domaines financiers affectés | tarifs, factures, créances et rapports | pas de notes ni de dossiers RH |
-| Caissier | caisse et site affectés | encaissements et reçus de sa session | pas de modification des tarifs ni des règles |
-| Responsable RH | employés des sites affectés | dossiers, contrats, congés et préparation RH | validation de paie séparée si requise |
-| Enseignant | classes et matières assignées, périodes ouvertes | appels et notes | pas d’accès aux autres classes ou aux finances familiales |
-| Professeur principal | enseignant + classe principale | suivi et préparation du conseil | pas de publication sans permission dédiée |
-| Parent/responsable | enfants légalement rattachés | documents publiés et finances de son foyer | aucun autre élève ou responsable |
-| Élève | son propre dossier | contenus publiés autorisés | aucun brouillon, incident privé ou donnée d’autrui |
-| Auditeur/lecture seule | ressources et périodes autorisées | consultation et contrôle | aucune écriture et aucun contenu masqué dans son mandat |
+Le catalogue ci-dessous constitue la proposition de référence à faire valider par la direction. Les identifiants sont stabilisés dans `src/features/auth/data/roles.ts` pour éviter les divergences entre les futurs écrans, l’API et les tests.
 
-**Décision requise :** préciser si ces profils sont des rôles fixes, des ensembles de permissions combinables, ou les deux. Les fonctions cumulées doivent être représentées sans contourner les séparations d’approbation.
+| Identifiant | Rôle | Portée candidate | Besoin principal | Restriction importante proposée |
+| --- | --- | --- | --- | --- |
+| `technical_admin` | Administrateur technique | établissements explicitement gérés | comptes, intégrations, supervision | pas d’accès métier automatique aux contenus sensibles |
+| `direction` | Direction | établissement ou sites désignés | pilotage et validations déléguées | pas d’accès RH/paie détaillé sans permission explicite |
+| `academic_manager` | Responsable pédagogique | sites, niveaux ou programmes affectés | programmes, règles académiques et validation des notes | pas de publication officielle sans permission dédiée |
+| `school_secretary` | Secrétariat/scolarité | sites et niveaux affectés | admissions, dossiers administratifs, inscriptions | pas de paie ni de contenu médical détaillé |
+| `student_affairs` | Vie scolaire | sites, niveaux ou classes affectés | assiduité et discipline | aucun accès médical ou financier implicite |
+| `teacher` | Enseignant | classes et matières assignées, périodes ouvertes | appels et notes | pas d’accès aux autres classes ou aux finances familiales |
+| `accountant` | Comptable | sites et domaines financiers affectés | tarifs, factures, créances et rapports | pas de notes, de dossiers RH ou de paie sans mandat distinct |
+| `cashier` | Caissier | caisse et site affectés | encaissements et reçus de sa session | pas de modification des tarifs ni des règles |
+| `hr_manager` | Responsable RH | employés des sites affectés | dossiers, contrats, congés et préparation RH | paie et validation de paie soumises à permissions séparées |
+| `employee` | Employé | son propre dossier | documents professionnels et bulletins publiés | aucun dossier d’un autre employé |
+| `guardian` | Parent/responsable | enfants légalement rattachés | documents publiés et finances de son foyer | aucun autre élève ou responsable |
+| `student` | Élève | son propre dossier | contenus publiés autorisés | aucun brouillon, incident privé ou donnée d’autrui |
+| `auditor` | Auditeur/lecture seule | ressources et périodes autorisées | consultation et contrôle | aucune écriture et aucun contenu masqué dans son mandat |
+
+### Modèle d’attribution proposé
+
+1. **Rôles combinables :** un utilisateur peut recevoir plusieurs rôles dans un établissement, avec une portée propre à chaque attribution.
+2. **Permissions additionnelles :** une action sensible ou inhabituelle peut être déléguée sans créer un nouveau rôle global.
+3. **Portée obligatoire :** le rôle seul ne suffit jamais ; l’API vérifie aussi l’établissement, le site, la classe, la matière, l’enfant, l’employé ou la caisse concerné.
+4. **Responsabilités plutôt que multiplication des rôles :** le **professeur principal** est un enseignant avec une affectation de classe principale ; les approbateurs financiers ou de paie reçoivent des permissions de validation dédiées.
+5. **Aucun accès implicite :** l’administration technique, la direction ou un rôle de préparation ne donnent pas automatiquement accès aux contenus médicaux, disciplinaires, financiers, RH ou de paie.
+
+Ce catalogue ne constitue pas encore une habilitation effective. Il devra être validé avec la matrice nominative, puis appliqué côté serveur avec les scénarios de refus de la section 7.
 
 ## 3. Matrice d’actions proposée
 
@@ -47,12 +59,12 @@ La liste des rôles autorisés ci-dessous est un point de départ. Elle ne const
 | Modifier une inscription | secrétariat | année ouverte et classe autorisée | modification d’une année clôturée |
 | Consulter une information médicale | rôle désigné uniquement | finalité et élève précis ; accès audité | enseignant ou liste générale |
 | Saisir une note en brouillon | enseignant | classe, matière, évaluation et fenêtre assignées | changement d’identifiant vers une autre classe |
-| Valider/clôturer les notes | rôle pédagogique désigné | période et portée autorisées | enseignant sans permission de clôture |
+| Valider/clôturer les notes | responsable pédagogique ou délégataire | période et portée autorisées | enseignant sans permission de clôture |
 | Rouvrir des notes validées | rôle autorisé distinct si retenu | motif, durée, audit | réouverture après proclamation sans procédure |
 | Publier un bulletin/proclamation | direction ou délégataire | version des règles et dossiers contrôlés | enseignant ou parent |
 | Consulter un résultat | enseignant autorisé, parent/élève rattaché | brouillon pour rôle interne ; publié seulement pour famille | enfant non rattaché |
 | Corriger un appel | enseignant/vie scolaire selon délai | séance assignée ; ancienne valeur conservée | correction hors fenêtre sans approbation |
-| Consulter un incident disciplinaire | rôles désignés | élève et portée autorisés | autre classe ou parent non concerné |
+| Consulter un incident disciplinaire | vie scolaire ou direction autorisée | élève et portée autorisés | autre classe ou parent non concerné |
 | Gérer tarifs et factures | comptable | site, année et état de la facture | caissier ou enseignant |
 | Approuver une remise au-delà du seuil | approbateur financier désigné | montant et domaine | auto-approbation par le préparateur |
 | Encaisser un paiement | caissier | session ouverte et caisse affectée | caisse d’un autre site ou session clôturée |
@@ -61,10 +73,10 @@ La liste des rôles autorisés ci-dessous est un point de départ. Elle ne const
 | Consulter la finance d’un foyer | comptable, parent/payeur rattaché | factures du payeur ou enfants rattachés | factures d’un autre foyer |
 | Consulter un dossier employé | RH, direction explicitement autorisée | site et champs autorisés | enseignant ou comptable scolaire |
 | Approuver un congé | approbateur hiérarchique/RH | type, durée et employé concernés | auto-approbation |
-| Préparer une paie | rôle RH désigné | période et employés autorisés | préparateur hors portée |
+| Préparer une paie | responsable RH avec permission de préparation | période et employés autorisés | préparateur hors portée |
 | Valider une paie | validateur désigné | séparation du préparateur si retenue | auto-validation interdite lorsque requise |
 | Consulter un bulletin de paie | RH autorisé et employé concerné | bulletin et champs précis | autre employé ou parent d’élève |
-| Modifier les règles académiques | rôle pédagogique désigné | brouillon et établissement/portée autorisés | comptable ou enseignant non délégué |
+| Modifier les règles académiques | responsable pédagogique ou délégataire | brouillon et établissement/portée autorisés | comptable ou enseignant non délégué |
 | Publier les règles académiques | direction/délégataire | simulation réussie et date d’effet valide | modification d’une version publiée |
 | Modifier/publier les règles financières | rôles finance distincts | domaine finance uniquement | rôle académique ou RH |
 | Modifier/publier les règles RH/paie | rôles RH/direction désignés | domaine RH uniquement | comptable scolaire sans mandat |

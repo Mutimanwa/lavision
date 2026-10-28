@@ -78,7 +78,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 
 | ID | Question à trancher | Propriétaire attendu | Preuve nécessaire | État |
 | --- | --- | --- | --- | --- |
-| SEC-001 | Rôles, permissions combinables et portées par site/classe/matière | direction | matrice validée | Ouvert |
+| SEC-001 | Rôles, permissions combinables et portées par site/classe/matière | direction | matrice validée | Proposition : 13 rôles combinables, permissions sensibles séparées et portées obligatoires ; validation de la direction restante |
 | SEC-002 | Accès aux données médicales, disciplinaires, financières et RH | direction | scénarios d’accès | Ouvert |
 | SEC-003 | Profils soumis à MFA et procédure de récupération | direction/administrateur | politique validée | Ouvert |
 | SEC-004 | Séparation préparateur/validateur/payeur selon les opérations | direction | circuit nominatif | Ouvert |

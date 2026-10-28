@@ -1,6 +1,6 @@
 # Registre des décisions de cadrage
 
-**Version :** 0.4 — 27 octobre 2026
+**Version :** 0.5 — 28 octobre 2026
 **Statut :** registre actif pendant M0
 
 ## 1. Règle de tenue du registre
@@ -21,6 +21,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | DEC-004 | Les règles ont des versions datées ; une version publiée est immutable et toute adaptation crée une nouvelle version. | Validé — exigence de conception du 27/10/2026 | cycle brouillon/publié/archivé |
 | DEC-005 | Bulletins, proclamations, factures et paies conservent la version exacte des règles utilisée. | Validé — exigence de conception du 27/10/2026 | aucune réécriture silencieuse de l’historique officiel |
 | DEC-006 | La v1 n’est pas élargie avec de nouveaux modules ; la suite du cadrage précise et valide les règles du périmètre existant. | Validé — arbitrage produit du 27/10/2026 | les ateliers ne créent pas de nouvelles fonctionnalités majeures |
+| DEC-007 | Toutes les règles métier variables du périmètre doivent être personnalisables de manière avancée et pouvoir changer au fil du temps, y compris lorsque leurs valeurs sont encore inconnues pendant le cadrage. | Validé — arbitrage produit du 28/10/2026 | catalogue exhaustif, portées, versions datées, simulation et état explicite « à configurer » ; aucune valeur inventée ni repli silencieux ; voir [spécification](10_CONFIGURATION_METIER_AVANCEE.md) |
 
 ## 3. Décisions académiques ouvertes
 
@@ -95,7 +96,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | --- | --- | --- | --- |
 | RUL-001 | Ordre de priorité des héritages et traitement des adaptations concurrentes | direction + tech lead | Ouvert |
 | RUL-002 | Portées autorisées pour chaque règle | propriétaires des domaines | Ouvert |
-| RUL-003 | Date d’effet, fuseau et publication programmée | direction + tech lead | Ouvert |
+| RUL-003 | Date d’effet, fuseau et publication programmée | direction + tech lead | Versions datées et planification requises par DEC-007 ; fuseau, limites exactes et annulation à préciser |
 | RUL-004 | Approbation à une ou plusieurs personnes par domaine | direction | Ouvert |
 | RUL-005 | Duplication entre années/établissements et contrôles à refaire | propriétaires des domaines | Ouvert |
 | RUL-006 | Jeu minimal de simulations obligatoires avant publication | propriétaires des domaines + QA | Ouvert |

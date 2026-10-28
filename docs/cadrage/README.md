@@ -1,7 +1,7 @@
 # Dossier de cadrage métier M0
 
 **Projet :** LaVision
-**Version :** 0.1 — 27 octobre 2026
+**Version :** 0.2 — 28 octobre 2026
 **Issues concernées :** [#2](https://github.com/Mutimanwa/lavision/issues/2), [#4](https://github.com/Mutimanwa/lavision/issues/4) et préparation de [#39](https://github.com/Mutimanwa/lavision/issues/39)
 **Statut :** dossier de travail à compléter avec l’établissement pilote
 
@@ -31,6 +31,7 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Base officielle RDC](07_BASE_OFFICIELLE_RDC.md) | distinguer le référentiel national des décisions locales | cycles, TENASOSP/EXETAT, calendrier et programmes sourcés |
 | [Analyse du bulletin 1ère/2e secondaire](08_ANALYSE_BULLETIN_1E_2E.md) | relever les maxima, totaux et champs du modèle fourni | formules vérifiées et règles de repêchage restant à documenter |
 | [Analyse du bulletin 5e HP](09_ANALYSE_BULLETIN_5E_HP.md) | comparer une option des humanités et contrôler un bulletin rempli | 22 branches, deux schémas d’agrégation, incohérences et questions ciblées documentés |
+| [Configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md) | permettre toutes les variations de règles dans le temps sans code arbitraire | parcours, héritage, versions, simulation, permissions, snapshots et critères d’acceptation |
 
 ## 3. Ateliers proposés
 
@@ -66,7 +67,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | Exigence de sortie M0 | État actuel | Preuve encore attendue |
 | --- | --- | --- |
 | Processus critiques documentés | Préparé | validation des propriétaires métier |
-| Catalogue de règles configurable | Préparé | valeurs, portées et contraintes validées |
+| Catalogue de règles configurable | Préparé ; configuration avancée spécifiée | couverture exhaustive, valeurs, portées et contraintes validées |
 | Questionnaire de l’établissement pilote | Préparé ; premiers éléments à confirmer | réponses locales sur les sections/options, les barèmes par cours et les documents |
 | Base officielle RDC | Consultée et sourcée | confirmation de son adoption par le pilote et des instructions applicables à chaque année |
 | Exemples académiques chiffrés | Modèles 1ère/2e et 5e HP analysés ; contrôles et écarts documentés | arbitrage des anomalies, règles de pourcentage/repêchage et exemples corrigés validés avec l’établissement |

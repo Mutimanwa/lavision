@@ -1,6 +1,6 @@
 # Plan de réalisation — LaVision
 
-**Version :** 1.1 — 27 octobre 2026
+**Version :** 1.2 — 28 octobre 2026
 **Document associé :** [Cahier des charges](CAHIER_DES_CHARGES.md)
 **Backlog GitHub :** [Index des 38 issues](BACKLOG.md) · [Vue GitHub](https://github.com/Mutimanwa/lavision/issues)
 
@@ -80,10 +80,12 @@ Le [dossier de cadrage métier](cadrage/README.md) prépare les ateliers de l’
 | Implémenter l’authentification, les sessions et la MFA des profils sensibles | P0 | 7–10 j | comptes et sessions sécurisés |
 | Appliquer le RBAC, les portées et le journal d’audit côté serveur | P0 | 8–12 j | permissions centralisées et audit |
 | Créer les référentiels d’établissement, années scolaires et périodes | P0 | 5–8 j | configuration structurée et historisée |
-| Créer le moteur de règles scolaires configurables et versionnées | P0 | 7–11 j | règles par établissement, simulation et historique préservé |
+| Créer le moteur de règles scolaires configurables et versionnées | P0 | 7–11 j | catalogue des règles variables, portées et dates d’effet, simulation et snapshots |
 | Mettre en place les environnements Docker, la CI/CD et l’observabilité | P0 | 6–9 j | staging reproductible et supervision initiale |
 
-**Sortie :** un utilisateur ne peut effectuer que les opérations autorisées par l’API ; la base, les migrations et les logs sont exploitables sur staging. Les règles métier sont configurables par établissement et leurs versions publiées sont immuables.
+La configuration métier avancée sera découpée en incréments vérifiables dans l’issue #39. Son estimation sera revue à la fin de l’ADR, sans élargir le périmètre fonctionnel de la v1.
+
+**Sortie :** un utilisateur ne peut effectuer que les opérations autorisées par l’API ; la base, les migrations et les logs sont exploitables sur staging. Toutes les règles métier variables sont référencées dans le catalogue, configurables par établissement et leurs versions publiées sont immuables. Les portées, dates d’effet, simulations et snapshots suivent la [spécification de configuration avancée](cadrage/10_CONFIGURATION_METIER_AVANCEE.md).
 
 ### M2 — Élèves et pédagogie
 

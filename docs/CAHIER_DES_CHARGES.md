@@ -1,8 +1,8 @@
 # Cahier des charges — LaVision
 
 **Produit :** LaVision, plateforme intégrée de gestion scolaire
-**Version du document :** 1.1
-**Date :** 27 octobre 2026
+**Version du document :** 1.2
+**Date :** 28 octobre 2026
 **Statut :** proposition détaillée à valider avec la direction, le secrétariat, la finance et les enseignants
 **Périmètre :** web, desktop Tauri, API, données, sécurité et exploitation
 
@@ -109,30 +109,34 @@ Ces hypothèses structurent la conception mais doivent être confirmées pendant
 
 ### 5.1.1 Moteur de règles métier configurables
 
-Les règles peuvent varier d’un établissement à un autre. Elles doivent donc être administrées depuis **Paramètres → Configuration scolaire**, sans modification du code source.
+Les règles peuvent varier d’un établissement à un autre et évoluer au fil du temps. **Toute règle métier variable du périmètre prévu** doit donc être administrée depuis **Paramètres → Configuration scolaire**, sans modification du code source pour changer ses valeurs.
 
 **Paramètres concernés**
 
-- académique : barème, coefficients, arrondis, seuils, appréciations, calcul annuel, ex æquo et règles de passage ;
+- académique : barèmes, schémas avec ou sans examen, coefficients éventuels, agrégations, notes manquantes, arrondis ou troncatures, seuils, appréciations, calcul annuel, ex æquo, repêchage et décisions ;
 - assiduité : types d’appel, tolérances, justificatifs et seuils d’alerte ;
-- finance : devise, échéanciers, pénalités, remises, numérotation et seuils d’approbation ;
+- finance : devise, échéanciers, pénalités, remises, affectations, numérotation et seuils d’approbation ;
 - personnel : temps de travail, congés, variables de paie et circuits de validation ;
-- documents : modèles, mentions obligatoires et règles de publication.
+- documents : modèles, mentions obligatoires, diffusion, rectification et publication ;
+- autres domaines déjà prévus : toute variable de communication ou de service doit également être référencée dans le catalogue.
 
 **Exigences de conception**
 
-- un catalogue de paramètres typés et bornés, validé par l’API ;
-- des valeurs par défaut et des modèles de configuration pour faciliter l’installation ;
-- une configuration par établissement, avec héritage et adaptations par année, niveau ou programme lorsque pertinent ;
-- des statuts brouillon, publié et archivé, ainsi que des dates d’effet ;
-- une simulation sur des exemples avant publication ;
-- des permissions distinctes pour les règles académiques, financières et RH ;
-- un historique complet et la possibilité de dupliquer une configuration existante ;
-- aucune exécution de code ou de formule arbitraire fournie par un utilisateur.
+- un catalogue exhaustif des règles variables, avec paramètres typés et bornés validés par l’API ;
+- des modèles de départ sourcés et duplicables en brouillon, sans valeur par défaut cachée ni adoption silencieuse des valeurs du prototype ;
+- une configuration par établissement, avec héritage explicable et adaptations autorisées par site, année, niveau, section/option, programme, classe ou branche ;
+- des statuts brouillon, en validation, publié, planifié et archivé, ainsi que des dates d’effet et des contrôles de chevauchement ;
+- des états explicites pour une règle non configurée, non applicable ou en conflit ; une règle obligatoire manquante bloque le résultat officiel concerné ;
+- une simulation sans effet métier comparant la version applicable et le brouillon avant publication ;
+- des permissions distinctes de lecture, brouillon, simulation, validation et publication par domaine ;
+- un historique complet, la comparaison des versions et la possibilité de dupliquer une configuration existante ;
+- des stratégies de calcul prédéfinies et des tables structurées bornées, sans exécution de code ou de formule arbitraire fournie par un utilisateur.
 
 **Versioning et historique**
 
-Une règle publiée est immutable. Toute modification crée une nouvelle version qui ne s’applique qu’à partir de sa date d’effet. Les bulletins, proclamations, factures et paies conservent la référence de la version utilisée. Un changement de configuration ne doit jamais modifier silencieusement un document officiel déjà publié.
+Une règle publiée est immutable. Toute modification crée une nouvelle version qui ne s’applique qu’à partir de sa date d’effet. Une version future ne modifie pas les calculs actuels ; un retour à une ancienne politique crée une nouvelle version datée. Les bulletins, proclamations, factures et paies conservent le snapshot exact de la configuration utilisée. Un changement de configuration ne doit jamais modifier silencieusement un document officiel déjà publié.
+
+La spécification détaillée des parcours, états, contrôles et critères d’acceptation figure dans [Configuration métier avancée](cadrage/10_CONFIGURATION_METIER_AVANCEE.md).
 
 ### 5.2 Utilisateurs, rôles et sécurité
 

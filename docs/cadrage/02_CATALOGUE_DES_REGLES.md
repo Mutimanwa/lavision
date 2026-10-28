@@ -7,6 +7,8 @@
 
 Chaque ligne décrit une décision métier, pas encore son implémentation. Les clés sont des identifiants techniques candidats destinés à éviter les ambiguïtés ; elles pourront être adaptées lors de la conception de l’API.
 
+Le fonctionnement détaillé des portées, versions, simulations et snapshots est défini dans la [configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md). Toute règle variable découverte dans un module doit être ajoutée au présent catalogue avant sa recette.
+
 | Colonne | Signification |
 | --- | --- |
 | Type | nature contrôlée de la valeur, jamais une formule libre |
@@ -25,7 +27,9 @@ Ces principes ont été explicitement retenus pour LaVision et ne sont pas remis
 | Clé candidate | Principe |
 | --- | --- |
 | `rules.scope.organization` | chaque établissement peut adapter ses règles autorisées sans changer le code |
-| `rules.lifecycle` | statuts brouillon, publié et archivé, avec date d’effet |
+| `rules.catalog.coverage` | toute règle métier variable du périmètre est référencée ; aucune variable critique cachée dans un module |
+| `rules.unknown_policy` | une règle obligatoire inconnue reste explicitement non configurée et bloque le résultat officiel concerné, sans repli silencieux |
+| `rules.lifecycle` | statuts brouillon, en validation, publié, planifié et archivé, avec dates d’effet et contrôle des chevauchements |
 | `rules.publication.immutable` | une version publiée est immutable ; toute modification crée une nouvelle version |
 | `rules.publication.simulation_required` | une simulation sur des exemples précède la publication |
 | `rules.documents.snapshot` | chaque document officiel conserve la version exacte des règles utilisée |
@@ -38,7 +42,7 @@ Ces principes ont été explicitement retenus pour LaVision et ne sont pas remis
 - ordre de priorité exact entre les portées d’héritage ;
 - comportement si deux adaptations de même spécificité se chevauchent ;
 - fuseau horaire utilisé pour les dates d’effet ;
-- possibilité de programmer une publication future et personne autorisée à l’annuler ;
+- procédure et personne autorisées à annuler une publication future ;
 - duplication d’une configuration entre années ou établissements et contrôles associés ;
 - politique d’archivage d’une version encore référencée par des documents.
 

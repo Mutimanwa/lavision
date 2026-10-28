@@ -127,6 +127,21 @@ Ce cas vérifie l’exigence de configurabilité sans choisir les valeurs d’un
 
 Les valeurs exactes de recette seront ajoutées après validation des règles de conversion entre barèmes.
 
+### Variation d’une règle dans le temps
+
+Cas entièrement fictif : une configuration publiée applique une troncature à une décimale jusqu’à la fin de l’année A, puis une nouvelle version applique un arrondi arithmétique à deux décimales à partir de l’année B.
+
+**Résultats attendus :**
+
+- les deux versions coexistent sans chevauchement de dates ;
+- la nouvelle version est simulée avant publication ;
+- les calculs de l’année A continuent d’utiliser l’ancienne version ou le snapshot du document ;
+- les calculs de l’année B utilisent la nouvelle version à partir de sa date d’effet ;
+- un retour à l’ancienne politique crée une troisième version au lieu de modifier l’historique ;
+- une règle obligatoire non configurée pour une nouvelle portée produit une erreur explicite, sans repli caché sur le prototype.
+
+Ces valeurs illustrent uniquement le versionnement et ne constituent pas une recommandation académique.
+
 ## 6. Facture, remise et paiements partiels
 
 ### Hypothèses de travail

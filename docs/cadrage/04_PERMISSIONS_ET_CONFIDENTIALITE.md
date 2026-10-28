@@ -80,6 +80,8 @@ Proposition de séparation à valider :
 | `rules.academic.read` | consulter les règles académiques accessibles |
 | `rules.academic.draft` | créer ou modifier un brouillon académique |
 | `rules.academic.simulate` | exécuter une simulation sans publier |
+| `rules.academic.submit` | soumettre un brouillon contrôlé et simulé pour validation |
+| `rules.academic.review` | vérifier la portée, les valeurs, la source et le rapport de simulation |
 | `rules.academic.publish` | publier une version après contrôles |
 | `rules.finance.*` | mêmes opérations pour le domaine financier |
 | `rules.hr.*` | mêmes opérations pour congés et personnel |

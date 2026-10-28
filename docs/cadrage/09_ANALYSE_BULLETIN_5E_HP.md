@@ -221,6 +221,8 @@ La comparaison confirme qu’un barème ou une formule ne peut pas être appliqu
 
 ## 12. Questions à traiter avec l’utilisateur et l’établissement
 
+L’utilisateur a indiqué ne pas connaître ces réponses avec certitude. Elles ne sont donc pas extrapolées. Conformément à la [configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md), chaque inconnue devient un paramètre typé et versionné à faire renseigner par le responsable compétent ; aucune valeur officielle n’est inventée pour débloquer les calculs.
+
 1. **Libellés :** « Humanités pédagogiques » est-il le nom de la section et « Pédagogie générale » celui de l’option dans votre référentiel ?
 2. **Programme :** les 22 branches et leurs maxima correspondent-ils encore à la 5e HP actuellement suivie ? Quelles différences existe-t-il par année ou option ?
 3. **Pratique :** l’absence d’examen semestriel en Pratique d’enseignement est-elle une règle actuelle ? Comment obtient-on chaque note de période sur 100 ?

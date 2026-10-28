@@ -66,7 +66,7 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-ETAT-03 | Quelles conditions l’établissement doit-il vérifier avant l’inscription à chaque épreuve ? | |
 | Q-ETAT-04 | Qui inscrit les candidats et quelles pièces sont nécessaires ? | |
 | Q-ETAT-05 | Quelles données chaque épreuve exige-t-elle : identité, numéro unique, école d’origine, cours, notes ou autres ? | |
-| Q-ETAT-06 | LaVision doit-il seulement enregistrer la candidature, saisir un résultat officiel, importer un fichier ou échanger avec un système externe ? | |
+| Q-ETAT-06 | lavision doit-il seulement enregistrer la candidature, saisir un résultat officiel, importer un fichier ou échanger avec un système externe ? | |
 | Q-ETAT-07 | Qui communique le résultat officiel et sous quelle forme ? | |
 | Q-ETAT-08 | Quels résultats sont possibles : réussite, échec, ajournement, rattrapage ou autre ? | |
 | Q-ETAT-09 | L’établissement calcule-t-il un résultat national ou se contente-t-il de reproduire une décision officielle externe ? | |
@@ -218,7 +218,7 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 
 | ID | Question | Réponse |
 | --- | --- | --- |
-| Q-SEC-01 | Quelles personnes ou fonctions utilisent LaVision et sur quels sites ? | |
+| Q-SEC-01 | Quelles personnes ou fonctions utilisent lavision et sur quels sites ? | |
 | Q-SEC-02 | Qui peut consulter ou modifier chaque type de dossier ? | |
 | Q-SEC-03 | Quelles classes et matières un enseignant peut-il voir en dehors de ses affectations ? | |
 | Q-SEC-04 | Qui peut publier les résultats, valider une remise, clôturer une caisse ou valider une paie ? | |

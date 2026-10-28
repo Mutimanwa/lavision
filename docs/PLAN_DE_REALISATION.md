@@ -1,4 +1,4 @@
-# Plan de réalisation — LaVision
+# Plan de réalisation — lavision
 
 **Version :** 1.2 — 28 octobre 2026
 **Document associé :** [Cahier des charges](CAHIER_DES_CHARGES.md)

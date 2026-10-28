@@ -8,12 +8,12 @@ import { SchoolProvider } from "@/components/school-provider";
 
 export const metadata: Metadata = {
   title: {
-    default: "LaVision — Gestion scolaire",
-    template: "%s · LaVision",
+    default: "lavision — Gestion scolaire",
+    template: "%s · lavision",
   },
   description:
-    "LaVision centralise la gestion scolaire, de l’inscription des élèves à la proclamation des résultats.",
-  applicationName: "LaVision",
+    "lavision centralise la gestion scolaire, de l’inscription des élèves à la proclamation des résultats.",
+  applicationName: "lavision",
   icons: { icon: "/icon.svg" },
 };
 

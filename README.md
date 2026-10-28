@@ -1,4 +1,4 @@
-# LaVision
+# lavision
 
 **Logiciel de gestion scolaire, de l’inscription à la proclamation.**
 

@@ -71,5 +71,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`LaVision est disponible sur http://0.0.0.0:${port}`);
+  console.log(`lavision est disponible sur http://0.0.0.0:${port}`);
 });

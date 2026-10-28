@@ -381,7 +381,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const basePath = pathname === "/" ? "/" : `/${pathname.split("/").filter(Boolean)[0] ?? ""}`;
-  const pageTitle = PAGE_TITLES[basePath] ?? "LaVision";
+  const pageTitle = PAGE_TITLES[basePath] ?? "lavision";
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -423,7 +423,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button className="icon-button mobile-menu" type="button" onClick={() => setMobileOpen(true)} aria-label="Ouvrir le menu">
               <Menu size={20} />
             </button>
-            <Link className="topbar-brand" href="/" aria-label="Accueil LaVision"><Logo /></Link>
+            <Link className="topbar-brand" href="/" aria-label="Accueil lavision"><Logo /></Link>
             <GlobalSearch />
           </div>
           <div className="topbar-actions">
@@ -441,7 +441,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </footer>
       </div>
 
-      <Modal open={helpOpen} onClose={() => setHelpOpen(false)} title="Centre d’aide LaVision" description={`${state.settings.schoolName} · ${state.settings.academicYear}`} size="medium">
+      <Modal open={helpOpen} onClose={() => setHelpOpen(false)} title="Centre d’aide lavision" description={`${state.settings.schoolName} · ${state.settings.academicYear}`} size="medium">
         <div className="help-intro"><span><Sparkles size={24} /></span><div><h3>Tout pour suivre votre année scolaire</h3><p>Ce prototype couvre le parcours complet, de l’inscription à la proclamation.</p></div></div>
         <div className="help-grid">
           <Link href="/inscriptions/" onClick={() => setHelpOpen(false)}><GraduationCap size={20} /><strong>1. Inscrire</strong><span>Créer un dossier élève et l’affecter à une classe.</span></Link>

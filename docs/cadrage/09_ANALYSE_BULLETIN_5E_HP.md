@@ -133,7 +133,7 @@ Mais le bulletin contient aussi des écarts visibles :
 
 Ces écarts peuvent provenir d’une erreur de calcul, de report ou de lecture du scan. **Il ne faut pas choisir silencieusement une correction.** Ils doivent être arbitrés avec une copie plus nette ou le détail de calcul validé.
 
-### Conséquence pour LaVision
+### Conséquence pour lavision
 
 Le futur moteur doit pouvoir contrôler au minimum :
 
@@ -168,7 +168,7 @@ Des tirets apparaissent notamment :
 
 Dans ces exemples, le tiret **n’ajoute pas de points** et le maximum général du programme reste inchangé. Cela ne suffit pas à déterminer sa signification métier : note non saisie, absence, dispense, cours non suivi ou zéro.
 
-LaVision doit donc conserver un statut distinct de la valeur numérique. Il ne faut pas transformer automatiquement tout tiret en zéro définitif ni réduire le dénominateur sans règle validée.
+lavision doit donc conserver un statut distinct de la valeur numérique. Il ne faut pas transformer automatiquement tout tiret en zéro définitif ni réduire le dénominateur sans règle validée.
 
 ## 9. Repêchage, rang et décisions
 
@@ -207,7 +207,7 @@ Les rubriques Application et Conduite utilisent notamment les codes `B` et `TB`.
 
 La comparaison confirme qu’un barème ou une formule ne peut pas être appliqué uniformément à tout le secondaire. La configuration doit être rattachée au **programme annuel et à la branche**, avec une date d’effet et une version publiée.
 
-## 11. Conséquences pour la configuration LaVision
+## 11. Conséquences pour la configuration lavision
 
 1. Représenter la 5e HP et Pédagogie générale dans le référentiel section/option/programme, après validation des libellés exacts.
 2. Configurer les maxima par programme et par branche, sans coefficient supplémentaire implicite.

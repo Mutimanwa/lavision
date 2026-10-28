@@ -1,4 +1,4 @@
-# Feuille de route — LaVision
+# Feuille de route — lavision
 
 La planification opérationnelle est désormais centralisée dans les documents suivants afin d’éviter les doublons :
 

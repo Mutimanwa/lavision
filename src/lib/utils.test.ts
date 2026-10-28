@@ -3,7 +3,7 @@ import { createSeedState } from "./seed";
 import { isAppState } from "./utils";
 
 describe("validation des sauvegardes", () => {
-  it("accepte une sauvegarde LaVision valide", () => {
+  it("accepte une sauvegarde lavision valide", () => {
     expect(isAppState(createSeedState())).toBe(true);
   });
 

@@ -1,4 +1,4 @@
-# Backlog GitHub — LaVision
+# Backlog GitHub — lavision
 
 **38 issues ouvertes — #2 à #39**
 Généré à partir des issues réelles du dépôt le 27 octobre 2026.

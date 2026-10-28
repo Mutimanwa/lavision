@@ -1,6 +1,6 @@
-# Cahier des charges — LaVision
+# Cahier des charges — lavision
 
-**Produit :** LaVision, plateforme intégrée de gestion scolaire
+**Produit :** lavision, plateforme intégrée de gestion scolaire
 **Version du document :** 1.2
 **Date :** 28 octobre 2026
 **Statut :** proposition détaillée à valider avec la direction, le secrétariat, la finance et les enseignants
@@ -10,7 +10,7 @@
 
 ## 1. Résumé exécutif
 
-LaVision doit devenir une plateforme modulaire couvrant le cycle de vie complet de l’établissement :
+lavision doit devenir une plateforme modulaire couvrant le cycle de vie complet de l’établissement :
 
 - admission et inscription ;
 - dossier élève et responsables légaux ;
@@ -22,7 +22,7 @@ LaVision doit devenir une plateforme modulaire couvrant le cycle de vie complet 
 - pilotage, reporting, audit et administration ;
 - exploitation web et desktop avec une source de données maîtrisée.
 
-La priorité n’est pas d’additionner des interfaces. LaVision doit garantir que **chaque information possède un propriétaire, une règle de validation, un historique et un niveau d’accès**. Une note publiée, un paiement encaissé ou un bulletin de paie doit être traçable et contrôlable.
+La priorité n’est pas d’additionner des interfaces. lavision doit garantir que **chaque information possède un propriétaire, une règle de validation, un historique et un niveau d’accès**. Une note publiée, un paiement encaissé ou un bulletin de paie doit être traçable et contrôlable.
 
 Le socle actuel fournit déjà un frontend Next.js/TypeScript/Tailwind, un parcours académique de démonstration et un shell Tauri. La prochaine étape structurante est le passage à une architecture client-serveur sécurisée avec PostgreSQL et une API métier.
 
@@ -646,6 +646,6 @@ Le [dossier de cadrage métier](cadrage/README.md) fournit les supports d’atel
 
 ## 16. Critère global de réussite
 
-LaVision sera considéré comme prêt pour une première production lorsque les parcours élèves, pédagogie, finance et personnel retenus auront été validés sur staging par les utilisateurs concernés, que les tests de sécurité et de restauration seront concluants, et que la direction disposera d’un plan de bascule, de formation et de support.
+lavision sera considéré comme prêt pour une première production lorsque les parcours élèves, pédagogie, finance et personnel retenus auront été validés sur staging par les utilisateurs concernés, que les tests de sécurité et de restauration seront concluants, et que la direction disposera d’un plan de bascule, de formation et de support.
 
 Les services annexes pourront ensuite être activés sans remettre en cause le socle ni les données déjà validées.

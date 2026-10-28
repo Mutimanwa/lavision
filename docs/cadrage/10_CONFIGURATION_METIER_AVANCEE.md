@@ -7,7 +7,7 @@
 
 ## 1. Décision et objectif
 
-LaVision doit permettre une **personnalisation poussée de toutes les règles métier variables du périmètre prévu**, car elles peuvent différer entre établissements et changer au fil du temps.
+lavision doit permettre une **personnalisation poussée de toutes les règles métier variables du périmètre prévu**, car elles peuvent différer entre établissements et changer au fil du temps.
 
 L’utilisateur ne doit pas deviner une règle pendant le cadrage pour permettre au développement d’avancer. Une information encore inconnue devient un paramètre documenté, avec un propriétaire et un état explicite. Elle ne devient une valeur officielle qu’après configuration et validation par une personne autorisée.
 

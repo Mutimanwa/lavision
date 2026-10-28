@@ -1,6 +1,6 @@
 # Dossier de cadrage métier M0
 
-**Projet :** LaVision
+**Projet :** lavision
 **Version :** 0.2 — 28 octobre 2026
 **Issues concernées :** [#2](https://github.com/Mutimanwa/lavision/issues/2), [#4](https://github.com/Mutimanwa/lavision/issues/4) et préparation de [#39](https://github.com/Mutimanwa/lavision/issues/39)
 **Statut :** dossier de travail à compléter avec l’établissement pilote

@@ -22,7 +22,7 @@ Le fonctionnement détaillé des portées, versions, simulations et snapshots es
 
 ## 2. Principes transverses déjà arrêtés
 
-Ces principes ont été explicitement retenus pour LaVision et ne sont pas remis en cause par les ateliers de valeurs :
+Ces principes ont été explicitement retenus pour lavision et ne sont pas remis en cause par les ateliers de valeurs :
 
 | Clé candidate | Principe |
 | --- | --- |

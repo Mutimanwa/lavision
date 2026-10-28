@@ -2,7 +2,7 @@
   "name": "lavision-school",
   "version": "0.1.0",
   "private": true,
-  "description": "LaVision — gestion scolaire de l'inscription à la proclamation",
+  "description": "lavision — gestion scolaire de l'inscription à la proclamation",
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",

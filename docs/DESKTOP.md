@@ -1,4 +1,4 @@
-# LaVision Desktop avec Tauri
+# lavision Desktop avec Tauri
 
 ## Pourquoi Tauri ?
 
@@ -43,8 +43,8 @@ Tauri exécute d’abord `npm run build`, intègre `out/`, compile Rust et produ
 
 ```text
 src-tauri/target/release/lavision.exe
-src-tauri/target/release/bundle/nsis/LaVision_0.1.0_x64-setup.exe
-src-tauri/target/release/bundle/msi/LaVision_0.1.0_x64_en-US.msi
+src-tauri/target/release/bundle/nsis/lavision_0.1.0_x64-setup.exe
+src-tauri/target/release/bundle/msi/lavision_0.1.0_x64_en-US.msi
 ```
 
 Les noms exacts peuvent varier selon la langue et l’architecture du bundle. L’installateur **NSIS** est le `.exe` à privilégier pour une distribution simple.

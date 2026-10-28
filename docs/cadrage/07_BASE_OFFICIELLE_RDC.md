@@ -6,7 +6,7 @@
 
 ## 1. Objet et limites
 
-Ce document rassemble les informations du site [edu-nc.gouv.cd](https://edu-nc.gouv.cd/) utiles à LaVision. Il évite de demander à l’utilisateur des réponses déjà publiées par le Ministère.
+Ce document rassemble les informations du site [edu-nc.gouv.cd](https://edu-nc.gouv.cd/) utiles à lavision. Il évite de demander à l’utilisateur des réponses déjà publiées par le Ministère.
 
 Les informations ci-dessous décrivent le référentiel national consulté. Elles ne prouvent pas encore :
 
@@ -19,7 +19,7 @@ Les dates et règles d’une année scolaire doivent rester versionnées. Elles 
 
 ## 2. Structure du parcours scolaire
 
-| Étape | Correspondance retenue dans les sources | Conséquence pour LaVision |
+| Étape | Correspondance retenue dans les sources | Conséquence pour lavision |
 | --- | --- | --- |
 | Primaire | six années, de la 1re à la 6e | niveau distinct du CTEB |
 | Éducation de Base | huit années : primaire + Cycle terminal de l’Éducation de Base | le parcours ne se limite pas au primaire |
@@ -43,13 +43,13 @@ Les sources mentionnent notamment des sections pédagogique, littéraire et scie
 | TENASOSP | fin de 8e EB / fin du CTEB | certificat de fin de l’Éducation de Base et orientation vers les humanités |
 | EXETAT | fin des humanités générales, techniques ou professionnelles | diplôme d’État |
 
-Le **TENASOSP** est le Test National de Sélection et d’Orientation Scolaire et Professionnelle. Il ne doit pas être enregistré dans LaVision comme l’Examen d’État de fin de secondaire.
+Le **TENASOSP** est le Test National de Sélection et d’Orientation Scolaire et Professionnelle. Il ne doit pas être enregistré dans lavision comme l’Examen d’État de fin de secondaire.
 
 Le programme 8e EB de 2019 emploie aussi le terme **brevet** pour le test sanctionnant le secondaire général/CTEB. La page actuelle des épreuves certificatives parle de **certificat de fin de l’Éducation de Base**. Le modèle exact du document et sa dénomination à afficher doivent donc être confirmés avec un document officiel récent.
 
 ### Conséquence fonctionnelle
 
-LaVision doit pouvoir distinguer :
+lavision doit pouvoir distinguer :
 
 - une candidature à une épreuve nationale ;
 - les données d’inscription exigées pour l’édition concernée ;

@@ -211,7 +211,7 @@ Les identifiants nationaux et numéros permanents doivent bénéficier d’un ac
 
 La note « le bulletin est sans valeur s’il est raturé ou surchargé » renforce le besoin de produire un document propre et contrôlé.
 
-Dans LaVision, une correction après publication ne doit donc pas simuler une rature. Elle doit suivre une procédure autorisée, créer une nouvelle version traçable et conserver le document précédent ainsi que le motif de rectification.
+Dans lavision, une correction après publication ne doit donc pas simuler une rature. Elle doit suivre une procédure autorisée, créer une nouvelle version traçable et conserver le document précédent ainsi que le motif de rectification.
 
 ## 10. Prochaine preuve nécessaire
 

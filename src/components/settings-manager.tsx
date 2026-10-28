@@ -57,7 +57,7 @@ export function SettingsManager() {
       setError("");
       setMessage("La sauvegarde a été restaurée avec succès.");
     } catch {
-      setError("Ce fichier n’est pas une sauvegarde LaVision valide.");
+      setError("Ce fichier n’est pas une sauvegarde lavision valide.");
     } finally {
       if (fileInput.current) fileInput.current.value = "";
     }
@@ -94,7 +94,7 @@ export function SettingsManager() {
         </div>
         <aside className="settings-side">
           <section className="card data-card"><span className="settings-big-icon"><Database size={24} /></span><h2>Données locales</h2><p>Votre travail est automatiquement enregistré dans ce navigateur.</p><div className="data-summary"><div><strong>{state.students.length}</strong><small>élèves</small></div><div><strong>{state.grades.length}</strong><small>notes</small></div><div><strong>{state.attendance.length}</strong><small>présences</small></div></div><button className="button button-secondary button-full" type="button" onClick={() => downloadJson(state)}><Download size={17} /> Télécharger une sauvegarde</button><button className="button button-ghost button-full" type="button" onClick={() => fileInput.current?.click()}><Upload size={17} /> Restaurer une sauvegarde</button><input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={(event) => importBackup(event.target.files?.[0])} /><small className="data-format">Format JSON · version 1</small></section>
-          <section className="card desktop-card"><span className="settings-big-icon"><Laptop size={24} /></span><h2>LaVision sur desktop</h2><p>Le socle Tauri permet de générer une application Windows avec installateur <strong>.exe</strong>.</p><div className="desktop-command"><HardDrive size={16} /><code>npm run tauri build</code></div><small>La compilation Windows doit être exécutée sur Windows ou dans la CI prévue à cet effet.</small></section>
+          <section className="card desktop-card"><span className="settings-big-icon"><Laptop size={24} /></span><h2>lavision sur desktop</h2><p>Le socle Tauri permet de générer une application Windows avec installateur <strong>.exe</strong>.</p><div className="desktop-command"><HardDrive size={16} /><code>npm run tauri build</code></div><small>La compilation Windows doit être exécutée sur Windows ou dans la CI prévue à cet effet.</small></section>
           <section className="card danger-card"><span><ShieldAlert size={21} /></span><div><h3>Restaurer la démonstration</h3><p>Remplace toutes les données locales par le jeu de démonstration initial.</p><button className="text-link text-danger" type="button" onClick={() => setResetOpen(true)}><RotateCcw size={15} /> Réinitialiser les données</button></div></section>
         </aside>
       </div>

@@ -110,7 +110,7 @@ export function ReportCards() {
             <div><h3>Appréciation du conseil de classe</h3><p className="council-comment">{report.isComplete ? `${getAppreciation(report.average)}. ${rankedStudent?.outcome === "Admis" ? "Poursuivre les efforts et la régularité dans le travail." : "Un travail soutenu est nécessaire pour atteindre le seuil de réussite."}` : "Le conseil de classe se prononcera après la saisie de toutes les notes."}</p></div>
           </section>
           <footer className="report-signature"><div><small>Fait à Bujumbura, le {formatDate(new Date().toISOString())}</small><span>Cachet de l’établissement</span></div><div><strong>{state.settings.directionName}</strong><span>La Direction</span></div></footer>
-          <div className="report-authenticity"><ShieldCheck size={14} /> Document généré par LaVision · {publication ? `Publié le ${formatDate(publication.publishedAt)}` : "Version de travail non publiée"}</div>
+          <div className="report-authenticity"><ShieldCheck size={14} /> Document généré par lavision · {publication ? `Publié le ${formatDate(publication.publishedAt)}` : "Version de travail non publiée"}</div>
         </article>
       ) : (
         <div className="card no-print"><EmptyState icon={<GraduationCap size={28} />} title="Aucun bulletin disponible" description="Ajoutez d’abord un élève actif dans cette classe." action={<Link className="button button-primary" href="/inscriptions/">Nouvelle inscription</Link>} /></div>

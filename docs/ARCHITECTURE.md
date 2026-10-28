@@ -1,8 +1,8 @@
-# Architecture LaVision
+# Architecture lavision
 
 ## Vue d’ensemble
 
-LaVision est organisé autour d’un **modèle académique unique**. Les écrans ne possèdent pas chacun une copie de leurs données : inscriptions, notes, bulletins et proclamation consomment le même état typé.
+lavision est organisé autour d’un **modèle académique unique**. Les écrans ne possèdent pas chacun une copie de leurs données : inscriptions, notes, bulletins et proclamation consomment le même état typé.
 
 ```text
 Inscription ──► Dossier élève ──► Affectation à une classe

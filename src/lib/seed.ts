@@ -104,7 +104,7 @@ const students: Student[] = [
     classId: "c5b",
     enrolledAt: "2026-08-26",
     status: "Actif",
-    previousSchool: "Complexe Scolaire LaVision",
+    previousSchool: "Complexe Scolaire lavision",
     guardian: {
       name: "Diane Ineza",
       relationship: "Mère",
@@ -125,7 +125,7 @@ const students: Student[] = [
     classId: "c5b",
     enrolledAt: "2026-08-29",
     status: "Actif",
-    previousSchool: "Complexe Scolaire LaVision",
+    previousSchool: "Complexe Scolaire lavision",
     guardian: {
       name: "Jeanne Irakoze",
       relationship: "Mère",
@@ -146,7 +146,7 @@ const students: Student[] = [
     classId: "c5b",
     enrolledAt: "2026-09-05",
     status: "Actif",
-    previousSchool: "Complexe Scolaire LaVision",
+    previousSchool: "Complexe Scolaire lavision",
     guardian: {
       name: "Olivier Niyonshuti",
       relationship: "Père",
@@ -188,7 +188,7 @@ const students: Student[] = [
     classId: "c4s",
     enrolledAt: "2026-08-22",
     status: "Actif",
-    previousSchool: "Complexe Scolaire LaVision",
+    previousSchool: "Complexe Scolaire lavision",
     guardian: {
       name: "Rémy Ndayisenga",
       relationship: "Père",
@@ -209,7 +209,7 @@ const students: Student[] = [
     classId: "c4s",
     enrolledAt: "2026-08-23",
     status: "Actif",
-    previousSchool: "Complexe Scolaire LaVision",
+    previousSchool: "Complexe Scolaire lavision",
     guardian: {
       name: "Chantal Nkurikiye",
       relationship: "Mère",
@@ -230,7 +230,7 @@ const students: Student[] = [
     classId: "c4s",
     enrolledAt: "2026-09-02",
     status: "Actif",
-    previousSchool: "Complexe Scolaire LaVision",
+    previousSchool: "Complexe Scolaire lavision",
     guardian: {
       name: "David Uwimana",
       relationship: "Père",
@@ -251,7 +251,7 @@ const students: Student[] = [
     classId: "c4s",
     enrolledAt: "2026-09-08",
     status: "Actif",
-    previousSchool: "Complexe Scolaire LaVision",
+    previousSchool: "Complexe Scolaire lavision",
     guardian: {
       name: "Béatrice Manirakiza",
       relationship: "Mère",
@@ -344,7 +344,7 @@ export function createSeedState(): AppState {
     attendance: createAttendance(),
     publications: [],
     settings: {
-      schoolName: "Complexe Scolaire LaVision",
+      schoolName: "Complexe Scolaire lavision",
       academicYear: "2026–2027",
       currentTerm: "Trimestre 1",
       passMark: 10,

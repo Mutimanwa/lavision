@@ -220,14 +220,14 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | ID | Question | Réponse |
 | --- | --- | --- |
 | Q-SEC-01 | Quelles personnes ou fonctions utilisent lavision et sur quels sites ? | |
-| Q-SEC-02 | Qui peut consulter ou modifier chaque type de dossier ? | |
-| Q-SEC-03 | Quelles classes et matières un enseignant peut-il voir en dehors de ses affectations ? | |
+| Q-SEC-02 | Qui peut consulter ou modifier chaque type de dossier ? | 29/10/2026 : rôles combinables ; parent et élève limités aux personnes rattachées et contenus publiés. Le reste de la matrice nominative reste à valider. |
+| Q-SEC-03 | Quelles classes et matières un enseignant peut-il voir en dehors de ses affectations ? | 29/10/2026 : consultation du suivi et des incidents disciplinaires de sa classe principale ; écriture limitée à ses cours assignés. Données médicales à confirmer. |
 | Q-SEC-04 | Qui peut publier les résultats, valider une remise, clôturer une caisse ou valider une paie ? | |
 | Q-SEC-05 | Quelles opérations exigent deux personnes distinctes ? | |
 | Q-SEC-06 | Qui peut modifier et publier les règles académiques, financières et RH ? | |
-| Q-SEC-07 | Quels profils doivent utiliser une authentification multifacteur ? | |
-| Q-SEC-08 | Quelles données sont particulièrement sensibles et qui peut exporter chaque catégorie ? | |
-| Q-SEC-09 | Quelles durées de conservation et quelles procédures d’accès ou de rectification faut-il appliquer ? | |
+| Q-SEC-07 | Quels profils doivent utiliser une authentification multifacteur ? | 29/10/2026 : profils sensibles ; liste exacte, portails familiaux et procédure de récupération à faire valider. |
+| Q-SEC-08 | Quelles données sont particulièrement sensibles et qui peut exporter chaque catégorie ? | 29/10/2026 : permission d’export séparée, avec motif et approbation tracée pour les exports sensibles ; données médicales laissées à confirmer, sans ajout de champ dans la v1. |
+| Q-SEC-09 | Quelles durées de conservation et quelles procédures d’accès ou de rectification faut-il appliquer ? | 29/10/2026 : validation par la direction avec avis juridique, administratif et informatique ; durées et procédures détaillées à fournir. |
 | Q-SEC-10 | Quels prestataires externes reçoivent des données et pour quelle finalité ? | |
 
 ## Bloc 11 — Volumes, reprise des données et exploitation

@@ -1,6 +1,6 @@
 # Proposition de permissions et de confidentialité
 
-**Statut :** proposition pour l’atelier A4
+**Statut :** atelier A4 en cours — premières réponses du 29/10/2026, validation de la direction et des propriétaires restante
 **Référence :** issue #4
 **Validation attendue :** direction et propriétaires des domaines
 
@@ -28,7 +28,7 @@ Le catalogue ci-dessous constitue la proposition de référence à faire valider
 | `academic_manager` | Responsable pédagogique | sites, niveaux ou programmes affectés | programmes, règles académiques et validation des notes | pas de publication officielle sans permission dédiée |
 | `school_secretary` | Secrétariat/scolarité | sites et niveaux affectés | admissions, dossiers administratifs, inscriptions | pas de paie ni de contenu médical détaillé |
 | `student_affairs` | Vie scolaire | sites, niveaux ou classes affectés | assiduité et discipline | aucun accès médical ou financier implicite |
-| `teacher` | Enseignant | classes et matières assignées, périodes ouvertes | appels et notes | pas d’accès aux autres classes ou aux finances familiales |
+| `teacher` | Enseignant | classes et matières assignées, suivi en lecture de sa classe principale, périodes ouvertes | appels, notes et suivi délégué de sa classe principale | écriture limitée à ses affectations ; pas d’accès aux autres classes ou aux finances familiales |
 | `accountant` | Comptable | sites et domaines financiers affectés | tarifs, factures, créances et rapports | pas de notes, de dossiers RH ou de paie sans mandat distinct |
 | `cashier` | Caissier | caisse et site affectés | encaissements et reçus de sa session | pas de modification des tarifs ni des règles |
 | `hr_manager` | Responsable RH | employés des sites affectés | dossiers, contrats, congés et préparation RH | paie et validation de paie soumises à permissions séparées |
@@ -44,6 +44,15 @@ Le catalogue ci-dessous constitue la proposition de référence à faire valider
 3. **Portée obligatoire :** le rôle seul ne suffit jamais ; l’API vérifie aussi l’établissement, le site, la classe, la matière, l’enfant, l’employé ou la caisse concerné.
 4. **Responsabilités plutôt que multiplication des rôles :** le **professeur principal** est un enseignant avec une affectation de classe principale ; les approbateurs financiers ou de paie reçoivent des permissions de validation dédiées.
 5. **Aucun accès implicite :** l’administration technique, la direction ou un rôle de préparation ne donnent pas automatiquement accès aux contenus médicaux, disciplinaires, financiers, RH ou de paie.
+
+### Réponses d’atelier du 29/10/2026
+
+Ces réponses restent des propositions jusqu’à validation par la direction et les propriétaires concernés :
+
+- les 13 rôles sont **combinables**, avec une portée propre à chaque attribution ;
+- l’enseignant est limité à ses cours pour l’écriture et peut consulter le suivi de sa **classe principale**, y compris ses incidents disciplinaires ; le traitement des données médicales reste à confirmer ;
+- le parent et l’élève consultent uniquement les personnes rattachées et les **contenus publiés**, sans brouillons ;
+- la MFA s’applique aux **profils sensibles** ; la liste nominative et la procédure de récupération restent à valider.
 
 Ce catalogue ne constitue pas encore une habilitation effective. Il devra être validé avec la matrice nominative, puis appliqué côté serveur avec les scénarios de refus de la section 7.
 
@@ -64,7 +73,7 @@ La liste des rôles autorisés ci-dessous est un point de départ. Elle ne const
 | Publier un bulletin/proclamation | direction ou délégataire | version des règles et dossiers contrôlés | enseignant ou parent |
 | Consulter un résultat | enseignant autorisé, parent/élève rattaché | brouillon pour rôle interne ; publié seulement pour famille | enfant non rattaché |
 | Corriger un appel | enseignant/vie scolaire selon délai | séance assignée ; ancienne valeur conservée | correction hors fenêtre sans approbation |
-| Consulter un incident disciplinaire | vie scolaire ou direction autorisée | élève et portée autorisés | autre classe ou parent non concerné |
+| Consulter un incident disciplinaire | vie scolaire, direction autorisée, professeur principal | professeur principal limité aux élèves de sa classe ; autres rôles selon leur portée | autre classe ou parent non concerné |
 | Gérer tarifs et factures | comptable | site, année et état de la facture | caissier ou enseignant |
 | Approuver une remise au-delà du seuil | approbateur financier désigné | montant et domaine | auto-approbation par le préparateur |
 | Encaisser un paiement | caissier | session ouverte et caisse affectée | caisse d’un autre site ou session clôturée |
@@ -81,7 +90,7 @@ La liste des rôles autorisés ci-dessous est un point de départ. Elle ne const
 | Modifier/publier les règles financières | rôles finance distincts | domaine finance uniquement | rôle académique ou RH |
 | Modifier/publier les règles RH/paie | rôles RH/direction désignés | domaine RH uniquement | comptable scolaire sans mandat |
 | Consulter le journal d’audit | auditeur ou rôle autorisé | types d’événements et périmètre du mandat | accès à des données hors mandat |
-| Exporter des données | permission séparée par domaine | même portée que la consultation + justification éventuelle | export massif sans permission dédiée |
+| Exporter des données | permission séparée par domaine | même portée que la consultation ; motif et approbation tracée pour les exports sensibles | export sensible sans permission, motif ou approbation |
 
 ## 4. Permissions du moteur de règles
 
@@ -119,7 +128,7 @@ Aucune permission de brouillon ne permet de modifier une version publiée. La si
 
 ## 6. Conservation, droits et destinataires
 
-Aucune durée n’est inscrite par défaut dans ce dossier. La direction doit faire valider la politique applicable et distinguer obligation de conservation, besoin opérationnel et suppression.
+Aucune durée n’est inscrite par défaut dans ce dossier. Le 29/10/2026, la validation par la direction de l’établissement, avec avis des responsables juridique, administratif et informatique concernés, a été retenue comme circuit de travail. La politique devra distinguer obligation applicable, besoin opérationnel et suppression ; les durées restent à fournir et à valider.
 
 | Sujet | Décision attendue |
 | --- | --- |
@@ -155,6 +164,11 @@ Chaque scénario deviendra un test automatisé négatif ou positif dans M1.
 | SEC-13 | un document publié est recalculé après une nouvelle version des règles | aucune modification du document historique |
 | SEC-14 | un export contient des champs médicaux ou RH non autorisés | champs exclus ou export refusé |
 | SEC-15 | un log d’erreur est inspecté après une authentification échouée | aucun mot de passe, jeton ou second facteur |
+| SEC-16 | un professeur principal consulte sa classe puis modifie un cours qui ne lui est pas assigné | consultation de la classe autorisée dans sa portée ; modification du cours refusée |
+| SEC-17 | un parent rattaché demande un bulletin encore en brouillon | refus, y compris lorsque l’enfant est correctement rattaché |
+| SEC-18 | un compte soumis à MFA tente d’ouvrir une session sans second facteur | authentification non finalisée ; aucune session métier créée |
+| SEC-19 | un professeur principal demande un incident d’un élève de sa classe puis d’une autre classe | accès au premier selon sa portée ; refus pour la seconde classe |
+| SEC-20 | un export sensible est demandé sans motif ou sans approbation requise | refus et événement de sécurité, sans génération du fichier |
 
 ## 8. Validation de la matrice
 

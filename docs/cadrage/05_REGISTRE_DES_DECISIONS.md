@@ -80,12 +80,12 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 
 | ID | Question à trancher | Propriétaire attendu | Preuve nécessaire | État |
 | --- | --- | --- | --- | --- |
-| SEC-001 | Rôles, permissions combinables et portées par site/classe/matière | direction | matrice validée | Proposition : 13 rôles combinables, permissions sensibles séparées et portées obligatoires ; validation de la direction restante |
-| SEC-002 | Accès aux données médicales, disciplinaires, financières et RH | direction | scénarios d’accès | Ouvert |
-| SEC-003 | Profils soumis à MFA et procédure de récupération | direction/administrateur | politique validée | Ouvert |
+| SEC-001 | Rôles, permissions combinables et portées par site/classe/matière | direction | matrice validée | Rôles combinables, suivi disciplinaire de la classe principale et accès famille limité aux contenus publiés sélectionnés le 29/10/2026 ; matrice nominative à valider |
+| SEC-002 | Accès aux données médicales, disciplinaires, financières et RH | direction | scénarios d’accès | Incidents de la classe principale accessibles au professeur principal sélectionné le 29/10/2026 ; médical à confirmer, restrictions finance/RH à valider |
+| SEC-003 | Profils soumis à MFA et procédure de récupération | direction/administrateur | politique validée | MFA pour profils sensibles sélectionnée le 29/10/2026 ; liste exacte, portails et récupération à confirmer |
 | SEC-004 | Séparation préparateur/validateur/payeur selon les opérations | direction | circuit nominatif | Ouvert |
-| SEC-005 | Exports, motifs, approbations et destinataires externes | direction | inventaire des exports | Ouvert |
-| SEC-006 | Conservation, archivage, suppression et demandes d’accès | direction | politique applicable validée | Ouvert |
+| SEC-005 | Exports, motifs, approbations et destinataires externes | direction | inventaire des exports | Permission séparée et approbation avec motif pour exports sensibles sélectionnées le 29/10/2026 ; catégories et destinataires à inventorier |
+| SEC-006 | Conservation, archivage, suppression et demandes d’accès | direction | politique applicable validée | Validation par la direction avec avis juridique, administratif et informatique sélectionnée le 29/10/2026 ; durées et procédures à fournir |
 | DOC-001 | Modèles, mentions, langues, signatures et paginations | propriétaires des documents | modèles anonymisés | Ouvert |
 | DOC-002 | Publication, retrait de diffusion, rectification et authenticité | direction | procédure validée | Ouvert |
 | OPS-001 | Volumes, postes, sites, connectivité et pics d’utilisation | direction/administrateur | mesures de l’établissement pilote | Ouvert |

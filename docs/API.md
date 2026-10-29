@@ -112,7 +112,7 @@ Les tests d’intégration exigent une base migrée et `DATABASE_URL`. Ils véri
 - le readiness avec une vraie requête SQL ;
 - OpenAPI et la normalisation HTTP des erreurs.
 
-Ils utilisent un seul worker et nettoient uniquement la base jetable configurée. La CI fournit un service PostgreSQL 16 isolé, exécute la même initialisation documentée avec `LAVISION_SKIP_DOCKER=true`, puis lance tous les contrôles et les builds Web/API. Le job Windows ne démarre qu’après leur réussite.
+Ils exécutent les fichiers séquentiellement et nettoient uniquement la base jetable configurée. La CI fournit un service PostgreSQL 16 isolé, exécute la même initialisation documentée avec `LAVISION_SKIP_DOCKER=true`, puis lance tous les contrôles et les builds Web/API. Le job Windows ne démarre qu’après leur réussite.
 
 ## 8. Limites d’exploitation
 

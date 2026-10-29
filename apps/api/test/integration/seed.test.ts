@@ -4,7 +4,7 @@ import { createTestPrismaClient, resetCoreDatabase } from "./helpers.js";
 
 const prisma = createTestPrismaClient();
 
-describe.sequential("seed anonymisé", () => {
+describe("seed anonymisé", () => {
   beforeEach(async () => {
     await resetCoreDatabase(prisma);
   });

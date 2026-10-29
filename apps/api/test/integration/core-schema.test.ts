@@ -9,7 +9,7 @@ async function createOrganization(code: string) {
   });
 }
 
-describe.sequential("contraintes PostgreSQL du socle", () => {
+describe("contraintes PostgreSQL du socle", () => {
   beforeEach(async () => {
     await resetCoreDatabase(prisma);
   });

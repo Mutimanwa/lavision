@@ -6,6 +6,10 @@ node_modules/
 out/
 next-env.d.ts
 
+# Builds / generated sources
+dist/
+apps/api/src/generated/
+
 # Tests / logs
 coverage/
 *.log

@@ -1,58 +1,44 @@
-# Feuille de route vers la production
+# Feuille de route — lavision
 
-## Phase 1 — Socle migré et parcours académique (cette itération)
+La planification opérationnelle est désormais centralisée dans les documents suivants afin d’éviter les doublons :
 
-- [x] audit du prototype PHP/HTML ;
-- [x] Next.js + TypeScript + Tailwind CSS ;
-- [x] inscription et dossier élève ;
-- [x] classes, matières et coefficients ;
-- [x] notes, bulletins et proclamation ;
-- [x] présences et paramètres ;
-- [x] exports CSV, impression et sauvegarde JSON ;
-- [x] tests, lint et build statique ;
-- [x] socle Tauri et build Windows en CI ;
-- [x] préparation au déploiement web.
+- **[Cahier des charges complet](CAHIER_DES_CHARGES.md)** : périmètre fonctionnel, règles, données, sécurité et architecture cible ;
+- **[Plan de réalisation](PLAN_DE_REALISATION.md)** : jalons, estimations, dépendances, équipe et critères de sortie ;
+- **[Backlog GitHub](BACKLOG.md)** : liens directs vers les 38 issues #2 à #39.
 
-## Phase 2 — Backend et sécurité
+## Socle déjà réalisé
 
-- [ ] choisir l’API et la base (recommandation : PostgreSQL) ;
-- [ ] créer les migrations et les contraintes d’intégrité ;
-- [ ] authentification sécurisée et récupération de compte ;
-- [ ] rôles direction, secrétariat, enseignant et consultation ;
-- [ ] autorisations serveur sur chaque opération ;
-- [ ] journal d’audit des notes, décisions et publications ;
-- [ ] import initial des élèves depuis les fichiers existants ;
-- [ ] sauvegardes automatiques et test de restauration.
+- migration du prototype PHP/HTML vers Next.js, TypeScript et Tailwind CSS ;
+- parcours de démonstration inscription, élèves, classes, notes, bulletins et proclamation ;
+- présences, paramètres, exports CSV et sauvegarde JSON ;
+- moteur académique testé ;
+- export web statique et build desktop Tauri Windows en CI.
 
-## Phase 3 — Couverture administrative complète
+Ces acquis restent un prototype local. Ils ne remplacent pas les prérequis de sécurité, de base centralisée et de recette du plan.
 
-- [ ] années scolaires et historisation des affectations ;
-- [ ] enseignants, personnel et attribution des cours ;
-- [ ] emplois du temps ;
-- [ ] documents d’inscription et stockage de fichiers ;
-- [ ] frais de scolarité, paiements et reçus ;
-- [ ] notifications aux responsables ;
-- [ ] rapports académiques et administratifs configurables ;
-- [ ] règles annuelles et conseils de fin d’année.
+**Prochaine étape :** conduire les ateliers M0 à partir du [dossier de cadrage métier](cadrage/README.md), faire valider les exemples et les permissions, puis finaliser les ADR avant l’initialisation de l’API.
 
-## Phase 4 — Desktop production
+## Cible par jalons
 
-- [ ] repository SQLite local via commandes Rust si hors ligne requis ;
-- [ ] synchronisation avec le backend et gestion des conflits ;
-- [ ] mises à jour signées ;
-- [ ] signature de code Windows ;
-- [ ] tests d’installation Windows 10/11 et WebView2 ;
-- [ ] procédure de sauvegarde/restauration sur poste.
+| Jalon | Finalité | Issues |
+| --- | --- | --- |
+| M0 — Cadrage et architecture | règles métier, ADR, permissions et confidentialité | #2–#4 |
+| M1 — Socle production et sécurité | API, PostgreSQL, authentification, RBAC, règles configurables et environnements | #5–#9 et #39 |
+| M2 — Élèves et pédagogie | inscription à proclamation sur données centralisées | #10–#14 |
+| M3 — Finances scolaires | facturation, paiements, caisse, impayés et contrôle | #15–#20 |
+| M4 — Personnel et paie | employés, contrats, congés, présences et paie | #21–#24 |
+| M5 — Portails et communication | accès familles/élèves, notifications et devoirs | #25–#28 |
+| M6 — Recette et mise en production | reporting, desktop, qualité, sauvegardes et bascule | #29–#33 |
+| M7 — Services annexes et hors ligne | bibliothèque, inventaire, transport, internat et synchronisation | #34–#38 |
 
-## Décisions métier à confirmer avec l’établissement
+## Versions cibles
 
-- barème officiel : 20, 100 ou autre ;
-- périodes : trimestres, semestres ou sessions ;
-- formule de moyenne annuelle ;
-- règles d’admission, de redoublement et d’ex æquo ;
-- mentions et appréciations officielles ;
-- modèle réglementaire du bulletin et du procès-verbal ;
-- langues du bulletin et matières par niveau ;
-- niveau d’accès de chaque profil utilisateur.
+- `0.2` : socle API, sécurité et règles configurables sur staging ;
+- `0.3` : élèves et pédagogie centralisés ;
+- `0.4` : finance scolaire ;
+- `0.5` : personnel et paie validée ;
+- `0.6` : portails et communication ;
+- `1.0` : noyau en production après recette ;
+- `1.x` : services annexes, intégrations et hors ligne évolué.
 
-La version actuelle utilise volontairement des valeurs configurables et des règles simples : notes sur 20, trois trimestres, seuil par défaut de 10/20 et dossier complet obligatoire.
+Les durées, responsabilités et conditions de validation sont détaillées dans le plan de réalisation.

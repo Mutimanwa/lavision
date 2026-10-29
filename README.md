@@ -1,121 +1,137 @@
-# LaVision
+# lavision
 
 **Logiciel de gestion scolaire, de l’inscription à la proclamation.**
 
-Cette version constitue la migration du prototype PHP/HTML vers **Next.js, React, TypeScript et Tailwind CSS**. Elle fournit un parcours académique cohérent et une base unique pour le web et le desktop avec **Tauri (Rust)**.
+Le dépôt est un monorepo **Next.js / NestJS / PostgreSQL**. Il contient le prototype d’interfaces déjà livré et le premier socle technique M1, sans réécrire les features existantes.
 
-## Fonctionnalités livrées
+## État actuel
 
-- **Tableau de bord** : effectifs, moyennes, réussite, progression des notes et présences ;
-- **Inscription en 4 étapes** : identité, scolarité, responsable légal et confirmation, avec matricule automatique ;
-- **Répertoire des élèves** : recherche, filtres, dossier détaillé, modification et export CSV ;
-- **Classes et matières** : capacités, salles, professeurs principaux et coefficients modifiables ;
-- **Notes** : saisie groupée par classe/matière/période, validation sur 20 et export ;
-- **Bulletins** : moyenne pondérée, rang, appréciations, assiduité, impression/PDF et CSV ;
-- **Proclamation** : classement avec ex æquo, contrôle des dossiers complets, décisions et publication officielle ;
-- **Présences** : appel quotidien, retards, absences, excuses et historique ;
-- **Paramètres** : identité de l’établissement, période active, seuil de réussite et sauvegardes JSON ;
-- **Desktop** : socle Tauri 2 et workflow Windows pour produire les installateurs.
+- **Web et desktop :** prototype fonctionnel local avec Next.js, TypeScript, Tailwind CSS et Tauri. Les données de démonstration restent dans `localStorage` jusqu’au raccordement prévu en M2.
+- **API :** socle NestJS/Fastify versionné sous `/api/v1`, contrats Zod/OpenAPI, erreurs normalisées, endpoints techniques et noyau d’authentification #6.
+- **Base :** PostgreSQL/Prisma, migrations du socle et de l’authentification, seed fictif pour organisations, sites, utilisateurs et appartenances.
+- **CI :** tests unitaires et d’intégration PostgreSQL, typecheck, lint, builds Web/API et installateurs Windows.
 
-> **État des données :** cette itération utilise `localStorage` avec un jeu de démonstration fictif. Elle est adaptée à la validation fonctionnelle et au prototype desktop monoposte. Elle ne constitue pas encore un backend multiutilisateur sécurisé.
+> **Limites :** le frontend n’est pas encore raccordé à l’API et le RBAC métier/audit complet reste en #7. Aucune donnée réelle, règle officielle ou infrastructure de production n’est livrée. Le moteur académique officiel et la finance/paie restent dans leurs issues dédiées. Le sélecteur de rôle du frontend est uniquement un aperçu UX.
 
-## Stack
+## Structure du monorepo
 
-| Couche | Technologie |
-| --- | --- |
-| Frontend | Next.js 16, React 19, TypeScript |
-| Styles | Tailwind CSS 4 + composants métier |
-| Icônes | Lucide React |
-| Tests | Vitest |
-| Desktop | Tauri 2 / Rust |
-| Build web | Export statique dans `out/` |
-| CI | GitHub Actions |
+```text
+apps/
+├── web/                       # frontend Next.js et features existantes
+│   ├── src/app/(school)/      # route groups, URL publiques inchangées
+│   ├── src/components/        # composants réutilisables partagés
+│   ├── src/features/          # pages, hooks, services et données métier
+│   ├── src/lib/               # types et calculs purs du prototype
+│   └── out/                   # export statique généré, non versionné
+└── api/                       # API NestJS/Fastify
+    ├── prisma/                # schéma, migrations et seed fictif
+    ├── src/modules/           # système, infrastructure et authentification #6
+    ├── src/database/          # client PostgreSQL/Prisma partagé
+    ├── test/integration/      # tests sur PostgreSQL réel
+    └── openapi/openapi.json   # contrat OpenAPI 3.1 généré
+packages/
+├── contracts/                 # schémas Zod, erreurs, permissions, OpenAPI
+└── testing/                   # fixtures entièrement fictives
+scripts/                       # serveur statique et initialisation locale
+src-tauri/                     # shell Windows/Rust
+compose.yml                    # PostgreSQL local jetable
+legacy/                        # prototype PHP/HTML initial, référence seulement
+docs/                          # cadrage, architecture et guides
+```
 
-## Démarrage local
+Les règles de dépendance du frontend sont décrites dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
-Prérequis : **Node.js 22.12 ou supérieur** et npm.
+## Prérequis
+
+- **Node.js 22.18 ou supérieur** et npm ;
+- **Docker avec Compose v2** pour le démarrage PostgreSQL local en une commande ;
+- Rust et les prérequis Tauri uniquement pour compiler le desktop.
+
+## Démarrer le prototype Web
 
 ```bash
 npm ci
-npm run dev
+npm run dev:web
 ```
 
-Ouvrir `http://localhost:3000`.
+Ouvrir `http://localhost:3000`. Cette commande n’a pas besoin de PostgreSQL et ne modifie pas les données locales existantes.
 
-### Commandes
+## Démarrer le socle API sur un environnement vierge
+
+Après `npm ci`, une seule commande prépare la base et démarre l’API :
 
 ```bash
-npm run dev          # serveur de développement sur 0.0.0.0
-npm test             # tests du moteur académique
-npm run lint         # ESLint
-npm run build        # vérifications TypeScript + export statique
-npm run tauri dev    # application desktop (Rust requis)
-npm run tauri build  # bundles desktop de la plateforme
+npm run dev:api:local
 ```
 
-## Structure
+Elle copie `apps/api/.env.example` vers `apps/api/.env` si nécessaire, démarre PostgreSQL, génère Prisma, applique les migrations, exécute le seed anonymisé puis lance l’API. Un `.env` existant n’est jamais écrasé.
 
-```text
-src/
-├── app/                    # routes Next.js App Router
-├── components/             # shell et modules métier
-└── lib/
-    ├── academic.ts         # moyennes, bulletins, rangs et décisions
-    ├── academic.test.ts    # tests du calcul académique
-    ├── seed.ts             # données fictives de démonstration
-    └── types.ts            # contrat du modèle de données
-public/                     # icône et ressources statiques
-src-tauri/                  # application Rust/Tauri
-legacy/                     # prototype PHP/HTML initial, conservé comme référence
-docs/                       # audit, architecture et guides de livraison
-.github/workflows/          # contrôles web et build Windows
-```
+Endpoints disponibles sur `http://localhost:3001` :
 
-## Règles académiques
+| Endpoint | Objet |
+| --- | --- |
+| `GET /api/v1/health/live` | disponibilité du processus |
+| `GET /api/v1/health/ready` | vérification réelle de PostgreSQL |
+| `GET /api/v1/version` | nom et versions du service/API |
+| `GET /api/v1/openapi.json` | document OpenAPI 3.1 |
 
-- chaque note est comprise entre **0 et 20** ;
-- la moyenne d’un bulletin est la somme `note × coefficient` divisée par les coefficients des matières notées ;
-- une note absente n’est pas une note de zéro ;
-- un élève sans toutes ses notes est marqué **Incomplet**, sans rang définitif ;
-- la proclamation est bloquée tant qu’un dossier de la classe est incomplet ;
-- un dossier complet est **Admis** si sa moyenne atteint le seuil configuré, sinon **Ajourné** ;
-- les ex æquo partagent le même rang.
+Les routes `/api/v1/auth/*` couvrent désormais invitation, sessions, récupération et MFA. Elles sont décrites avec leurs critères de sécurité dans [`docs/API.md`](docs/API.md) ; le frontend reste à raccorder.
 
-Ces règles sont centralisées dans `src/lib/academic.ts`, jamais dupliquées dans les écrans.
+Pour arrêter les conteneurs : `docker compose down`. Le volume local peut être supprimé explicitement avec `docker compose down -v` si toutes les données locales jetables peuvent être perdues.
 
-## Sauvegarde et restauration
+Le guide complet, les commandes manuelles et les limites sont dans [`docs/API.md`](docs/API.md).
 
-La page **Paramètres** permet de télécharger une sauvegarde JSON et de la restaurer. Les exports CSV utilisent un encodage UTF-8 avec séparateur `;` pour faciliter leur ouverture dans les tableurs francophones.
-
-## Déploiement
+## Vérifications et builds
 
 ```bash
-npm run build
+npm test                 # tests unitaires, frontend et contrats
+npm run test:integration # nécessite PostgreSQL migré et DATABASE_URL
+npm run typecheck        # tous les workspaces
+npm run lint
+npm run openapi:check    # vérifie que le document versionné est à jour
+npm run build            # build API + export statique Web
+npm run build:web        # frontend seul, notamment pour Tauri/Docker
 ```
 
-Le dossier `out/` peut être publié sur un hébergement statique. Un `Dockerfile` est également fourni :
+L’export Web est généré dans `apps/web/out/`. Les clients Prisma, builds et artefacts ne sont pas versionnés ; la migration SQL et le document OpenAPI le sont.
+
+## Prototype fonctionnel existant
+
+Les interfaces conservées comprennent notamment le tableau de bord par rôle, les inscriptions, les élèves, les classes, les notes, les bulletins, les présences, la proclamation, les paramètres et l’activation progressive des modules. Elles continuent d’utiliser leurs services locaux actuels.
+
+Ces écrans ne constituent pas une preuve de calcul officiel. Les sections, options, cours, maxima, pondérations et validateurs restent des configurations locales versionnées à traiter dans les issues métier ; aucune valeur inconnue n’est devinée dans le socle.
+
+## Docker Web
+
+Le `Dockerfile` racine construit uniquement le frontend statique et le sert avec Nginx :
 
 ```bash
-docker build -t lavision .
-docker run --rm -p 8080:80 lavision
+docker build -t lavision:0.1.0 .
+docker run --rm -p 8080:80 --name lavision lavision:0.1.0
 ```
 
-Voir [`docs/DEPLOIEMENT.md`](docs/DEPLOIEMENT.md).
+Cela ne déploie ni l’API ni une production sécurisée. Voir [`docs/DEPLOIEMENT.md`](docs/DEPLOIEMENT.md).
 
-## Application Windows `.exe`
-
-Le build Windows s’effectue sur Windows ou via le workflow GitHub Actions fourni :
+## Application Windows
 
 ```bash
+npm run tauri dev
 npm run tauri build
 ```
 
-Les artefacts sont générés sous `src-tauri/target/release/bundle/` (NSIS `.exe` et MSI). Voir [`docs/DESKTOP.md`](docs/DESKTOP.md).
+Tauri utilise le build Web de `apps/web/out/` et produit les installateurs NSIS/MSI sous `src-tauri/target/release/bundle/`. La CI Windows les publie comme artefacts ; aucun exécutable n’est stocké dans Git. Voir [`docs/DESKTOP.md`](docs/DESKTOP.md).
 
 ## Documentation
 
-- [Audit du projet initial](docs/AUDIT.md)
+- [Socle API, PostgreSQL et recette](docs/API.md)
 - [Architecture et modèle métier](docs/ARCHITECTURE.md)
-- [Déploiement web](docs/DEPLOIEMENT.md)
+- [ADR de l’architecture M1](docs/adr/README.md)
+- [Cahier des charges](docs/CAHIER_DES_CHARGES.md)
+- [Plan de réalisation](docs/PLAN_DE_REALISATION.md)
+- [Backlog GitHub](docs/BACKLOG.md)
+- [Dossier de cadrage métier M0](docs/cadrage/README.md)
+- [Revue de sortie M0 et périmètre #5](docs/cadrage/13_REVUE_DE_SORTIE_M0.md)
+- [Interfaces par rôle et activation progressive](docs/cadrage/11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md)
+- [Déploiement Web](docs/DEPLOIEMENT.md)
 - [Application desktop Tauri](docs/DESKTOP.md)
 - [Feuille de route production](docs/ROADMAP.md)

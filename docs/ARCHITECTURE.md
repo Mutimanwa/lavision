@@ -1,8 +1,10 @@
-# Architecture LaVision
+# Architecture lavision
 
-## Vue d’ensemble
+## 1. Vue d’ensemble
 
-LaVision est organisé autour d’un **modèle académique unique**. Les écrans ne possèdent pas chacun une copie de leurs données : inscriptions, notes, bulletins et proclamation consomment le même état typé.
+lavision distingue désormais le **prototype fonctionnel local** du **socle serveur M1**. Le déplacement du frontend dans le monorepo ne change ni ses routes, ni ses features, ni sa persistance actuelle. Le raccordement des repositories à l’API interviendra en M2 avec l’authentification et les autorisations.
+
+Le parcours fonctionnel existant reste organisé autour d’un modèle académique partagé :
 
 ```text
 Inscription ──► Dossier élève ──► Affectation à une classe
@@ -11,7 +13,7 @@ Inscription ──► Dossier élève ──► Affectation à une classe
                             Saisie des notes par matière
                                       │
                                       ▼
-                         Moteur académique (pur et testé)
+                      Calculs purs du prototype, testés
                              │                  │
                              ▼                  ▼
                           Bulletin          Classement
@@ -20,83 +22,143 @@ Inscription ──► Dossier élève ──► Affectation à une classe
                                           Proclamation
 ```
 
-## Frontend
+Ce schéma ne vaut pas validation du moteur officiel. Les règles locales versionnées, leur circuit de publication et les décisions officielles restent traités par les issues métier dédiées.
 
-- **App Router** : une route par module métier ;
-- **composants clients** : formulaires et interactions, préfixés par `use client` ;
-- **SchoolProvider** : état partagé et opérations de modification ;
-- **Tailwind CSS** : thème et utilitaires, complétés par des classes de composants métier dans `globals.css` ;
-- **export statique** : aucune route serveur n’est nécessaire pour le prototype, ce qui permet le même artefact sur le web et dans Tauri.
+## 2. Monorepo
 
-## Modèle de données
+| Workspace | Responsabilité |
+| --- | --- |
+| `apps/web` | interfaces Next.js, features et prototype local |
+| `apps/api` | monolithe NestJS/Fastify, PostgreSQL/Prisma et endpoints techniques |
+| `packages/contracts` | contrats Zod, erreurs, permissions et document OpenAPI |
+| `packages/testing` | fixtures fictives partagées par le seed et les tests |
 
-Les contrats se trouvent dans `src/lib/types.ts`.
+Les dépendances vont des applications vers les packages partagés. Le frontend ne dépend pas de Prisma et ne reçoit aucun accès PostgreSQL. L’API ne dépend pas des composants React.
+
+## 3. Frontend
+
+- **App Router** : routes organisées dans `(school)` et ses sous-groupes `(dashboard)`, `(people)`, `(academic)` et `(configuration)` ; les parenthèses ne modifient pas les URL ;
+- **pages `app` minimales** : métadonnées et appel des pages de features, sans duplication de logique métier ;
+- **composants clients** : formulaires et interactions préfixés par `use client` ;
+- **SchoolProvider** : état local partagé et opérations du prototype ;
+- **Tailwind CSS** : thème, utilitaires et classes de composants métier ;
+- **export statique** : artefact `apps/web/out/`, commun au Web et à Tauri.
+
+### Organisation par features
+
+```text
+apps/web/src/
+├── app/(school)/                 # points d’entrée Next.js et groupes de routes
+├── components/
+│   ├── forms/                    # contrôles de formulaire réutilisables
+│   ├── layout/                   # shell et navigation communs
+│   └── ui/                       # primitives UI et tableau générique
+├── features/
+│   ├── auth/data/                # catalogue initial des rôles
+│   ├── dashboard/pages/
+│   ├── students/pages/
+│   ├── enrollments/pages/
+│   ├── classes/pages/
+│   ├── grades/pages/
+│   ├── reports/pages/
+│   ├── attendance/pages/
+│   ├── proclamation/pages/
+│   ├── settings/pages/
+│   └── school/
+│       ├── context/              # provider et contrat du contexte
+│       ├── hooks/                # useSchool
+│       ├── services/             # persistance locale
+│       └── data/                 # données fictives de démonstration
+└── lib/                          # types, calculs purs et utilitaires transverses
+```
+
+Une feature suit ce contrat lorsque ses besoins augmentent :
+
+```text
+features/<feature>/
+├── pages/                        # écrans appelés par app/
+├── components/                   # composants propres à la feature
+├── hooks/                        # logique d’interface réutilisable
+├── services/                     # accès aux données et effets externes
+└── data/                         # constantes ou données locales
+```
+
+Les dossiers ne sont créés que lorsqu’ils ont un contenu réel. La feature `auth` contient le catalogue fonctionnel des rôles ; cela ne simule pas une authentification ou un RBAC serveur.
+
+Règles de dépendance :
+
+1. `components` ne contient que du code réellement partagé et ne dépend d’aucune page métier ;
+2. une page de feature peut consommer `components`, `lib` et la feature transverse `school` ;
+3. un composant propre à un seul module reste dans sa feature ;
+4. les calculs purs ne dépendent ni de React ni de Next.js ;
+5. les route groups ne modifient pas les URL publiques existantes.
+
+## 4. Modèle du prototype
+
+Les contrats locaux se trouvent dans `apps/web/src/lib/types.ts`.
 
 | Entité | Rôle |
 | --- | --- |
 | `Student` | identité, affectation, statut et responsable légal |
 | `SchoolClass` | niveau, salle, capacité et professeur principal |
-| `Subject` | nom, code et coefficient |
+| `Subject` | nom, code et coefficient du prototype |
 | `Grade` | note d’un élève pour une matière et une période |
 | `AttendanceRecord` | statut quotidien de présence |
-| `Publication` | publication d’une classe pour une période |
-| `SchoolSettings` | identité de l’école et règles générales |
-| `AppState` | agrégat versionné de toutes les données |
+| `Publication` | état de publication local du prototype |
+| `SchoolSettings` | identité de l’école et paramètres locaux |
+| `AppState` | agrégat versionné des données du prototype |
 
-Les identifiants de notes sont déterministes (`élève-matière-période`), ce qui rend une nouvelle saisie idempotente.
+`apps/web/src/lib/academic.ts` contient les fonctions pures existantes pour les lignes de bulletin, les moyennes du prototype, le classement et les ex æquo. Leurs tests restent exécutés après le déplacement. Elles ne sont pas présentées comme le moteur officiel configurable de l’issue #39.
 
-## Moteur académique
+## 5. Persistance locale actuelle
 
-`src/lib/academic.ts` contient uniquement des fonctions pures :
+`SchoolProvider` délègue la clé `lavision.school.v1` à `apps/web/src/features/school/services/school-storage.ts`, qui encapsule `localStorage` et la validation de la sauvegarde.
 
-- `getStudentReport` assemble les lignes du bulletin et calcule la moyenne ;
-- `getClassRanking` ordonne les dossiers complets et gère les ex æquo ;
-- `getAppreciation` fournit une appréciation homogène ;
-- les helpers de formatage ne modifient jamais les données sources.
+Avantages : démonstration sans infrastructure, même code Web/desktop et export/import JSON versionné.
 
-Les tests couvrent la pondération, les notes nulles, les absences de notes, les ex æquo et les décisions d’admission.
+Limites : données propres au navigateur ou à la WebView, absence de synchronisation, de contrôle d’accès serveur et de sauvegarde centralisée.
 
-## Persistance actuelle
+## 6. Socle serveur initial
 
-`SchoolProvider` lit et écrit la clé `lavision.school.v1` dans `localStorage`.
+L’API utilise NestJS avec l’adaptateur Fastify et le préfixe `/api/v1`. Les premiers modules sont :
 
-Avantages :
+- `SystemModule` : liveness, readiness, version et OpenAPI ;
+- `InfrastructureModule` : client Prisma/PostgreSQL partagé ;
+- filtre global Problem Details pour les erreurs HTTP stables.
 
-- aucune infrastructure requise pour la démonstration ;
-- fonctionnement web et desktop avec le même code ;
-- export/import JSON versionné ;
-- réinitialisation facile.
+Le schéma `apps/api/prisma/schema.prisma` couvre uniquement les agrégats de socle : organisations, sites, utilisateurs et appartenances. Les contraintes PostgreSQL complètent les schémas Zod. La migration SQL et le seed fictif sont versionnés ; le client Prisma est généré.
 
-Limites :
+Le frontend n’est pas encore connecté à ces modules. La procédure de recette et les limites sont détaillées dans [API.md](API.md).
 
-- données propres au navigateur ou au WebView ;
-- pas de synchronisation entre postes ;
-- pas de contrôle d’accès ni de chiffrement applicatif ;
-- pas de garantie de sauvegarde serveur.
+## 7. Raccordement progressif
 
-## Évolution vers un backend
-
-L’étape production recommandée consiste à remplacer les opérations du provider par un **repository de données** sans changer les contrats des composants :
+L’évolution prévue consiste à introduire des repositories sans réécrire les composants :
 
 ```text
 SchoolProvider
       │
       ▼
 SchoolRepository (interface)
-      ├── LocalSchoolRepository   # prototype / hors ligne
-      └── ApiSchoolRepository     # production multiutilisateur
+      ├── LocalSchoolRepository   # prototype / repli local explicite
+      └── ApiSchoolRepository     # cible multiutilisateur authentifiée
                 │
                 ▼
        API authentifiée + PostgreSQL
 ```
 
-Le backend devra recalculer ou valider les décisions sensibles, appliquer les autorisations et empêcher qu’un client modifie directement une moyenne ou une publication.
+L’API devra valider les entrées, appliquer les permissions et portées, recalculer ou vérifier les décisions sensibles et empêcher qu’un client impose directement une moyenne, un rang ou une publication. L’authentification/MFA (#6) et le RBAC/audit (#7) précèdent ce raccordement métier.
 
-## Desktop
+## 8. Desktop
 
-Tauri embarque le dossier `out/` dans une WebView native. Rust fournit le shell applicatif et les installateurs ; aucune duplication du frontend n’est nécessaire.
+Tauri embarque `apps/web/out/` dans une WebView native. Rust fournit le shell et les installateurs ; aucune duplication du frontend n’est nécessaire.
 
 - développement : Tauri charge le serveur Next.js local ;
-- production : Tauri charge les fichiers statiques intégrés ;
-- données : stockage local de la WebView dans le prototype ;
-- cible future : adapter le repository local à SQLite via des commandes Rust si un mode hors ligne robuste est requis.
+- production desktop : Tauri charge les fichiers statiques intégrés ;
+- données actuelles : stockage local de la WebView ;
+- cible : client online-first HTTPS, sans connexion directe à PostgreSQL, Redis ou S3.
+
+## 9. Cible M1 et ADR
+
+La cible M1 est un **monolithe modulaire NestJS**, avec PostgreSQL/Prisma, contrats OpenAPI, stockage S3 privé, worker Redis/BullMQ et clients Web/Tauri authentifiés. Seul le premier socle API/PostgreSQL est implémenté ici ; les autres composants restent des évolutions planifiées.
+
+Les huit ADR sont **acceptés pour M1** depuis le 29 octobre 2026. Leur validation autorise #5 sans clôturer #3 ni valider une infrastructure de production. Les menaces, frontières de domaines, stratégies de retour arrière et exigences d’environnement sont regroupées dans le [dossier des ADR](adr/README.md).

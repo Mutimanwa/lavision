@@ -1,8 +1,8 @@
 [package]
 name = "lavision"
 version = "0.1.0"
-description = "LaVision — gestion scolaire de l'inscription à la proclamation"
-authors = ["LaVision"]
+description = "lavision — gestion scolaire de l'inscription à la proclamation"
+authors = ["lavision"]
 edition = "2024"
 rust-version = "1.90"
 repository = "https://github.com/Mutimanwa/lavision"

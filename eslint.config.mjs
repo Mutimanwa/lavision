@@ -5,9 +5,19 @@ import nextTs from "eslint-config-next/typescript";
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    settings: {
+      next: {
+        rootDir: "apps/web",
+      },
+    },
+  },
   globalIgnores([
-    ".next/**",
-    "out/**",
+    "**/.next/**",
+    "**/out/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/generated/**",
     "node_modules/**",
     "src-tauri/target/**",
     "legacy/**",

@@ -1,0 +1,618 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  DISABLED
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum Role {
+  TECHNICAL_ADMIN  @map("technical_admin")
+  DIRECTION        @map("direction")
+  ACADEMIC_MANAGER @map("academic_manager")
+  SCHOOL_SECRETARY @map("school_secretary")
+  STUDENT_AFFAIRS  @map("student_affairs")
+  TEACHER          @map("teacher")
+  ACCOUNTANT       @map("accountant")
+  CASHIER          @map("cashier")
+  HR_MANAGER       @map("hr_manager")
+  EMPLOYEE         @map("employee")
+  GUARDIAN         @map("guardian")
+  STUDENT          @map("student")
+  AUDITOR          @map("auditor")
+}
+
+enum AuthTokenKind {
+  INVITATION
+  PASSWORD_RESET
+  MFA_LOGIN
+  MFA_SETUP
+}
+
+enum AuthEventOutcome {
+  SUCCESS
+  FAILURE
+  RATE_LIMITED
+}
+
+enum AuthRateAction {
+  LOGIN
+  MFA
+  PASSWORD_RESET
+}
+
+enum AccessResourceType {
+  ORGANIZATION @map("organization")
+  SITE         @map("site")
+  LEVEL        @map("level")
+  ROOM         @map("room")
+  SCHOOL_YEAR  @map("school_year")
+  PERIOD       @map("period")
+  NON_WORKING_DAY @map("non_working_day")
+  CLASS        @map("class")
+  SUBJECT      @map("subject")
+  SECTION      @map("section")
+  OPTION       @map("option")
+  PROGRAM      @map("program")
+  STUDENT      @map("student")
+  EMPLOYEE     @map("employee")
+  NOTE         @map("note")
+  PAYMENT      @map("payment")
+  PAYROLL      @map("payroll")
+  PROCLAMATION @map("proclamation")
+  PERMISSION   @map("permission")
+  OTHER        @map("other")
+}
+
+enum AccessRelationType {
+  TEACHER_CLASS    @map("teacher_class")
+  TEACHER_SUBJECT  @map("teacher_subject")
+  PRINCIPAL_CLASS  @map("principal_class")
+  GUARDIAN_STUDENT @map("guardian_student")
+  STUDENT_SELF     @map("student_self")
+  EMPLOYEE_SELF    @map("employee_self")
+}
+
+enum AuditOutcome {
+  SUCCESS
+  DENIED
+  FAILURE
+}
+
+enum SchoolYearStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum RuleVersionStatus {
+  DRAFT
+  IN_REVIEW
+  VALIDATED
+  APPROVED
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+enum RuleSimulationStatus {
+  PASSED
+  FAILED
+}
+
+model Organization {
+  id          String                   @id @default(uuid()) @db.Uuid
+  code        String                   @unique @db.VarChar(32)
+  name        String                   @db.VarChar(160)
+  createdAt   DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime                 @updatedAt @db.Timestamptz(6)
+  archivedAt  DateTime?                @db.Timestamptz(6)
+  sites       Site[]
+  memberships OrganizationMembership[]
+  resources   AccessResource[]
+  levels      AcademicLevel[]
+  rooms       Room[]
+  schoolYears SchoolYear[]
+  ruleSets    RuleSet[]
+
+  @@map("organizations")
+}
+
+model Site {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  code           String           @db.VarChar(32)
+  name           String           @db.VarChar(160)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?        @db.Timestamptz(6)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  resources      AccessResource[]
+  rooms          Room[]
+  nonWorkingDays NonWorkingDay[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+  @@map("sites")
+}
+
+model AcademicLevel {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  code           String       @db.VarChar(32)
+  name           String       @db.VarChar(160)
+  rank           Int
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([organizationId, code])
+  @@index([organizationId, archivedAt])
+  @@map("academic_levels")
+}
+
+model Room {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  siteId         String       @db.Uuid
+  code           String       @db.VarChar(32)
+  name           String       @db.VarChar(160)
+  capacity       Int?
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([siteId, code])
+  @@index([organizationId, siteId, archivedAt])
+  @@map("rooms")
+}
+
+model SchoolYear {
+  id              String           @id @default(uuid()) @db.Uuid
+  organizationId  String           @db.Uuid
+  code            String           @db.VarChar(32)
+  name            String           @db.VarChar(160)
+  startDate       DateTime         @db.Date
+  endDate         DateTime         @db.Date
+  status          SchoolYearStatus @default(DRAFT)
+  closedAt        DateTime?        @db.Timestamptz(6)
+  closedByUserId  String?          @db.Uuid
+  closureReason   String?          @db.VarChar(500)
+  reopenedAt      DateTime?        @db.Timestamptz(6)
+  reopenedByUserId String?         @db.Uuid
+  reopenReason    String?          @db.VarChar(500)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt      DateTime?        @db.Timestamptz(6)
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  periods         SchoolPeriod[]
+  nonWorkingDays  NonWorkingDay[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, status, archivedAt])
+  @@map("school_years")
+}
+
+model SchoolPeriod {
+  id           String      @id @default(uuid()) @db.Uuid
+  schoolYearId String      @db.Uuid
+  code         String      @db.VarChar(32)
+  name         String      @db.VarChar(160)
+  sequence     Int
+  startDate    DateTime    @db.Date
+  endDate      DateTime    @db.Date
+  createdAt    DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime    @updatedAt @db.Timestamptz(6)
+  archivedAt   DateTime?   @db.Timestamptz(6)
+  schoolYear   SchoolYear  @relation(fields: [schoolYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([schoolYearId, code])
+  @@unique([schoolYearId, sequence])
+  @@index([schoolYearId, startDate, endDate])
+  @@map("school_periods")
+}
+
+model NonWorkingDay {
+  id           String      @id @default(uuid()) @db.Uuid
+  schoolYearId String      @db.Uuid
+  siteId       String?     @db.Uuid
+  day          DateTime    @db.Date
+  reason       String      @db.VarChar(160)
+  createdAt    DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime    @updatedAt @db.Timestamptz(6)
+  archivedAt   DateTime?   @db.Timestamptz(6)
+  schoolYear   SchoolYear  @relation(fields: [schoolYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  site         Site?       @relation(fields: [siteId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([schoolYearId, siteId, day])
+  @@map("non_working_days")
+}
+
+model ReferentialRevision {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  entityType     String   @db.VarChar(32)
+  entityId       String   @db.Uuid
+  action         String   @db.VarChar(64)
+  reason         String?  @db.VarChar(500)
+  actorUserId    String?  @db.Uuid
+  requestId      String   @db.Uuid
+  before         Json?    @db.JsonB
+  after          Json?    @db.JsonB
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([organizationId, entityType, entityId, createdAt])
+  @@map("referential_revisions")
+}
+
+model User {
+  id            String                   @id @default(uuid()) @db.Uuid
+  email         String                   @unique @db.Citext
+  displayName   String                   @db.VarChar(160)
+  status        UserStatus               @default(INVITED)
+  passwordHash  String?
+  authVersion   Int                      @default(0)
+  lastLoginAt   DateTime?                @db.Timestamptz(6)
+  createdAt     DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime                 @updatedAt @db.Timestamptz(6)
+  archivedAt    DateTime?                @db.Timestamptz(6)
+  memberships   OrganizationMembership[]
+  sessions      AuthSession[]
+  oneTimeTokens AuthOneTimeToken[]
+  mfaCredential MfaCredential?
+  recoveryCodes MfaRecoveryCode[]
+  authEvents    AuthEvent[]
+
+  @@map("users")
+}
+
+model OrganizationMembership {
+  id              String           @id @default(uuid()) @db.Uuid
+  organizationId  String           @db.Uuid
+  userId          String           @db.Uuid
+  status          MembershipStatus @default(ACTIVE)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt      DateTime?        @db.Timestamptz(6)
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  roleAssignments RoleAssignment[]
+  permissionGrants PermissionGrant[]
+  accessRelations  AccessRelation[]
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("organization_memberships")
+}
+
+model RoleAssignment {
+  id           String                 @id @default(uuid()) @db.Uuid
+  membershipId String                 @db.Uuid
+  role         Role
+  scopeId      String                 @db.Uuid
+  createdAt    DateTime               @default(now()) @db.Timestamptz(6)
+  archivedAt   DateTime?              @db.Timestamptz(6)
+  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scope        AccessResource         @relation(fields: [scopeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([membershipId, role, scopeId])
+  @@index([role])
+  @@index([scopeId])
+  @@map("role_assignments")
+}
+
+model AccessResource {
+  id             String            @id @default(uuid()) @db.Uuid
+  organizationId String            @db.Uuid
+  siteId         String?           @db.Uuid
+  parentId       String?           @db.Uuid
+  type           AccessResourceType
+  createdAt      DateTime          @default(now()) @db.Timestamptz(6)
+  archivedAt     DateTime?         @db.Timestamptz(6)
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  site           Site?             @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parent         AccessResource?   @relation("ResourceHierarchy", fields: [parentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  children       AccessResource[]  @relation("ResourceHierarchy")
+  roleAssignments RoleAssignment[]
+  permissionGrants PermissionGrant[]
+  accessRelations AccessRelation[]
+
+  @@index([organizationId, type])
+  @@index([siteId, type])
+  @@index([parentId])
+  @@map("access_resources")
+}
+
+model PermissionGrant {
+  id           String                 @id @default(uuid()) @db.Uuid
+  membershipId String                 @db.Uuid
+  permission   String                 @db.VarChar(96)
+  scopeId      String                 @db.Uuid
+  createdAt    DateTime               @default(now()) @db.Timestamptz(6)
+  archivedAt   DateTime?              @db.Timestamptz(6)
+  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scope        AccessResource         @relation(fields: [scopeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([membershipId, permission, scopeId])
+  @@index([permission, scopeId])
+  @@map("permission_grants")
+}
+
+model AccessRelation {
+  id           String                 @id @default(uuid()) @db.Uuid
+  membershipId String                 @db.Uuid
+  relation     AccessRelationType
+  resourceId   String                 @db.Uuid
+  createdAt    DateTime               @default(now()) @db.Timestamptz(6)
+  archivedAt   DateTime?              @db.Timestamptz(6)
+  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  resource     AccessResource         @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([membershipId, relation, resourceId])
+  @@index([resourceId, relation])
+  @@map("access_relations")
+}
+
+model AuditEvent {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  actorUserId    String?      @db.Uuid
+  action         String       @db.VarChar(96)
+  resourceType   String       @db.VarChar(64)
+  resourceId     String?      @db.Uuid
+  outcome        AuditOutcome
+  requestId      String       @db.Uuid
+  reason         String?      @db.VarChar(96)
+  context        Json?        @db.JsonB
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+
+  @@index([organizationId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([action, createdAt])
+  @@index([resourceType, resourceId, createdAt])
+  @@map("audit_events")
+}
+
+model AuthSession {
+  id                String    @id @default(uuid()) @db.Uuid
+  userId            String    @db.Uuid
+  tokenHash         String    @unique @db.Char(64)
+  csrfTokenHash     String    @db.Char(64)
+  authVersion       Int
+  mfaVerifiedAt     DateTime? @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(6)
+  lastSeenAt        DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt         DateTime  @db.Timestamptz(6)
+  absoluteExpiresAt DateTime  @db.Timestamptz(6)
+  revokedAt         DateTime? @db.Timestamptz(6)
+  revocationReason  String?   @db.VarChar(64)
+  userAgent         String?   @db.VarChar(512)
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+  @@map("auth_sessions")
+}
+
+model AuthOneTimeToken {
+  id           String        @id @default(uuid()) @db.Uuid
+  userId       String        @db.Uuid
+  kind         AuthTokenKind
+  tokenHash    String        @unique @db.Char(64)
+  attemptCount Int           @default(0)
+  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  expiresAt    DateTime      @db.Timestamptz(6)
+  consumedAt   DateTime?     @db.Timestamptz(6)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, kind, consumedAt])
+  @@map("auth_one_time_tokens")
+}
+
+model MfaCredential {
+  id                   String    @id @default(uuid()) @db.Uuid
+  userId               String    @unique @db.Uuid
+  secretCiphertext     String    @db.Text
+  confirmedAt          DateTime? @db.Timestamptz(6)
+  lastAcceptedTimeStep Int?
+  createdAt            DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime  @updatedAt @db.Timestamptz(6)
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("mfa_credentials")
+}
+
+model MfaRecoveryCode {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  codeHash  String    @db.Char(64)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  usedAt    DateTime? @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, codeHash])
+  @@index([userId, usedAt])
+  @@map("mfa_recovery_codes")
+}
+
+model AuthEvent {
+  id          String           @id @default(uuid()) @db.Uuid
+  userId      String?          @db.Uuid
+  action      String           @db.VarChar(64)
+  outcome     AuthEventOutcome
+  reason      String?          @db.VarChar(64)
+  requestId   String           @db.Uuid
+  subjectHash String?          @db.Char(64)
+  ipHash      String?          @db.Char(64)
+  userAgent   String?          @db.VarChar(512)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(6)
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@map("auth_events")
+}
+
+model AuthRateBucket {
+  id             String         @id @default(uuid()) @db.Uuid
+  action         AuthRateAction
+  keyHash        String         @db.Char(64)
+  windowStartedAt DateTime      @db.Timestamptz(6)
+  failureCount   Int            @default(0)
+  blockedUntil   DateTime?      @db.Timestamptz(6)
+  updatedAt      DateTime       @updatedAt @db.Timestamptz(6)
+
+  @@unique([action, keyHash])
+  @@map("auth_rate_buckets")
+}
+
+model RuleSet {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  domain         String           @db.VarChar(32)
+  code           String           @db.VarChar(64)
+  name           String           @db.VarChar(160)
+  purpose        String           @db.VarChar(500)
+  scopeOrder     Json             @db.JsonB
+  definitionKeys Json             @db.JsonB
+  nextVersion    Int              @default(1)
+  createdById    String           @db.Uuid
+  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?        @db.Timestamptz(6)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  versions       RuleSetVersion[]
+
+  @@unique([organizationId, domain, code])
+  @@index([organizationId, domain, archivedAt])
+  @@map("rule_sets")
+}
+
+model RuleSetVersion {
+  id                      String              @id @default(uuid()) @db.Uuid
+  ruleSetId               String              @db.Uuid
+  version                 Int
+  status                  RuleVersionStatus   @default(DRAFT)
+  effectiveFrom           DateTime            @db.Date
+  effectiveTo             DateTime?           @db.Date
+  effectiveTimezone       String              @db.VarChar(64)
+  source                  String              @db.VarChar(500)
+  reason                  String              @db.VarChar(500)
+  contentHash             String?             @db.Char(64)
+  createdById             String              @db.Uuid
+  reviewedById            String?             @db.Uuid
+  approvedById            String?             @db.Uuid
+  publishedById           String?             @db.Uuid
+  publicationSimulationId String?             @db.Uuid
+  submittedAt             DateTime?           @db.Timestamptz(6)
+  reviewedAt              DateTime?           @db.Timestamptz(6)
+  approvedAt              DateTime?           @db.Timestamptz(6)
+  publishedAt             DateTime?           @db.Timestamptz(6)
+  createdAt               DateTime            @default(now()) @db.Timestamptz(6)
+  updatedAt               DateTime            @updatedAt @db.Timestamptz(6)
+  archivedAt              DateTime?           @db.Timestamptz(6)
+  ruleSet                 RuleSet             @relation(fields: [ruleSetId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  values                  RuleValue[]
+  bindings                RuleBinding[]
+  simulations             RuleSimulation[]
+  snapshots               DocumentRuleSnapshot[]
+  revisions               RuleRevision[]
+
+  @@unique([ruleSetId, version])
+  @@index([ruleSetId, status, effectiveFrom, effectiveTo])
+  @@map("rule_set_versions")
+}
+
+model RuleValue {
+  id                String         @id @default(uuid()) @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  definitionKey     String         @db.VarChar(160)
+  value             Json?          @db.JsonB
+  notApplicable     Boolean        @default(false)
+  reason            String?        @db.VarChar(500)
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([ruleSetVersionId, definitionKey])
+  @@index([definitionKey])
+  @@map("rule_values")
+}
+
+model RuleBinding {
+  id                String         @id @default(uuid()) @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  scopeType         String         @db.VarChar(32)
+  scopeId           String         @db.Uuid
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([ruleSetVersionId, scopeType, scopeId])
+  @@index([scopeType, scopeId])
+  @@map("rule_bindings")
+}
+
+model RuleSimulation {
+  id                String              @id @default(uuid()) @db.Uuid
+  organizationId    String              @db.Uuid
+  ruleSetVersionId  String              @db.Uuid
+  status            RuleSimulationStatus
+  input             Json                @db.JsonB
+  report            Json                @db.JsonB
+  inputHash         String              @db.Char(64)
+  contentHash       String              @db.Char(64)
+  createdById       String              @db.Uuid
+  createdAt         DateTime            @default(now()) @db.Timestamptz(6)
+  ruleSetVersion    RuleSetVersion      @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([ruleSetVersionId, createdAt])
+  @@index([organizationId, createdAt])
+  @@map("rule_simulations")
+}
+
+model DocumentRuleSnapshot {
+  id                String         @id @default(uuid()) @db.Uuid
+  organizationId    String         @db.Uuid
+  documentType      String         @db.VarChar(32)
+  documentId        String         @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  resolved          Json           @db.JsonB
+  contentHash       String         @db.Char(64)
+  createdById       String         @db.Uuid
+  createdAt         DateTime       @default(now()) @db.Timestamptz(6)
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([documentType, documentId, ruleSetVersionId])
+  @@index([organizationId, documentType, documentId])
+  @@map("document_rule_snapshots")
+}
+
+model RuleRevision {
+  id                String         @id @default(uuid()) @db.Uuid
+  organizationId    String         @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  action            String         @db.VarChar(64)
+  reason            String?        @db.VarChar(500)
+  actorUserId       String         @db.Uuid
+  requestId         String         @db.Uuid
+  before            Json?          @db.JsonB
+  after             Json?          @db.JsonB
+  createdAt         DateTime       @default(now()) @db.Timestamptz(6)
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([organizationId, ruleSetVersionId, createdAt])
+  @@map("rule_revisions")
+}

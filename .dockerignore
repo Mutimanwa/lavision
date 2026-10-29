@@ -1,6 +1,9 @@
-node_modules
-.next
-out
+**/node_modules
+**/.next
+**/out
+**/dist
+**/coverage
+apps/api/src/generated
 .git
 .github
 src-tauri
@@ -9,5 +12,7 @@ vendors
 assets
 *.php
 *.html
-coverage
 *.log
+.env
+.env.*
+!.env.example

@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 
-const root = resolve("out");
+const root = resolve("apps/web/out");
 const port = Number(process.env.PORT || 3000);
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -71,5 +71,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`LaVision est disponible sur http://0.0.0.0:${port}`);
+  console.log(`lavision est disponible sur http://0.0.0.0:${port}`);
 });

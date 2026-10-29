@@ -50,6 +50,7 @@ export class RulesController {
   }
 
   @Post("validate")
+  @HttpCode(HttpStatus.OK)
   @RequirePermission(writeGuard)
   validate(@CurrentAuth() actor: SessionAuthContext, @Body() body: unknown) {
     return this.rules.validate(actor, parseInput(ruleValidationInputSchema, body));

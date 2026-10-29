@@ -236,6 +236,22 @@ describe("Moteur de règles versionné #39", () => {
     expect(snapshot.statusCode).toBe(201);
     expect(snapshot.json().resolved.ruleContentHash).toBe(first.contentHash);
     expect(snapshot.json().resolved.resolution.values.find((entry: { key: string }) => entry.key === "academic.grading.scale_max").value).toBe("120");
+    const sameSnapshot = await http().inject({
+      method: "POST",
+      url: "/api/v1/rules/snapshots",
+      headers: sessionHeaders(direction),
+      payload: {
+        organizationId: organization.id,
+        documentType: "bulletin",
+        documentId,
+        ruleSetVersionId: first.id,
+        asOf: "2026-10-01",
+        scope: { programId: firstProgram.id },
+      },
+    });
+    expect(sameSnapshot.statusCode).toBe(201);
+    expect(sameSnapshot.json().id).toBe(snapshot.json().id);
+    await expect(prisma.documentRuleSnapshot.update({ where: { id: snapshot.json().id }, data: { contentHash: "0".repeat(64) } })).rejects.toThrow();
 
     const patchedPublished = await http().inject({
       method: "PATCH",

@@ -452,27 +452,30 @@ export class RulesService {
     const report = { contentHash: candidate.contentHash?.trim() ?? "", cases };
     const status = cases.every((entry) => entry.status === "RESOLVED") ? RuleSimulationStatus.PASSED : RuleSimulationStatus.FAILED;
     const inputHash = sha256({ versionId, contentHash: report.contentHash, comparisonVersionId: input.comparisonVersionId ?? null, cases: input.cases });
-    const simulation = await this.prisma.ruleSimulation.create({
-      data: {
+    const simulation = await this.prisma.$transaction(async (transaction) => {
+      const created = await transaction.ruleSimulation.create({
+        data: {
+          organizationId: input.organizationId,
+          ruleSetVersionId: versionId,
+          status,
+          input: asJson(input),
+          report: asJson(report),
+          inputHash,
+          contentHash: report.contentHash,
+          createdById: actor.session.userId,
+        },
+      });
+      await this.audit.record({
         organizationId: input.organizationId,
-        ruleSetVersionId: versionId,
-        status,
-        input: asJson(input),
-        report: asJson(report),
-        inputHash,
-        contentHash: report.contentHash,
-        createdById: actor.session.userId,
-      },
-    });
-    await this.audit.record({
-      organizationId: input.organizationId,
-      actorUserId: actor.session.userId,
-      action: "rules.simulation.create",
-      resourceType: "rule_simulation",
-      resourceId: simulation.id,
-      outcome: AuditOutcome.SUCCESS,
-      requestId: context.requestId,
-      context: { scope: "rules", version: candidate.version },
+        actorUserId: actor.session.userId,
+        action: "rules.simulation.create",
+        resourceType: "rule_simulation",
+        resourceId: created.id,
+        outcome: AuditOutcome.SUCCESS,
+        requestId: context.requestId,
+        context: { scope: "rules", version: candidate.version },
+      }, transaction);
+      return created;
     });
     return presentRuleSimulation(simulation);
   }
@@ -500,33 +503,38 @@ export class RulesService {
       resolution,
     };
     const contentHash = sha256(envelope);
-    const existing = await this.prisma.documentRuleSnapshot.findFirst({
-      where: { documentType: input.documentType, documentId: input.documentId, ruleSetVersionId: version.id },
-    });
-    if (existing) {
-      if (existing.contentHash.trim() !== contentHash) this.conflict("SNAPSHOT_CONTEXT_MISMATCH", "Le même document et la même version ne peuvent pas produire deux snapshots différents.");
-      return presentRuleSnapshot(existing);
-    }
-    const snapshot = await this.prisma.documentRuleSnapshot.create({
-      data: {
+    const snapshot = await this.prisma.$transaction(async (transaction) => {
+      const lockKey = `${input.documentType}:${input.documentId}:${version.id}`;
+      await transaction.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey})::bigint)`;
+      const existing = await transaction.documentRuleSnapshot.findFirst({
+        where: { documentType: input.documentType, documentId: input.documentId, ruleSetVersionId: version.id },
+      });
+      if (existing) {
+        if (existing.contentHash.trim() !== contentHash) this.conflict("SNAPSHOT_CONTEXT_MISMATCH", "Le même document et la même version ne peuvent pas produire deux snapshots différents.");
+        return existing;
+      }
+      const created = await transaction.documentRuleSnapshot.create({
+        data: {
+          organizationId: input.organizationId,
+          documentType: input.documentType,
+          documentId: input.documentId,
+          ruleSetVersionId: version.id,
+          resolved: asJson(envelope),
+          contentHash,
+          createdById: actor.session.userId,
+        },
+      });
+      await this.audit.record({
         organizationId: input.organizationId,
-        documentType: input.documentType,
-        documentId: input.documentId,
-        ruleSetVersionId: version.id,
-        resolved: asJson(envelope),
-        contentHash,
-        createdById: actor.session.userId,
-      },
-    });
-    await this.audit.record({
-      organizationId: input.organizationId,
-      actorUserId: actor.session.userId,
-      action: "rules.snapshot.create",
-      resourceType: "document_rule_snapshot",
-      resourceId: snapshot.id,
-      outcome: AuditOutcome.SUCCESS,
-      requestId: context.requestId,
-      context: { scope: "rules", version: version.version },
+        actorUserId: actor.session.userId,
+        action: "rules.snapshot.create",
+        resourceType: "document_rule_snapshot",
+        resourceId: created.id,
+        outcome: AuditOutcome.SUCCESS,
+        requestId: context.requestId,
+        context: { scope: "rules", version: version.version },
+      }, transaction);
+      return created;
     });
     return presentRuleSnapshot(snapshot);
   }

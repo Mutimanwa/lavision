@@ -139,17 +139,46 @@ Les années suivent un cycle contrôlé : `DRAFT` → `ACTIVE` → `CLOSED`. L�
 
 Les codes, numéros de séquence et jours non ouvrés ont des contraintes d’unicité. Les référentiels ne sont jamais supprimés physiquement par l’API : les commandes `archive` conservent les lignes et les historiques. Les usages métier futurs devront conserver des références restrictives plutôt que supprimer une ressource utilisée.
 
-Chaque mutation crée, dans la même transaction, une révision avant/après avec acteur, date, `requestId` et motif éventuel, ainsi qu’un événement `AuditService`. `GET /school/history` permet une consultation autorisée et filtrée de ces révisions. Les permissions de préparation des référentiels sont distinctes de celles du calendrier et des futures règles #39. Le cycle `DRAFT`/`ACTIVE`/`CLOSED` décrit ici l’état opérationnel d’une année ; il ne remplace pas le circuit préparation → validation pédagogique → approbation → publication des référentiels académiques versionnés, qui reste à traiter dans #39.
+Chaque mutation crée, dans la même transaction, une révision avant/après avec acteur, date, `requestId` et motif éventuel, ainsi qu’un événement `AuditService`. `GET /school/history` permet une consultation autorisée et filtrée de ces révisions. Les permissions de préparation des référentiels sont distinctes de celles du calendrier et des règles #39. Le cycle `DRAFT`/`ACTIVE`/`CLOSED` décrit ici l’état opérationnel d’une année ; il ne remplace pas le circuit préparation → validation pédagogique → approbation → publication des référentiels académiques versionnés, dont la composition détaillée des programmes reste un raccordement métier séparé.
 
-## 7. Catalogue et validation des règles #39 — premier incrément
+## 7. Moteur de règles #39
 
-`GET /api/v1/rules/catalog?organizationId=...` expose le catalogue fermé de définitions typées, avec leurs domaines, portées autorisées, caractère obligatoire et bornes. `domain` et `search` sont des filtres optionnels. Le catalogue ne contient aucune valeur par défaut et ne prétend pas encore couvrir toutes les règles du cahier des charges.
+### Catalogue et validation
 
-`POST /api/v1/rules/validate` valide une valeur sans la persister et sans calculer de résultat métier. La réponse `200` contient `valid`, la valeur normalisée éventuelle et des `issues` compréhensibles ; une clé inconnue est également rapportée comme invalide. Les décimales acceptées sont normalisées en chaînes pour éviter une conversion binaire silencieuse. Les objets, formules, exposants et codes arbitraires sont refusés pour les types qui n’en attendent pas.
+`GET /api/v1/rules/catalog?organizationId=...` expose les définitions typées, leurs domaines, portées autorisées, caractère obligatoire et bornes. `POST /api/v1/rules/validate` valide une valeur sans la persister. Les décimales sont normalisées en chaînes pour éviter une conversion binaire silencieuse ; formules, scripts, objets non prévus et valeurs hors bornes sont refusés. Le catalogue initial ne contient aucune valeur par défaut et reste à enrichir pour couvrir exhaustivement les listes structurées du cadrage.
 
-La permission `rules.catalog.validate` ne suffit pas : le service vérifie aussi la permission de lecture du domaine (`rules.academic.read`, `rules.finance.read`, etc.). Un responsable académique ne peut donc pas valider une règle financière par ce endpoint. Les requêtes de mutation restent soumises à la session et au CSRF.
+La permission générique du guard ne suffit jamais : le service vérifie aussi la permission du domaine (`rules.academic.*`, `rules.finance.*`, etc.). Les erreurs de commandes #39 peuvent contenir des `issues` `{ path, code, message }` dans le Problem Details.
 
-Cet incrément ne crée pas encore de `RuleSet`, de version publiée, de portée datée, de simulation ou de snapshot documentaire. Ces éléments, ainsi que l’exhaustivité du catalogue et le circuit préparation → validation pédagogique → approbation → publication, restent à livrer dans les incréments suivants de #39. Les questions préalables sont consignées dans `docs/cadrage/14_QUESTIONS_MOTEUR_REGLES.md`.
+### Sets, portées et versions
+
+Un `RuleSet` appartient à une organisation et un domaine, déclare ses `definitionKeys` et son `scopeOrder`. Cet ordre est obligatoire et visible : le moteur ne choisit pas silencieusement une priorité métier encore ouverte. Les bindings référencent des ressources RBAC de la même organisation ; les types `section`, `option` et `program` sont disponibles pour les futurs référentiels académiques.
+
+| Méthode et chemin | Objet |
+| --- | --- |
+| `GET/POST /api/v1/rules/sets` | lister ou créer un ensemble cohérent |
+| `GET /api/v1/rules/sets/:id` | lire l’ensemble et ses versions |
+| `POST /api/v1/rules/sets/:id/versions` | créer un brouillon daté |
+| `GET/PATCH /api/v1/rules/versions/:id` | lire ou modifier un brouillon uniquement |
+| `POST /api/v1/rules/versions/:id/duplicate` | dupliquer en nouveau brouillon, sans copier les approbations |
+| `POST /api/v1/rules/versions/:id/submit` | préparation → revue, après contrôle de la configuration résolue |
+| `POST /api/v1/rules/versions/:id/review` | validation pédagogique par un acteur distinct du préparateur |
+| `POST /api/v1/rules/versions/:id/approve` | approbation avec permission dédiée |
+| `POST /api/v1/rules/versions/:id/publish` | publication ou planification après simulation réussie du hash exact |
+| `POST /api/v1/rules/versions/:id/archive` | archiver sans supprimer les valeurs ni l’historique |
+| `GET /api/v1/rules/versions/:id/diff/:againstId` | comparer valeurs, bindings et dates |
+| `GET /api/v1/rules/versions/:id/revisions` | consulter les révisions avant/après |
+
+Les statuts sont `DRAFT`, `IN_REVIEW`, `VALIDATED`, `APPROVED`, `PUBLISHED`, `SCHEDULED` et `ARCHIVED`. Les dates sont des intervalles `[effectiveFrom, effectiveTo)` et le fuseau IANA est obligatoire. À portée égale, la version dont la date d’effet est la plus récente et déjà applicable succède à la précédente ; deux versions différentes avec la même date, la même portée et la même clé sont ambiguës et rejetées. Une version publiée/planifiée est protégée par PostgreSQL contre toute modification de contenu ; son archivage ne réécrit pas ses valeurs.
+
+### Résolution, simulation et snapshots
+
+`POST /api/v1/rules/resolve` utilise uniquement les versions publiées/planifiées applicables à la date et au contexte fournis. La réponse distingue valeur, source exacte, héritage, règles manquantes, non configurées et conflits. Une adaptation partielle peut hériter d’une version organisationnelle ; la soumission et la publication contrôlent la configuration résolue, pas seulement les lignes locales.
+
+`POST /api/v1/rules/versions/:id/simulate` appelle ce même résolveur pour le brouillon et le référentiel de comparaison. Le rapport append-only contient les cas, les provenances, les avertissements et les erreurs ; il ne crée aucune note, facture, paiement, paie ou notification. À ce stade, la simulation couvre la résolution et la cohérence des valeurs, pas encore les calculs académiques, financiers ou de paie officiels. La publication exige une simulation `PASSED` du `contentHash` exact et au moins un cas où la candidate est applicable.
+
+`POST /api/v1/rules/snapshots` fige la configuration résolue et son empreinte pour un identifiant technique de bulletin, proclamation, facture ou paie. Le snapshot est append-only et idempotent pour un même document/version/contexte. Le service métier qui créera réellement le document devra vérifier l’existence et l’appartenance du document avant d’appeler cette primitive ; #39 ne crée aucun document officiel.
+
+Les questions de valeurs et de politique restant à trancher sont consignées dans `docs/cadrage/14_QUESTIONS_MOTEUR_REGLES.md`.
 
 ## 8. Limitation et journalisation
 
@@ -164,6 +193,7 @@ Les échecs de connexion sont limités par compte et par IP dans une fenêtre de
 - migration #6 : `20261029153000_authentication_mfa` ;
 - migration #7 : `20261029163000_rbac_audit` ;
 - migration #8 : `20261029173000_school_referentials` ;
+- migration #39 : `20261029190000_rule_engine` ;
 - seed : `apps/api/prisma/seed-core.ts` et `packages/testing/src/fixtures.ts` ;
 - contrat versionné : `apps/api/openapi/openapi.json`.
 
@@ -182,7 +212,7 @@ npm run test:integration
 npm run typecheck
 ```
 
-Les tests PostgreSQL couvrent les contraintes du socle, les parcours #6, les scénarios #7, les référentiels #8 et le catalogue #39 : refus d’une classe ou d’un enfant non rattaché, isolation inter-organisations, gestion cross-tenant, attribution et révocation, portée limitée à une classe, lecture d’audit restreinte, refus UPDATE/DELETE du journal, activation unique, clôture/réouverture, doublons, chevauchements SQL, archivage et historique avant/après. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
+Les tests PostgreSQL couvrent les contraintes du socle, les parcours #6, les scénarios #7, les référentiels #8 et le moteur #39 : refus d’une classe ou d’un enfant non rattaché, isolation inter-organisations, gestion cross-tenant, attribution et révocation, portée limitée à une classe, lecture d’audit restreinte, refus UPDATE/DELETE du journal, activation unique, clôture/réouverture, doublons, chevauchements SQL, archivage et historique avant/après. Pour #39, ils couvrent l’héritage par programme, les dates successives, la duplication, la séparation préparateur/validateur, les permissions de domaine, les snapshots et les refus SQL d’altération des versions publiées. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
 
 La CI utilise PostgreSQL 16 isolé, `LAVISION_SKIP_DOCKER=true`, une clé de test non réutilisable et le même chemin de migration/seed que le démarrage local. Le sandbox sans PostgreSQL ne constitue pas une preuve d’intégration.
 
@@ -190,4 +220,4 @@ La CI utilise PostgreSQL 16 isolé, `LAVISION_SKIP_DOCKER=true`, une clé de tes
 
 Le frontend n’appelle pas encore cette API : le raccordement Web/Tauri reste prévu en M2. Pour Tauri, ce raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
 
-Avant toute production : brancher les modules métier sur #7 et les référentiels #8, raccorder les clients et les écrans d’administration, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6, #7, #8 ou ce premier incrément #39.
+Avant toute production : brancher les modules métier sur #7 et les référentiels #8, raccorder les clients et les écrans d’administration, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6, #7, #8 ou #39. Les écrans de configuration et les compositions détaillées sections/options/programmes restent à raccorder ; le catalogue et les stratégies de calcul métier doivent être complétés avant la recette fonctionnelle correspondante.

@@ -261,6 +261,7 @@ describe("Moteur de règles versionné #39", () => {
     });
     expect(patchedPublished.statusCode).toBe(409);
     await expect(prisma.ruleSetVersion.update({ where: { id: first.id }, data: { source: "Réécriture interdite" } })).rejects.toThrow();
+    await expect(prisma.ruleSetVersion.update({ where: { id: first.id }, data: { archivedAt: new Date() } })).rejects.toThrow();
     const storedValue = await prisma.ruleValue.findFirstOrThrow({ where: { ruleSetVersionId: first.id, definitionKey: "academic.grading.scale_max" } });
     await expect(prisma.ruleValue.update({ where: { id: storedValue.id }, data: { value: "999" } })).rejects.toThrow();
 
@@ -358,6 +359,38 @@ describe("Moteur de règles versionné #39", () => {
       });
       expect(response.statusCode).toBe(200);
     }
+
+    const scopedProgram = await program(organization.id);
+    const scoped = await createVersion(setId, creator, versionInput(organization.id, [
+      { key: "academic.grading.scale_max", value: 30 },
+      { key: "academic.pass.mark", value: 15 },
+    ], [{ scopeType: "program", scopeId: scopedProgram.id }]));
+    const wrongScopeSimulation = await http().inject({
+      method: "POST",
+      url: `/api/v1/rules/versions/${scoped.id}/simulate`,
+      headers: sessionHeaders(creator),
+      payload: { organizationId: organization.id, cases: [{ name: "hors portée", asOf: "2026-01-01", scope: {} }] },
+    });
+    expect(wrongScopeSimulation.statusCode).toBe(201);
+    expect(wrongScopeSimulation.json().status).toBe("PASSED");
+    expect(wrongScopeSimulation.json().report.cases[0].candidateApplies).toBe(false);
+    for (const [action, session] of [["submit", creator], ["review", direction], ["approve", direction]] as const) {
+      const response = await http().inject({
+        method: "POST",
+        url: `/api/v1/rules/versions/${scoped.id}/${action}`,
+        headers: sessionHeaders(session),
+        payload: { organizationId: organization.id, reason: `Étape ${action} avec simulation hors portée.` },
+      });
+      expect(response.statusCode).toBe(200);
+    }
+    const blockedPublish = await http().inject({
+      method: "POST",
+      url: `/api/v1/rules/versions/${scoped.id}/publish`,
+      headers: sessionHeaders(direction),
+      payload: { organizationId: organization.id, reason: "La simulation hors portée ne doit pas suffire." },
+    });
+    expect(blockedPublish.statusCode).toBe(409);
+    expect(blockedPublish.json().code).toBe("SIMULATION_REQUIRED");
 
     const competing = await createVersion(setId, creator, versionInput(organization.id, [
       { key: "academic.grading.scale_max", value: 30 },

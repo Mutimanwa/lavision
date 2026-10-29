@@ -100,6 +100,20 @@ function applies(version: ResolverVersion, asOf: string): boolean {
   );
 }
 
+/** Une simulation ne prouve la version candidate que si sa date et l’une de ses portées s’appliquent au cas. */
+export function versionAppliesToContext(
+  version: ResolverVersion,
+  asOf: string,
+  scopeOrder: readonly RuleScope[],
+  context: RuleResolutionScope & { organizationId: string },
+): boolean {
+  if (!applies(version, asOf)) return false;
+  const ids = scopeIds(context);
+  return version.bindings.some((binding) =>
+    scopeOrder.includes(binding.scopeType) && ids[binding.scopeType] === binding.scopeId,
+  );
+}
+
 interface Candidate {
   version: ResolverVersion;
   binding: ResolverBinding;

@@ -193,7 +193,7 @@ Les échecs de connexion sont limités par compte et par IP dans une fenêtre de
 - migration #6 : `20261029153000_authentication_mfa` ;
 - migration #7 : `20261029163000_rbac_audit` ;
 - migration #8 : `20261029173000_school_referentials` ;
-- migration #39 : `20261029190000_rule_engine` ;
+- migrations #39 : `20261029190000_rule_engine` et `20261029210000_rule_archive_guard` ;
 - seed : `apps/api/prisma/seed-core.ts` et `packages/testing/src/fixtures.ts` ;
 - contrat versionné : `apps/api/openapi/openapi.json`.
 

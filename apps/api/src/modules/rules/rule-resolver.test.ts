@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { RULE_DEFINITIONS } from "@lavision/contracts";
-import { compareExactDecimals, resolveRules, type ResolverVersion } from "./rule-resolver.js";
+import { compareExactDecimals, resolveRules, versionAppliesToContext, type ResolverVersion } from "./rule-resolver.js";
 
 const organizationId = "00000000-0000-4000-8000-000000000001";
 const programId = "00000000-0000-4000-8000-000000000002";
@@ -78,6 +78,15 @@ describe("résolution déterministe des règles", () => {
     const common = { ruleSetId: "set-1", scopeOrder, definitions: definitions.filter((entry) => entry.key === "academic.grading.scale_max"), context, versions: [base, future] };
     expect(resolveRules({ ...common, asOf: "2026-12-31" }).values[0]?.value).toBe("20");
     expect(resolveRules({ ...common, asOf: "2027-01-01" }).values[0]?.value).toBe("120");
+  });
+
+  it("exige une portée réellement applicable pour la preuve de simulation", () => {
+    const candidate = version("v1", 1, "2026-01-01", "program", programId, [
+      { key: "academic.grading.scale_max", value: "120" },
+    ]);
+    expect(versionAppliesToContext(candidate, "2026-10-01", scopeOrder, { organizationId })).toBe(false);
+    expect(versionAppliesToContext(candidate, "2026-10-01", scopeOrder, { organizationId, programId })).toBe(true);
+    expect(versionAppliesToContext(candidate, "2025-12-31", scopeOrder, { organizationId, programId })).toBe(false);
   });
 
   it("signale un conflit de même portée/date et une règle obligatoire absente", () => {

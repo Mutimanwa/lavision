@@ -50,7 +50,7 @@ import {
   presentRuleVersion,
   type RuleVersionWithChildren,
 } from "./rule-presenters.js";
-import { compareExactDecimals, resolveRules } from "./rule-resolver.js";
+import { compareExactDecimals, resolveRules, versionAppliesToContext } from "./rule-resolver.js";
 import {
   asJson,
   dateInTimezone,
@@ -438,7 +438,10 @@ export class RulesService {
         versions: baseVersions.map(toResolverVersion),
         candidate: comparisonResolver,
       });
-      const candidateApplies = candidate.effectiveFrom <= dateOnly(entry.asOf) && (!candidate.effectiveTo || entry.asOf < isoDate(candidate.effectiveTo));
+      const candidateApplies = versionAppliesToContext(candidateResolver, entry.asOf, this.scopeOrder(candidate.ruleSet), {
+        organizationId: input.organizationId,
+        ...entry.scope,
+      });
       return {
         name: entry.name,
         kind: entry.kind ?? null,

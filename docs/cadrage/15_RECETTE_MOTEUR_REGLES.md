@@ -26,8 +26,9 @@ Les fixtures utilisent uniquement des organisations, programmes et valeurs ficti
 5. une portée d’une autre organisation et une écriture dans un domaine non autorisé refusées ;
 6. l’auto-validation du préparateur refusée ;
 7. deux adaptations différentes de même portée/date signalées comme ambiguës ;
-8. l’impossibilité de modifier une version publiée par HTTP ou SQL ;
-9. un snapshot qui conserve le maximum de sa version après publication d’une version future.
+8. l’impossibilité de modifier une version publiée par HTTP ou SQL, y compris son `archivedAt` sans transition ;
+9. une simulation complète mais hors portée qui ne permet pas la publication de la candidate ;
+10. un snapshot qui conserve le maximum de sa version après publication d’une version future.
 
 Le run CI PostgreSQL associé au commit courant constitue la preuve d’intégration ; un sandbox sans PostgreSQL ne suffit pas.
 

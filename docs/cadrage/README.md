@@ -36,6 +36,7 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Analyse du recueil de bulletins 2024–2025](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md) | comparer les formulaires par cycle, année, section et option | structures, maxima reconstitués, épreuves nationales et points de validation documentés |
 | [ADR de l’architecture cible](../adr/README.md) | vérifier les choix techniques et les menaces avant le backend | huit ADR acceptés pour M1, schéma des flux et retour arrière |
 | [Revue de sortie M0](13_REVUE_DE_SORTIE_M0.md) | vérifier les conditions de démarrage du socle sans clôturer les ateliers restants | feu vert tracé pour #5, limites et points non bloquants explicites |
+| [Questions du moteur de règles](14_QUESTIONS_MOTEUR_REGLES.md) | traiter les points ouverts avant simulations et calculs | réponses sourcées, propriétaires et exemples de validation |
 
 ## 3. Ateliers proposés
 

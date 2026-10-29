@@ -141,13 +141,23 @@ Les codes, numéros de séquence et jours non ouvrés ont des contraintes d’un
 
 Chaque mutation crée, dans la même transaction, une révision avant/après avec acteur, date, `requestId` et motif éventuel, ainsi qu’un événement `AuditService`. `GET /school/history` permet une consultation autorisée et filtrée de ces révisions. Les permissions de préparation des référentiels sont distinctes de celles du calendrier et des futures règles #39. Le cycle `DRAFT`/`ACTIVE`/`CLOSED` décrit ici l’état opérationnel d’une année ; il ne remplace pas le circuit préparation → validation pédagogique → approbation → publication des référentiels académiques versionnés, qui reste à traiter dans #39.
 
-## 7. Limitation et journalisation
+## 7. Catalogue et validation des règles #39 — premier incrément
+
+`GET /api/v1/rules/catalog?organizationId=...` expose le catalogue fermé de définitions typées, avec leurs domaines, portées autorisées, caractère obligatoire et bornes. `domain` et `search` sont des filtres optionnels. Le catalogue ne contient aucune valeur par défaut et ne prétend pas encore couvrir toutes les règles du cahier des charges.
+
+`POST /api/v1/rules/validate` valide une valeur sans la persister et sans calculer de résultat métier. La réponse `200` contient `valid`, la valeur normalisée éventuelle et des `issues` compréhensibles ; une clé inconnue est également rapportée comme invalide. Les décimales acceptées sont normalisées en chaînes pour éviter une conversion binaire silencieuse. Les objets, formules, exposants et codes arbitraires sont refusés pour les types qui n’en attendent pas.
+
+La permission `rules.catalog.validate` ne suffit pas : le service vérifie aussi la permission de lecture du domaine (`rules.academic.read`, `rules.finance.read`, etc.). Un responsable académique ne peut donc pas valider une règle financière par ce endpoint. Les requêtes de mutation restent soumises à la session et au CSRF.
+
+Cet incrément ne crée pas encore de `RuleSet`, de version publiée, de portée datée, de simulation ou de snapshot documentaire. Ces éléments, ainsi que l’exhaustivité du catalogue et le circuit préparation → validation pédagogique → approbation → publication, restent à livrer dans les incréments suivants de #39. Les questions préalables sont consignées dans `docs/cadrage/14_QUESTIONS_MOTEUR_REGLES.md`.
+
+## 8. Limitation et journalisation
 
 Les échecs de connexion sont limités par compte et par IP dans une fenêtre de 15 minutes, avec blocage progressif borné. Les challenges MFA ont en outre un compteur de cinq essais. Les demandes de récupération sont limitées pour réduire le spam et conservent une réponse identique pour les adresses inconnues.
 
 `auth_events` enregistre l’action, le résultat, un motif technique, la date et des hashes HMAC du sujet/IP. Il ne contient ni mot de passe, ni hash de mot de passe, ni jeton brut, ni secret TOTP, ni code de récupération, ni email en clair. Les erreurs SMTP et les détails Prisma ne sont pas renvoyés au client.
 
-## 8. Migration, seed et contrats
+## 9. Migration, seed et contrats
 
 - Schéma : `apps/api/prisma/schema.prisma` ;
 - migration initiale : `20261029140000_initial_core` ;
@@ -164,7 +174,7 @@ npm run openapi:check  # échoue si le document diffère
 
 Les migrations sont appliquées avec `prisma migrate deploy`, jamais avec `db push`. La migration #6 est additive et ne réécrit pas les documents historiques ni les règles métier.
 
-## 9. Tests et CI
+## 10. Tests et CI
 
 ```bash
 npm test
@@ -172,12 +182,12 @@ npm run test:integration
 npm run typecheck
 ```
 
-Les tests PostgreSQL couvrent les contraintes du socle, les parcours #6, les scénarios #7 et les référentiels #8 : refus d’une classe ou d’un enfant non rattaché, isolation inter-organisations, gestion cross-tenant, attribution et révocation, portée limitée à une classe, lecture d’audit restreinte, refus UPDATE/DELETE du journal, activation unique, clôture/réouverture, doublons, chevauchements SQL, archivage et historique avant/après. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
+Les tests PostgreSQL couvrent les contraintes du socle, les parcours #6, les scénarios #7, les référentiels #8 et le catalogue #39 : refus d’une classe ou d’un enfant non rattaché, isolation inter-organisations, gestion cross-tenant, attribution et révocation, portée limitée à une classe, lecture d’audit restreinte, refus UPDATE/DELETE du journal, activation unique, clôture/réouverture, doublons, chevauchements SQL, archivage et historique avant/après. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
 
 La CI utilise PostgreSQL 16 isolé, `LAVISION_SKIP_DOCKER=true`, une clé de test non réutilisable et le même chemin de migration/seed que le démarrage local. Le sandbox sans PostgreSQL ne constitue pas une preuve d’intégration.
 
-## 10. Limites d’exploitation
+## 11. Limites d’exploitation
 
 Le frontend n’appelle pas encore cette API : le raccordement Web/Tauri reste prévu en M2. Pour Tauri, ce raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
 
-Avant toute production : brancher les modules métier sur #7 et les référentiels #8, raccorder les clients et les écrans d’administration, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6, #7 ou #8.
+Avant toute production : brancher les modules métier sur #7 et les référentiels #8, raccorder les clients et les écrans d’administration, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6, #7, #8 ou ce premier incrément #39.

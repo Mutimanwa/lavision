@@ -38,6 +38,10 @@ import {
   createSchoolOpenApiSchemas,
 } from "./school-openapi.js";
 import {
+  createRulesOpenApiPaths,
+  createRulesOpenApiSchemas,
+} from "./rules-openapi.js";
+import {
   API_PREFIX,
   livenessResponseSchema,
   problemDetailsSchema,
@@ -90,11 +94,12 @@ export function createOpenApiDocument() {
       title: "lavision API",
       version: "0.1.0",
       description:
-        "Socle M1, authentification #6, RBAC/audit #7 et référentiels/calendrier #8. Les modules métier appliquent ces gardes à leurs ressources enregistrées.",
+        "Socle M1, authentification #6, RBAC/audit #7, référentiels/calendrier #8 et catalogue de règles #39. Les modules métier appliquent ces gardes à leurs ressources enregistrées.",
     },
     servers: [{ url: API_PREFIX }],
     paths: {
       ...createSchoolOpenApiPaths(),
+      ...createRulesOpenApiPaths(),
       "/health/live": {
         get: {
           operationId: "getLiveness",
@@ -453,6 +458,7 @@ export function createOpenApiDocument() {
       },
       schemas: {
         ...createSchoolOpenApiSchemas(),
+        ...createRulesOpenApiSchemas(),
         AccessScope: z.toJSONSchema(accessScopeSchema),
         PermissionGrantInput: z.toJSONSchema(permissionGrantInputSchema),
         PermissionRevokeInput: z.toJSONSchema(permissionRevokeInputSchema),

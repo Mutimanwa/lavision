@@ -3,7 +3,7 @@
   "info": {
     "title": "lavision API",
     "version": "0.1.0",
-    "description": "Socle M1, authentification #6, RBAC/audit #7 et référentiels/calendrier #8. Les modules métier appliquent ces gardes à leurs ressources enregistrées."
+    "description": "Socle M1, authentification #6, RBAC/audit #7, référentiels/calendrier #8 et catalogue de règles #39. Les modules métier appliquent ces gardes à leurs ressources enregistrées."
   },
   "servers": [
     {
@@ -2459,6 +2459,155 @@
           },
           "409": {
             "description": "Doublon, chevauchement ou état de clôture incompatible.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rules/catalog": {
+      "get": {
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "operationId": "getRuleCatalog",
+        "tags": [
+          "Règles #39"
+        ],
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "domain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Réponse conforme au contrat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleCatalogResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Filtre invalide.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Session requise.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Lecture du catalogue refusée.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rules/validate": {
+      "post": {
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "operationId": "validateRuleValue",
+        "tags": [
+          "Règles #39"
+        ],
+        "description": "Validation sans persistance ni calcul. Le header x-csrf-token est requis. La permission du domaine de la définition est vérifiée en plus de la permission de validation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RuleValidationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Réponse conforme au contrat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleValidationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Corps de requête invalide.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Session requise.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Permission du domaine ou CSRF refusée.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -5580,6 +5729,325 @@
         ],
         "additionalProperties": false
       },
+      "RuleDefinition": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "academic",
+              "attendance",
+              "finance",
+              "hr",
+              "payroll",
+              "documents",
+              "calendar"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "boolean",
+              "integer",
+              "decimal",
+              "enum",
+              "currency",
+              "date"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "organization",
+                "site",
+                "school_year",
+                "level",
+                "program",
+                "class",
+                "subject"
+              ]
+            }
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "min": {
+                    "type": "number"
+                  },
+                  "max": {
+                    "type": "number"
+                  },
+                  "values": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "domain",
+          "label",
+          "description",
+          "type",
+          "required",
+          "scopes",
+          "constraints"
+        ],
+        "additionalProperties": false
+      },
+      "RuleCatalogQuery": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "domain": {
+            "type": "string",
+            "enum": [
+              "academic",
+              "attendance",
+              "finance",
+              "hr",
+              "payroll",
+              "documents",
+              "calendar"
+            ]
+          },
+          "search": {
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "organizationId"
+        ],
+        "additionalProperties": false
+      },
+      "RuleCatalogResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "catalogVersion": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "definitions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "string",
+                  "enum": [
+                    "academic",
+                    "attendance",
+                    "finance",
+                    "hr",
+                    "payroll",
+                    "documents",
+                    "calendar"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "boolean",
+                    "integer",
+                    "decimal",
+                    "enum",
+                    "currency",
+                    "date"
+                  ]
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "scopes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "organization",
+                      "site",
+                      "school_year",
+                      "level",
+                      "program",
+                      "class",
+                      "subject"
+                    ]
+                  }
+                },
+                "constraints": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "min": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        },
+                        "values": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "key",
+                "domain",
+                "label",
+                "description",
+                "type",
+                "required",
+                "scopes",
+                "constraints"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "catalogVersion",
+          "definitions"
+        ],
+        "additionalProperties": false
+      },
+      "RuleValidationInput": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "value": {}
+        },
+        "required": [
+          "organizationId",
+          "key",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "RuleValidationIssue": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "RuleValidationResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          },
+          "key": {
+            "type": "string"
+          },
+          "normalizedValue": {},
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "path",
+                "code",
+                "message"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "valid",
+          "key",
+          "issues"
+        ],
+        "additionalProperties": false
+      },
       "AccessScope": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
@@ -5668,13 +6136,21 @@
               "calendar.activate",
               "calendar.close",
               "calendar.reopen",
+              "rules.catalog.read",
+              "rules.catalog.validate",
               "rules.academic.read",
               "rules.academic.draft",
               "rules.academic.simulate",
               "rules.academic.submit",
               "rules.academic.review",
               "rules.academic.approve",
-              "rules.academic.publish"
+              "rules.academic.publish",
+              "rules.attendance.read",
+              "rules.finance.read",
+              "rules.hr.read",
+              "rules.payroll.read",
+              "rules.documents.read",
+              "rules.calendar.read"
             ]
           },
           "scope": {
@@ -5794,13 +6270,21 @@
               "calendar.activate",
               "calendar.close",
               "calendar.reopen",
+              "rules.catalog.read",
+              "rules.catalog.validate",
               "rules.academic.read",
               "rules.academic.draft",
               "rules.academic.simulate",
               "rules.academic.submit",
               "rules.academic.review",
               "rules.academic.approve",
-              "rules.academic.publish"
+              "rules.academic.publish",
+              "rules.attendance.read",
+              "rules.finance.read",
+              "rules.hr.read",
+              "rules.payroll.read",
+              "rules.documents.read",
+              "rules.calendar.read"
             ]
           },
           "scope": {

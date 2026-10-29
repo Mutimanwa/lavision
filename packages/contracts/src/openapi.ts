@@ -22,6 +22,18 @@ import {
   sessionsResponseSchema,
 } from "./auth.js";
 import {
+  accessScopeSchema,
+  auditEventsResponseSchema,
+  auditEventSchema,
+  auditQuerySchema,
+  permissionGrantInputSchema,
+  permissionGrantResponseSchema,
+  permissionRevokeInputSchema,
+  roleAssignmentInputSchema,
+  roleAssignmentResponseSchema,
+  roleRevokeInputSchema,
+} from "./access.js";
+import {
   API_PREFIX,
   livenessResponseSchema,
   problemDetailsSchema,
@@ -74,7 +86,7 @@ export function createOpenApiDocument() {
       title: "lavision API",
       version: "0.1.0",
       description:
-        "Socle M1 et authentification #6. Les permissions métier et les portées deny-by-default sont traitées séparément en #7.",
+        "Socle M1, authentification #6 et noyau RBAC/audit #7. Les modules métier appliquent ces gardes à leurs ressources enregistrées.",
     },
     servers: [{ url: API_PREFIX }],
     paths: {
@@ -100,6 +112,111 @@ export function createOpenApiDocument() {
           operationId: "getVersion",
           tags: ["Système"],
           responses: { "200": success("VersionResponse") },
+        },
+      },
+      "/security/permissions/grant": {
+        post: {
+          ...secured,
+          operationId: "grantPermission",
+          tags: ["Sécurité"],
+          description: csrfNote,
+          requestBody: body("PermissionGrantInput"),
+          responses: {
+            "201": success("PermissionGrantResponse"),
+            "400": failure("Entrée ou portée invalide."),
+            "401": failure("Session requise."),
+            "403": failure("Permission d’administration ou portée refusée."),
+          },
+        },
+      },
+      "/security/permissions/revoke": {
+        post: {
+          ...secured,
+          operationId: "revokePermission",
+          tags: ["Sécurité"],
+          description: csrfNote,
+          requestBody: body("PermissionRevokeInput"),
+          responses: {
+            "200": success("PermissionGrantResponse"),
+            "400": failure("Entrée invalide."),
+            "401": failure("Session requise."),
+            "403": failure("Permission d’administration ou portée refusée."),
+          },
+        },
+      },
+      "/security/roles/assign": {
+        post: {
+          ...secured,
+          operationId: "assignRole",
+          tags: ["Sécurité"],
+          description: csrfNote,
+          requestBody: body("RoleAssignmentInput"),
+          responses: {
+            "201": success("RoleAssignmentResponse"),
+            "400": failure("Entrée ou portée invalide."),
+            "401": failure("Session requise."),
+            "403": failure("Permission d’administration ou portée refusée."),
+          },
+        },
+      },
+      "/security/roles/revoke": {
+        post: {
+          ...secured,
+          operationId: "revokeRole",
+          tags: ["Sécurité"],
+          description: csrfNote,
+          requestBody: body("RoleRevokeInput"),
+          responses: {
+            "200": success("RoleAssignmentResponse"),
+            "400": failure("Entrée invalide."),
+            "401": failure("Session requise."),
+            "403": failure("Permission d’administration ou portée refusée."),
+          },
+        },
+      },
+      "/security/audit": {
+        get: {
+          ...secured,
+          operationId: "listAuditEvents",
+          tags: ["Sécurité"],
+          parameters: [
+            {
+              name: "organizationId",
+              in: "query",
+              required: true,
+              schema: { type: "string", format: "uuid" },
+            },
+            {
+              name: "action",
+              in: "query",
+              required: false,
+              schema: { type: "string" },
+            },
+            {
+              name: "resourceType",
+              in: "query",
+              required: false,
+              schema: { type: "string" },
+            },
+            {
+              name: "before",
+              in: "query",
+              required: false,
+              schema: { type: "string", format: "date-time" },
+            },
+            {
+              name: "limit",
+              in: "query",
+              required: false,
+              schema: { type: "integer", minimum: 1, maximum: 100, default: 50 },
+            },
+          ],
+          responses: {
+            "200": success("AuditEventsResponse"),
+            "400": failure("Filtre invalide."),
+            "401": failure("Session requise."),
+            "403": failure("Lecture d’audit ou organisation refusée."),
+          },
         },
       },
       "/auth/login": {
@@ -330,6 +447,16 @@ export function createOpenApiDocument() {
         },
       },
       schemas: {
+        AccessScope: z.toJSONSchema(accessScopeSchema),
+        PermissionGrantInput: z.toJSONSchema(permissionGrantInputSchema),
+        PermissionRevokeInput: z.toJSONSchema(permissionRevokeInputSchema),
+        PermissionGrantResponse: z.toJSONSchema(permissionGrantResponseSchema),
+        RoleAssignmentInput: z.toJSONSchema(roleAssignmentInputSchema),
+        RoleRevokeInput: z.toJSONSchema(roleRevokeInputSchema),
+        RoleAssignmentResponse: z.toJSONSchema(roleAssignmentResponseSchema),
+        AuditQuery: z.toJSONSchema(auditQuerySchema),
+        AuditEventResponse: z.toJSONSchema(auditEventSchema),
+        AuditEventsResponse: z.toJSONSchema(auditEventsResponseSchema),
         LivenessResponse: z.toJSONSchema(livenessResponseSchema),
         ReadinessResponse: z.toJSONSchema(readinessResponseSchema),
         VersionResponse: z.toJSONSchema(versionResponseSchema),

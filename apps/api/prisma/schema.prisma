@@ -54,6 +54,36 @@ enum AuthRateAction {
   PASSWORD_RESET
 }
 
+enum AccessResourceType {
+  ORGANIZATION @map("organization")
+  SITE         @map("site")
+  CLASS        @map("class")
+  SUBJECT      @map("subject")
+  STUDENT      @map("student")
+  EMPLOYEE     @map("employee")
+  NOTE         @map("note")
+  PAYMENT      @map("payment")
+  PAYROLL      @map("payroll")
+  PROCLAMATION @map("proclamation")
+  PERMISSION   @map("permission")
+  OTHER        @map("other")
+}
+
+enum AccessRelationType {
+  TEACHER_CLASS    @map("teacher_class")
+  TEACHER_SUBJECT  @map("teacher_subject")
+  PRINCIPAL_CLASS  @map("principal_class")
+  GUARDIAN_STUDENT @map("guardian_student")
+  STUDENT_SELF     @map("student_self")
+  EMPLOYEE_SELF    @map("employee_self")
+}
+
+enum AuditOutcome {
+  SUCCESS
+  DENIED
+  FAILURE
+}
+
 model Organization {
   id          String                   @id @default(uuid()) @db.Uuid
   code        String                   @unique @db.VarChar(32)
@@ -63,19 +93,21 @@ model Organization {
   archivedAt  DateTime?                @db.Timestamptz(6)
   sites       Site[]
   memberships OrganizationMembership[]
+  resources   AccessResource[]
 
   @@map("organizations")
 }
 
 model Site {
-  id             String       @id @default(uuid()) @db.Uuid
-  organizationId String       @db.Uuid
-  code           String       @db.VarChar(32)
-  name           String       @db.VarChar(160)
-  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
-  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
-  archivedAt     DateTime?    @db.Timestamptz(6)
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  code           String           @db.VarChar(32)
+  name           String           @db.VarChar(160)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?        @db.Timestamptz(6)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  resources      AccessResource[]
 
   @@unique([organizationId, code])
   @@index([organizationId])
@@ -114,6 +146,8 @@ model OrganizationMembership {
   organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   user            User             @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   roleAssignments RoleAssignment[]
+  permissionGrants PermissionGrant[]
+  accessRelations  AccessRelation[]
 
   @@unique([organizationId, userId])
   @@index([userId])
@@ -124,30 +158,105 @@ model RoleAssignment {
   id           String                 @id @default(uuid()) @db.Uuid
   membershipId String                 @db.Uuid
   role         Role
+  scopeId      String                 @db.Uuid
   createdAt    DateTime               @default(now()) @db.Timestamptz(6)
   archivedAt   DateTime?              @db.Timestamptz(6)
   membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scope        AccessResource         @relation(fields: [scopeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  @@unique([membershipId, role])
+  @@unique([membershipId, role, scopeId])
   @@index([role])
+  @@index([scopeId])
   @@map("role_assignments")
 }
 
+model AccessResource {
+  id             String            @id @default(uuid()) @db.Uuid
+  organizationId String            @db.Uuid
+  siteId         String?           @db.Uuid
+  parentId       String?           @db.Uuid
+  type           AccessResourceType
+  createdAt      DateTime          @default(now()) @db.Timestamptz(6)
+  archivedAt     DateTime?         @db.Timestamptz(6)
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  site           Site?             @relation(fields: [siteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parent         AccessResource?   @relation("ResourceHierarchy", fields: [parentId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  children       AccessResource[]  @relation("ResourceHierarchy")
+  roleAssignments RoleAssignment[]
+  permissionGrants PermissionGrant[]
+  accessRelations AccessRelation[]
+
+  @@index([organizationId, type])
+  @@index([siteId, type])
+  @@index([parentId])
+  @@map("access_resources")
+}
+
+model PermissionGrant {
+  id           String                 @id @default(uuid()) @db.Uuid
+  membershipId String                 @db.Uuid
+  permission   String                 @db.VarChar(96)
+  scopeId      String                 @db.Uuid
+  createdAt    DateTime               @default(now()) @db.Timestamptz(6)
+  archivedAt   DateTime?              @db.Timestamptz(6)
+  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scope        AccessResource         @relation(fields: [scopeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([membershipId, permission, scopeId])
+  @@index([permission, scopeId])
+  @@map("permission_grants")
+}
+
+model AccessRelation {
+  id           String                 @id @default(uuid()) @db.Uuid
+  membershipId String                 @db.Uuid
+  relation     AccessRelationType
+  resourceId   String                 @db.Uuid
+  createdAt    DateTime               @default(now()) @db.Timestamptz(6)
+  archivedAt   DateTime?              @db.Timestamptz(6)
+  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  resource     AccessResource         @relation(fields: [resourceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([membershipId, relation, resourceId])
+  @@index([resourceId, relation])
+  @@map("access_relations")
+}
+
+model AuditEvent {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  actorUserId    String?      @db.Uuid
+  action         String       @db.VarChar(96)
+  resourceType   String       @db.VarChar(64)
+  resourceId     String?      @db.Uuid
+  outcome        AuditOutcome
+  requestId      String       @db.Uuid
+  reason         String?      @db.VarChar(96)
+  context        Json?        @db.JsonB
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+
+  @@index([organizationId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([action, createdAt])
+  @@index([resourceType, resourceId, createdAt])
+  @@map("audit_events")
+}
+
 model AuthSession {
-  id               String    @id @default(uuid()) @db.Uuid
-  userId           String    @db.Uuid
-  tokenHash        String    @unique @db.Char(64)
-  csrfTokenHash    String    @db.Char(64)
-  authVersion      Int
-  mfaVerifiedAt    DateTime? @db.Timestamptz(6)
-  createdAt        DateTime  @default(now()) @db.Timestamptz(6)
-  lastSeenAt       DateTime  @default(now()) @db.Timestamptz(6)
-  expiresAt        DateTime  @db.Timestamptz(6)
-  absoluteExpiresAt DateTime @db.Timestamptz(6)
-  revokedAt        DateTime? @db.Timestamptz(6)
-  revocationReason String?   @db.VarChar(64)
-  userAgent        String?   @db.VarChar(512)
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id                String    @id @default(uuid()) @db.Uuid
+  userId            String    @db.Uuid
+  tokenHash         String    @unique @db.Char(64)
+  csrfTokenHash     String    @db.Char(64)
+  authVersion       Int
+  mfaVerifiedAt     DateTime? @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(6)
+  lastSeenAt        DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt         DateTime  @db.Timestamptz(6)
+  absoluteExpiresAt DateTime  @db.Timestamptz(6)
+  revokedAt         DateTime? @db.Timestamptz(6)
+  revocationReason  String?   @db.VarChar(64)
+  userAgent         String?   @db.VarChar(512)
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId, revokedAt])
   @@index([expiresAt])
@@ -155,15 +264,15 @@ model AuthSession {
 }
 
 model AuthOneTimeToken {
-  id          String        @id @default(uuid()) @db.Uuid
-  userId      String        @db.Uuid
-  kind        AuthTokenKind
-  tokenHash   String        @unique @db.Char(64)
-  attemptCount Int          @default(0)
-  createdAt   DateTime      @default(now()) @db.Timestamptz(6)
-  expiresAt   DateTime      @db.Timestamptz(6)
-  consumedAt  DateTime?     @db.Timestamptz(6)
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id           String        @id @default(uuid()) @db.Uuid
+  userId       String        @db.Uuid
+  kind         AuthTokenKind
+  tokenHash    String        @unique @db.Char(64)
+  attemptCount Int           @default(0)
+  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  expiresAt    DateTime      @db.Timestamptz(6)
+  consumedAt   DateTime?     @db.Timestamptz(6)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId, kind, consumedAt])
   @@map("auth_one_time_tokens")

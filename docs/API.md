@@ -1,4 +1,4 @@
-# API, PostgreSQL et authentification M1
+# API, PostgreSQL, authentification et RBAC M1
 
 ## 1. Périmètre livré
 
@@ -11,9 +11,11 @@ Le workspace `apps/api` contient le monolithe modulaire NestJS/Fastify avec :
 - Argon2id, cookies HttpOnly/Secure/SameSite=Strict, protection CSRF par double submit ;
 - MFA TOTP pour les rôles sensibles de la matrice et codes de récupération à usage unique ;
 - limitation progressive des tentatives et événements de sécurité minimisés ;
+- noyau #7 : catalogue des 13 rôles, refus par défaut, portées, relations et ressources enregistrées ;
+- gestion technique des rôles/permissions et journal d’audit append-only ;
 - tests unitaires et tests PostgreSQL exécutés en CI.
 
-**Non inclus :** RBAC métier et portées complètes de #7, audit métier, référentiels scolaires, règles académiques, calculs officiels, finance/paie, raccordement frontend/Tauri et déploiement de production.
+**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; référentiels scolaires, règles académiques, calculs officiels, raccordement frontend/Tauri et déploiement de production. Le noyau #7 est une brique transverse, pas la recette fonctionnelle de ces modules futurs.
 
 ## 2. Démarrage vierge en une commande
 
@@ -99,17 +101,48 @@ Les rôles `technical_admin`, `direction`, `accountant`, `cashier` et `hr_manage
 
 Un mot de passe valide ne crée **aucune session métier** pour ces profils : le serveur émet seulement un challenge MFA de 5 minutes. L’enrôlement doit être confirmé par un TOTP, puis les dix codes de récupération sont affichés une seule fois. Le dernier pas TOTP accepté est enregistré pour empêcher le rejeu ; les codes de récupération sont hashés et consommés atomiquement.
 
-## 5. Limitation et journalisation
+## 5. Noyau RBAC, portées et audit
+
+Le catalogue `packages/contracts/src/permissions.ts` est la référence des permissions et des permissions de rôle. Il couvre les treize rôles validés, dont `technical_admin`, `direction`, `teacher`, `guardian`, `auditor` et les rôles financiers. Une permission absente du rôle et sans attribution explicite active est refusée.
+
+`AuthorizationService` vérifie, côté serveur : appartenance active, permission de rôle ou attribution explicite, ressource enregistrée dans la même organisation, périmètre organisation/site/classe/matière et relation enseignant–classe ou responsable–élève. Une ressource inconnue, une autre organisation, une relation absente ou une portée non couvrante produit un refus ; aucun identifiant fourni par le client ne contourne ces contrôles.
+
+Les organisations et sites sont enregistrés automatiquement par la migration #7. Les classes, élèves et ressources métier doivent être enregistrés par leurs futurs services avec leur organisation, leur site éventuel et leur parent. Les attributions explicites et les relations sont séparées des rôles de base et sont révocables sans supprimer l’historique.
+
+### Endpoints de gestion technique
+
+Ces endpoints sont protégés par `security.permissions.manage` et `audit.read` selon le cas. Ils exigent la session et le CSRF pour les mutations, et ne permettent pas à un utilisateur de se modifier lui-même.
+
+| Méthode et chemin | Objet |
+| --- | --- |
+| `POST /api/v1/security/permissions/grant` | attribuer une permission avec une portée |
+| `POST /api/v1/security/permissions/revoke` | révoquer une attribution sans effacer son historique |
+| `POST /api/v1/security/roles/assign` | attribuer un rôle dans une organisation, un site, une classe ou une matière |
+| `POST /api/v1/security/roles/revoke` | révoquer une attribution de rôle |
+| `GET /api/v1/security/audit?organizationId=...` | consulter les événements avec filtres et limite bornée |
+
+La gestion d’une organisation cible vérifie d’abord la permission dans cette organisation, sans exiger que la ressource métier cible existe déjà. Un administrateur d’une autre organisation reste donc refusé ; un administrateur valide peut ensuite créer ou modifier l’attribution demandée.
+
+### Audit et raccordement des futurs modules
+
+`AuditService.record` reçoit l’acteur, l’action, la ressource, le résultat, la date serveur, le `requestId` et un contexte technique minimisé. Seules des clés autorisées sont conservées ; les secrets et objets arbitraires sont écartés. Les triggers PostgreSQL bloquent UPDATE et DELETE du journal, tandis que les suppressions de maintenance utilisent des opérations contrôlées.
+
+Les futurs modules doivent appeler `assertAuthorized` avant chaque commande et écrire l’événement dans la même unité de travail métier que la mutation. Les actions `notes.*`, `payments.*`, `payroll.*`, `proclamations.*` et `permissions.*` disposent ainsi d’un point de journalisation commun ; leurs tables et règles de calcul ne sont pas créées par ce noyau.
+
+La rétention du journal n’est pas fixée arbitrairement ici : elle reste une décision de gouvernance à valider avant production. Aucun événement ne contient de mot de passe, jeton, secret TOTP ou donnée scolaire nominative par défaut.
+
+## 6. Limitation et journalisation
 
 Les échecs de connexion sont limités par compte et par IP dans une fenêtre de 15 minutes, avec blocage progressif borné. Les challenges MFA ont en outre un compteur de cinq essais. Les demandes de récupération sont limitées pour réduire le spam et conservent une réponse identique pour les adresses inconnues.
 
 `auth_events` enregistre l’action, le résultat, un motif technique, la date et des hashes HMAC du sujet/IP. Il ne contient ni mot de passe, ni hash de mot de passe, ni jeton brut, ni secret TOTP, ni code de récupération, ni email en clair. Les erreurs SMTP et les détails Prisma ne sont pas renvoyés au client.
 
-## 6. Migration, seed et contrats
+## 7. Migration, seed et contrats
 
 - Schéma : `apps/api/prisma/schema.prisma` ;
 - migration initiale : `20261029140000_initial_core` ;
 - migration #6 : `20261029153000_authentication_mfa` ;
+- migration #7 : `20261029163000_rbac_audit` ;
 - seed : `apps/api/prisma/seed-core.ts` et `packages/testing/src/fixtures.ts` ;
 - contrat versionné : `apps/api/openapi/openapi.json`.
 
@@ -120,7 +153,7 @@ npm run openapi:check  # échoue si le document diffère
 
 Les migrations sont appliquées avec `prisma migrate deploy`, jamais avec `db push`. La migration #6 est additive et ne réécrit pas les documents historiques ni les règles métier.
 
-## 7. Tests et CI
+## 8. Tests et CI
 
 ```bash
 npm test
@@ -128,12 +161,12 @@ npm run test:integration
 npm run typecheck
 ```
 
-Les tests PostgreSQL couvrent les contraintes du socle et les parcours #6 : invitation, MFA obligatoire, anti-rejeu TOTP, codes de récupération, expiration, rotation, CSRF, récupération de mot de passe, déconnexion, révocation, désactivation et force brute. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
+Les tests PostgreSQL couvrent les contraintes du socle, les parcours #6 et les scénarios #7 : refus d’une classe ou d’un enfant non rattaché, isolation inter-organisations, gestion cross-tenant, attribution et révocation, portée limitée à une classe, lecture d’audit restreinte et refus UPDATE/DELETE du journal. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
 
 La CI utilise PostgreSQL 16 isolé, `LAVISION_SKIP_DOCKER=true`, une clé de test non réutilisable et le même chemin de migration/seed que le démarrage local. Le sandbox sans PostgreSQL ne constitue pas une preuve d’intégration.
 
-## 8. Limites d’exploitation
+## 9. Limites d’exploitation
 
 Le frontend n’appelle pas encore cette API : le raccordement Web/Tauri reste prévu en M2. Pour Tauri, ce raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
 
-Avant toute production : livrer #7, raccorder les clients, choisir l’hébergement et les RPO/RTO, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6.
+Avant toute production : brancher les modules métier sur #7, raccorder les clients, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6 ou #7.

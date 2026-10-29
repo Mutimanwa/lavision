@@ -1,4 +1,27 @@
+import type { RoleId } from "./auth.js";
+
 export const PERMISSIONS = {
+  securityPermissionsRead: "security.permissions.read",
+  securityPermissionsManage: "security.permissions.manage",
+  auditRead: "audit.read",
+  studentsRead: "students.read",
+  studentsWrite: "students.write",
+  classesRead: "classes.read",
+  attendanceRead: "attendance.read",
+  attendanceWrite: "attendance.write",
+  notesRead: "notes.read",
+  notesWrite: "notes.write",
+  notesReview: "notes.review",
+  paymentsRead: "payments.read",
+  paymentsWrite: "payments.write",
+  payrollRead: "payroll.read",
+  payrollWrite: "payroll.write",
+  payrollApprove: "payroll.approve",
+  proclamationsRead: "proclamations.read",
+  proclamationsPublish: "proclamations.publish",
+  financeFamilyRead: "finance.family.read",
+  employeeRead: "employee.read",
+  employeeWrite: "employee.write",
   referentialsAcademicRead: "referentials.academic.read",
   referentialsAcademicDraft: "referentials.academic.draft",
   referentialsAcademicReview: "referentials.academic.review",
@@ -14,3 +37,59 @@ export const PERMISSIONS = {
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+
+/**
+ * Catalogue de départ, sans habilitation nominative implicite.
+ * Les contrôles de portée et de relation sont toujours appliqués par l’API.
+ */
+export const ROLE_PERMISSIONS: Record<RoleId, readonly Permission[]> = {
+  technical_admin: [
+    PERMISSIONS.securityPermissionsRead,
+    PERMISSIONS.securityPermissionsManage,
+  ],
+  direction: [
+    PERMISSIONS.auditRead,
+    PERMISSIONS.proclamationsRead,
+    PERMISSIONS.proclamationsPublish,
+  ],
+  academic_manager: [
+    PERMISSIONS.notesRead,
+    PERMISSIONS.notesReview,
+    PERMISSIONS.referentialsAcademicRead,
+    PERMISSIONS.referentialsAcademicDraft,
+    PERMISSIONS.referentialsAcademicReview,
+    PERMISSIONS.referentialsAcademicApprove,
+    PERMISSIONS.referentialsAcademicPublish,
+    PERMISSIONS.rulesAcademicRead,
+    PERMISSIONS.rulesAcademicDraft,
+    PERMISSIONS.rulesAcademicSimulate,
+    PERMISSIONS.rulesAcademicSubmit,
+    PERMISSIONS.rulesAcademicReview,
+    PERMISSIONS.rulesAcademicApprove,
+    PERMISSIONS.rulesAcademicPublish,
+  ],
+  school_secretary: [
+    PERMISSIONS.studentsRead,
+    PERMISSIONS.studentsWrite,
+    PERMISSIONS.classesRead,
+  ],
+  student_affairs: [
+    PERMISSIONS.studentsRead,
+    PERMISSIONS.attendanceRead,
+    PERMISSIONS.attendanceWrite,
+  ],
+  teacher: [
+    PERMISSIONS.classesRead,
+    PERMISSIONS.attendanceRead,
+    PERMISSIONS.attendanceWrite,
+    PERMISSIONS.notesRead,
+    PERMISSIONS.notesWrite,
+  ],
+  accountant: [PERMISSIONS.paymentsRead, PERMISSIONS.paymentsWrite],
+  cashier: [PERMISSIONS.paymentsRead, PERMISSIONS.paymentsWrite],
+  hr_manager: [PERMISSIONS.employeeRead, PERMISSIONS.employeeWrite],
+  employee: [PERMISSIONS.employeeRead],
+  guardian: [PERMISSIONS.studentsRead, PERMISSIONS.financeFamilyRead],
+  student: [PERMISSIONS.studentsRead],
+  auditor: [PERMISSIONS.auditRead],
+};

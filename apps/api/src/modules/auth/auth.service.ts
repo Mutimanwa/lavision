@@ -186,6 +186,7 @@ export class AuthService {
               roleAssignments: {
                 create: input.roles.map((role) => ({
                   role: PRISMA_ROLE_BY_ROLE_ID[role],
+                  scopeId: input.organizationId,
                 })),
               },
             },

@@ -58,7 +58,7 @@ export async function createUser(
     organizationId: string;
     email: string;
     passwordHash: string;
-    role?: Role;
+    role?: Role | null;
     status?: UserStatus;
   },
 ) {
@@ -72,9 +72,15 @@ export async function createUser(
         create: {
           organizationId: input.organizationId,
           status: MembershipStatus.ACTIVE,
-          roleAssignments: {
-            create: { role: input.role ?? Role.TEACHER },
-          },
+          roleAssignments:
+            input.role === null
+              ? undefined
+              : {
+                  create: {
+                    role: input.role ?? Role.TEACHER,
+                    scopeId: input.organizationId,
+                  },
+                },
         },
       },
     },

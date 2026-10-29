@@ -233,7 +233,7 @@ describe("Moteur de règles versionné #39", () => {
         scope: { programId: firstProgram.id },
       },
     });
-    expect(snapshot.statusCode).toBe(201);
+    expect(snapshot.statusCode, snapshot.body).toBe(201);
     expect(snapshot.json().resolved.ruleContentHash).toBe(first.contentHash);
     expect(snapshot.json().resolved.resolution.values.find((entry: { key: string }) => entry.key === "academic.grading.scale_max").value).toBe("120");
     const sameSnapshot = await http().inject({

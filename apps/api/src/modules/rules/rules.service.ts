@@ -505,7 +505,7 @@ export class RulesService {
     const contentHash = sha256(envelope);
     const snapshot = await this.prisma.$transaction(async (transaction) => {
       const lockKey = `${input.documentType}:${input.documentId}:${version.id}`;
-      await transaction.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey})::bigint)`;
+      await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${lockKey})::bigint)`;
       const existing = await transaction.documentRuleSnapshot.findFirst({
         where: { documentType: input.documentType, documentId: input.documentId, ruleSetVersionId: version.id },
       });

@@ -75,7 +75,7 @@ Avec les résultats précédents, A et B ont la même moyenne et C a la moyenne 
 
 **Question d’atelier :** quelle politique figure sur les documents officiels ? Si un départage est requis, quel critère est légitime et comment éviter un choix arbitraire ?
 
-**Décision validée :** à compléter
+**Réponse du 29/10/2026 :** rang de compétition `1, 1, 3` et comparaison avant arrondi sélectionnés ; validation par la direction et exemple annuel restant à compléter.
 
 ## 3. Agrégation annuelle
 
@@ -95,7 +95,7 @@ Supposons trois moyennes périodiques déjà calculées sans nouvel arrondi inte
 - traitement d’une période incomplète ou d’une arrivée en cours d’année ;
 - liens éventuels avec compensation, assiduité ou conseil de classe.
 
-**Configuration retenue et exemple validé :** à compléter
+**Réponse du 29/10/2026 :** le résultat annuel combine les périodes et un examen annuel distinct. Les poids et un exemple chiffré restent à définir ; les politiques ci-dessus ne sont pas retenues comme formule annuelle complète.
 
 ## 4. Arrondis et frontières
 

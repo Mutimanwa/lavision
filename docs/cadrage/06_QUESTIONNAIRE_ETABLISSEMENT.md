@@ -19,7 +19,7 @@ Ces éléments proviennent des échanges. Ils sont reformulés pour vérificatio
 
 | Élément compris | Statut | Clarification encore nécessaire |
 | --- | --- | --- |
-| Le premier pilote concerne le secondaire uniquement. | réponse sélectionnée le 29/10/2026 | liste des classes, sections et options du pilote à faire valider par la scolarité |
+| Le premier pilote concerne tout le secondaire : 7e/8e et Humanités. | réponse sélectionnée le 29/10/2026 | liste physique des classes, sections et options participantes à faire valider par la scolarité |
 | La première description évoquait un concours d’État après 7E/8E, puis un certificat et le choix d’une section/option. | reformulé après consultation des sources RDC | les sources identifient le TENASOSP à la fin de 8E ; l’EXETAT est une étape distincte en fin d’humanités |
 | Le nombre associé à un cours représente une note maximale, définie au niveau du programme de cours. | réponses sélectionnées le 29/10/2026 | confirmer les maxima par classe, section, option et année ainsi que les formules de conversion et de synthèse |
 | Le choix initial était trimestres + séquences ; le calendrier RDC 2026–2027 retient 2 semestres et 4 périodes pour le secondaire. | structure par cycle sélectionnée le 29/10/2026 : primaire 3 trimestres/6 périodes, secondaire 2 semestres/4 périodes | validation par la scolarité et précision du sens local de « séquence » |
@@ -41,12 +41,12 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-STR-02 | Quels sont les noms officiels et les abréviations des classes, notamment 7E et 8E ? | |
 | Q-STR-03 | Les classes 7E et 8E appartiennent-elles au même cycle ? Quelle classe précède et quelle classe suit chacune ? | |
 | Q-STR-04 | Combien de sites, sections, options et classes physiques faut-il gérer la première année ? | |
-| Q-STR-05 | Quelle est la différence exacte entre **cycle**, **section**, **option**, **filière**, **programme** et **classe** dans votre organisation ? | |
+| Q-STR-05 | Quelle est la différence exacte entre **cycle**, **section**, **option**, **filière**, **programme** et **classe** dans votre organisation ? | 29/10/2026 : hiérarchie proposée année scolaire → établissement → classe académique ; section, option, niveau et programme sont rattachés à cette classe. Définitions de filière et cycle à préciser. |
 | Q-STR-06 | La section est-elle choisie avant l’option ? Donner deux ou trois exemples réels de combinaisons section/option. | |
 | Q-STR-07 | Une même option peut-elle exister dans plusieurs sections ? Son programme est-il alors identique ? | |
-| Q-STR-08 | À quel moment l’élève choisit-il sa section et son option ? Qui valide ce choix ? | |
+| Q-STR-08 | À quel moment l’élève choisit-il sa section et son option ? Qui valide ce choix ? | 29/10/2026 : à l’entrée dans les Humanités, après la 8e / le TENASOSP ; position exacte par rapport au résultat officiel et validateur à confirmer. |
 | Q-STR-09 | Peut-on changer de section ou d’option en cours d’année ? Comment reporter les notes déjà obtenues ? | |
-| Q-STR-10 | Le programme des cours est-il défini par classe, section, option ou combinaison des trois ? | |
+| Q-STR-10 | Le programme des cours est-il défini par classe, section, option ou combinaison des trois ? | 29/10/2026 : programme rattaché à la classe académique dans la hiérarchie proposée, avec section, option, niveau et année scolaire ; exemples de combinaisons à fournir. |
 | Q-STR-11 | Un programme change-t-il selon l’année scolaire tout en conservant le même nom ? | |
 | Q-STR-12 | Quels cours sont communs, obligatoires ou propres à une option ? | |
 | Q-STR-13 | Un élève peut-il suivre un cours facultatif ou supplémentaire hors de son programme principal ? | |
@@ -95,11 +95,11 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-EVAL-08 | Que représente localement une « séquence » : séance didactique de 50 minutes, période du calendrier, évaluation ou ensemble d’évaluations ? | |
 | Q-EVAL-09 | Quels types d’évaluations existent : interrogations, devoirs, travaux pratiques, examens ou autres ? | |
 | Q-EVAL-10 | Comment obtient-on la note d’une séquence pour un cours ? Donner un exemple chiffré. | |
-| Q-EVAL-11 | Comment obtient-on la note trimestrielle d’un cours à partir des séquences et de l’examen éventuel ? | |
+| Q-EVAL-11 | Comment obtient-on la note trimestrielle d’un cours à partir des séquences et de l’examen éventuel ? | 29/10/2026 : structure variable par programme de cours ; schémas avec ou sans examen et poids des composantes à définir. |
 | Q-EVAL-12 | Chaque composante possède-t-elle un poids ou un pourcentage ? Leur total doit-il être égal à une valeur précise ? | |
 | Q-EVAL-13 | Comment calcule-t-on la moyenne générale d’un trimestre à partir des cours ? | 29/10/2026 : moyenne pondérée des pourcentages de cours par un coefficient distinct du maximum ; valeurs par programme à fournir. |
 | Q-EVAL-14 | Les cours facultatifs ou supplémentaires entrent-ils dans la moyenne générale ? | |
-| Q-EVAL-15 | Comment calcule-t-on le résultat annuel : moyenne des trimestres, cumul des points, examen annuel ou autre ? | |
+| Q-EVAL-15 | Comment calcule-t-on le résultat annuel : moyenne des trimestres, cumul des points, examen annuel ou autre ? | 29/10/2026 : combinaison des périodes et d’un examen annuel distinct sélectionnée ; poids et formule à définir sur exemple. |
 | Q-EVAL-16 | Les trimestres ont-ils des poids différents ? | |
 | Q-EVAL-17 | Existe-t-il une note minimale par cours, une note éliminatoire ou une compensation entre cours ? | |
 | Q-EVAL-18 | Quel est le seuil de réussite et s’applique-t-il au cours, au trimestre, à l’année ou à plusieurs niveaux ? | 29/10/2026 : 50 % sélectionné comme règle de départ pour chaque cours et la moyenne générale ; exemples de décision à faire valider. |
@@ -114,20 +114,20 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 
 | ID | Question | Réponse |
 | --- | --- | --- |
-| Q-DEC-01 | Une moyenne provisoire utilise-t-elle seulement les cours notés ou tous les coefficients du programme ? | |
+| Q-DEC-01 | Une moyenne provisoire utilise-t-elle seulement les cours notés ou tous les coefficients du programme ? | 29/10/2026 : seuls les cours notés, avec signalement explicite des notes manquantes et statut provisoire. |
 | Q-DEC-02 | Comment distingue-t-on une note non saisie, une absence, une dispense et un zéro obtenu ? | 29/10/2026 : note obtenue, absence et cellule non saisie distinguées ; pas de dispense distincte retenue pour le pilote à ce stade. |
 | Q-DEC-03 | Qui voit la moyenne provisoire : enseignant, direction, secrétariat, parent ou élève ? | |
 | Q-DEC-04 | Une note obligatoire manquante bloque-t-elle le bulletin individuel, toute la classe ou seulement la décision finale ? | 29/10/2026 : « À confirmer » ; aucune règle de diffusion ou de blocage définitive retenue. |
 | Q-DEC-05 | Que se passe-t-il après une absence justifiée ou un rattrapage ? | |
 | Q-DEC-06 | Le rang de compétition `1, 1, 3` s’applique-t-il aux trimestres et à l’année ? | 29/10/2026 : rang de compétition sélectionné comme règle de départ ; application à chaque période et à l’année à faire valider. |
-| Q-DEC-07 | Les ex æquo sont-ils déterminés avant ou après arrondi de la moyenne ? | |
+| Q-DEC-07 | Les ex æquo sont-ils déterminés avant ou après arrondi de la moyenne ? | 29/10/2026 : avant arrondi, sur la précision interne ; deux affichages identiques peuvent donc ne pas être ex æquo. |
 | Q-DEC-08 | Les élèves incomplets apparaissent-ils dans le classement et, si oui, à quel endroit ? | |
 | Q-DEC-09 | Quelles décisions officielles existent : passage, redoublement, ajournement, exclusion, orientation ou autres ? | |
 | Q-DEC-10 | La décision est-elle entièrement calculée ou le conseil peut-il la modifier ? Avec quel motif et quelle approbation ? | 29/10/2026 : circuit général à confirmer ; pour ACA-PROP-001, orientation vers la délibération sans décision automatique sélectionnée. |
 | Q-DEC-11 | L’assiduité ou la conduite influence-t-elle la décision académique ? Selon quelle règle ? | |
 | Q-DEC-12 | Comment gérer un élève arrivé ou parti en cours d’année dans les moyennes et le classement ? | |
-| Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | |
-| Q-DEC-14 | Une rectification produit-elle une nouvelle version du document et comment les destinataires sont-ils informés ? | |
+| Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | 29/10/2026 : ne pas modifier une publication comme un brouillon ; procédure de rectification contrôlée requise, avec approbateurs encore à définir. |
+| Q-DEC-14 | Une rectification produit-elle une nouvelle version du document et comment les destinataires sont-ils informés ? | 29/10/2026 : préserver les résultats précédemment publiés et tracer les changements ; notification des destinataires à définir. |
 | Q-DEC-15 | Quelles règles s’appliquent à la première délibération, au repêchage et à la deuxième délibération prévus dans le calendrier secondaire ? | |
 
 ## Bloc 5 — Bulletins et autres documents académiques

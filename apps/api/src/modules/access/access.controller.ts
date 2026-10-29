@@ -69,6 +69,7 @@ export class AccessController {
   }
 
   @Post("permissions/revoke")
+  @HttpCode(HttpStatus.OK)
   @RequirePermission(manageRequirement)
   revokePermission(
     @CurrentAuth() actor: SessionAuthContext,
@@ -98,6 +99,7 @@ export class AccessController {
   }
 
   @Post("roles/revoke")
+  @HttpCode(HttpStatus.OK)
   @RequirePermission(manageRequirement)
   revokeRole(
     @CurrentAuth() actor: SessionAuthContext,

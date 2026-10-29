@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.5 — 28 octobre 2026
+**Version :** 0.6 — 29 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -19,11 +19,12 @@ Ces éléments proviennent des échanges. Ils sont reformulés pour vérificatio
 
 | Élément compris | Statut | Clarification encore nécessaire |
 | --- | --- | --- |
+| Le premier pilote concerne le secondaire uniquement. | réponse sélectionnée le 29/10/2026 | liste des classes, sections et options du pilote à faire valider par la scolarité |
 | La première description évoquait un concours d’État après 7E/8E, puis un certificat et le choix d’une section/option. | reformulé après consultation des sources RDC | les sources identifient le TENASOSP à la fin de 8E ; l’EXETAT est une étape distincte en fin d’humanités |
-| Le barème ou la pondération peut dépendre du cours, notamment selon la section et l’option. | à confirmer | distinguer note maximale, coefficient, pourcentage du volume horaire et moyenne de synthèse |
-| Le choix initial était trimestres + séquences ; le calendrier RDC 2026–2027 retient 2 semestres et 4 périodes pour le secondaire. | base officielle à confirmer pour le pilote | préciser le découpage par niveau et le sens local de « séquence » |
-| Une note manquante permet une moyenne provisoire. | proposition sélectionnée | dénominateur, visibilité et blocage éventuel de la publication |
-| Les ex æquo utilisent le rang de compétition `1, 1, 3`. | proposition sélectionnée | moyenne arrondie ou non et comportement annuel |
+| Le nombre associé à un cours représente une note maximale, définie au niveau du programme de cours. | réponses sélectionnées le 29/10/2026 | confirmer les maxima par classe, section, option et année ainsi que les formules de conversion et de synthèse |
+| Le choix initial était trimestres + séquences ; le calendrier RDC 2026–2027 retient 2 semestres et 4 périodes pour le secondaire. | structure par cycle sélectionnée le 29/10/2026 : primaire 3 trimestres/6 périodes, secondaire 2 semestres/4 périodes | validation par la scolarité et précision du sens local de « séquence » |
+| Une note manquante permet une moyenne provisoire. | comportement du prototype ; diffusion d’un bulletin incomplet laissée « À confirmer » le 29/10/2026 | dénominateur, visibilité et blocage éventuel de la publication ; aucune règle définitive retenue |
+| Les ex æquo utilisent le rang de compétition `1, 1, 3`. | règle de départ sélectionnée le 29/10/2026 | validation par la direction ; moyenne arrondie ou non et comportement annuel à préciser |
 | Un modèle vierge de bulletin 1ère/2e secondaire a été fourni. | structure analysée | bulletin rempli, arrondis, pourcentage, décisions et repêchage à confirmer |
 | Un bulletin rempli de 5e HP — Humanités pédagogiques, formulaire Pédagogie générale — a été fourni. | structure et contrôles analysés ; 22 branches et cinq profils de maxima | écarts manuscrits, tirets, troncature/arrondi, repêchage et application actuelle à confirmer |
 | Toutes les règles métier variables doivent être personnalisables et pouvoir changer au fil du temps, même si certaines réponses sont encore inconnues. | orientation produit validée le 28/10/2026 — DEC-007 | catalogue exhaustif, versions datées, simulation et état « à configurer » ; aucune valeur officielle inventée |
@@ -84,29 +85,29 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 
 | ID | Question | Réponse |
 | --- | --- | --- |
-| Q-EVAL-01 | Pour un cours donné, que signifie exactement le nombre associé au cours : note maximale, coefficient, crédit, pourcentage ou autre ? | |
+| Q-EVAL-01 | Pour un cours donné, que signifie exactement le nombre associé au cours : note maximale, coefficient, crédit, pourcentage ou autre ? | 29/10/2026 : note maximale sélectionnée ; exemples par programme à faire valider. |
 | Q-EVAL-02 | Donner un exemple complet pour un cours commun : intitulé, section/option, barème, coefficient et évaluations. | |
 | Q-EVAL-03 | Donner le même exemple pour un cours d’option dont la règle est différente. | |
-| Q-EVAL-04 | La note maximale est-elle propre à chaque évaluation, à chaque cours ou à chaque programme ? | |
+| Q-EVAL-04 | La note maximale est-elle propre à chaque évaluation, à chaque cours ou à chaque programme ? | 29/10/2026 : niveau programme de cours sélectionné, avec variations possibles par classe, section, option et année. |
 | Q-EVAL-05 | Les notes sont-elles saisies sur leur barème brut puis converties ? Si oui, vers quel barème et avec quelle formule déterminée ? | |
 | Q-EVAL-06 | Le coefficient d’un cours peut-il changer selon la section, l’option, la période ou l’année ? | |
-| Q-EVAL-07 | Le calendrier RDC 2026–2027 prévoit 2 semestres/4 périodes au secondaire et 3 trimestres/6 périodes au primaire. Quel découpage chaque niveau de l’école applique-t-il ? | |
+| Q-EVAL-07 | Le calendrier RDC 2026–2027 prévoit 2 semestres/4 périodes au secondaire et 3 trimestres/6 périodes au primaire. Quel découpage chaque niveau de l’école applique-t-il ? | 29/10/2026 : structure par cycle sélectionnée ; validation locale par la scolarité restante. |
 | Q-EVAL-08 | Que représente localement une « séquence » : séance didactique de 50 minutes, période du calendrier, évaluation ou ensemble d’évaluations ? | |
 | Q-EVAL-09 | Quels types d’évaluations existent : interrogations, devoirs, travaux pratiques, examens ou autres ? | |
 | Q-EVAL-10 | Comment obtient-on la note d’une séquence pour un cours ? Donner un exemple chiffré. | |
 | Q-EVAL-11 | Comment obtient-on la note trimestrielle d’un cours à partir des séquences et de l’examen éventuel ? | |
 | Q-EVAL-12 | Chaque composante possède-t-elle un poids ou un pourcentage ? Leur total doit-il être égal à une valeur précise ? | |
-| Q-EVAL-13 | Comment calcule-t-on la moyenne générale d’un trimestre à partir des cours ? | |
+| Q-EVAL-13 | Comment calcule-t-on la moyenne générale d’un trimestre à partir des cours ? | 29/10/2026 : moyenne pondérée des pourcentages de cours par un coefficient distinct du maximum ; valeurs par programme à fournir. |
 | Q-EVAL-14 | Les cours facultatifs ou supplémentaires entrent-ils dans la moyenne générale ? | |
 | Q-EVAL-15 | Comment calcule-t-on le résultat annuel : moyenne des trimestres, cumul des points, examen annuel ou autre ? | |
 | Q-EVAL-16 | Les trimestres ont-ils des poids différents ? | |
 | Q-EVAL-17 | Existe-t-il une note minimale par cours, une note éliminatoire ou une compensation entre cours ? | |
-| Q-EVAL-18 | Quel est le seuil de réussite et s’applique-t-il au cours, au trimestre, à l’année ou à plusieurs niveaux ? | |
+| Q-EVAL-18 | Quel est le seuil de réussite et s’applique-t-il au cours, au trimestre, à l’année ou à plusieurs niveaux ? | 29/10/2026 : 50 % sélectionné comme règle de départ pour chaque cours et la moyenne générale ; exemples de décision à faire valider. |
 | Q-EVAL-19 | Quelles appréciations ou mentions existent et quelles sont leurs limites ? | |
-| Q-EVAL-20 | Quand arrondit-on : évaluation, cours, séquence, trimestre, moyenne générale ou résultat annuel ? | |
-| Q-EVAL-21 | Combien de décimales faut-il conserver dans les calculs et afficher sur chaque document ? | |
-| Q-EVAL-22 | Quelle règle applique-t-on exactement à mi-chemin, par exemple pour `12,345` affiché avec deux décimales ? | |
-| Q-EVAL-23 | Les enseignants saisissent-ils des points bruts, des pourcentages ou les deux ? | |
+| Q-EVAL-20 | Quand arrondit-on : évaluation, cours, séquence, trimestre, moyenne générale ou résultat annuel ? | 29/10/2026 : arrondi de chaque cours avant la moyenne générale sélectionné ; précision et mode à définir. |
+| Q-EVAL-21 | Combien de décimales faut-il conserver dans les calculs et afficher sur chaque document ? | 29/10/2026 : une décimale à l’affichage sélectionnée ; précision interne et variations documentaires à confirmer. |
+| Q-EVAL-22 | Quelle règle applique-t-on exactement à mi-chemin, par exemple pour `12,345` affiché avec deux décimales ? | 29/10/2026 : arrondi au pair le plus proche sélectionné comme règle de départ. |
+| Q-EVAL-23 | Les enseignants saisissent-ils des points bruts, des pourcentages ou les deux ? | 29/10/2026 : points bruts sélectionnés pour la saisie normale. |
 | Q-EVAL-24 | Qui peut créer une évaluation, modifier son barème et verrouiller les notes ? | |
 
 ## Bloc 4 — Notes manquantes, classement et décisions
@@ -114,15 +115,15 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | ID | Question | Réponse |
 | --- | --- | --- |
 | Q-DEC-01 | Une moyenne provisoire utilise-t-elle seulement les cours notés ou tous les coefficients du programme ? | |
-| Q-DEC-02 | Comment distingue-t-on une note non saisie, une absence, une dispense et un zéro obtenu ? | |
+| Q-DEC-02 | Comment distingue-t-on une note non saisie, une absence, une dispense et un zéro obtenu ? | 29/10/2026 : note obtenue, absence et cellule non saisie distinguées ; pas de dispense distincte retenue pour le pilote à ce stade. |
 | Q-DEC-03 | Qui voit la moyenne provisoire : enseignant, direction, secrétariat, parent ou élève ? | |
-| Q-DEC-04 | Une note obligatoire manquante bloque-t-elle le bulletin individuel, toute la classe ou seulement la décision finale ? | |
+| Q-DEC-04 | Une note obligatoire manquante bloque-t-elle le bulletin individuel, toute la classe ou seulement la décision finale ? | 29/10/2026 : « À confirmer » ; aucune règle de diffusion ou de blocage définitive retenue. |
 | Q-DEC-05 | Que se passe-t-il après une absence justifiée ou un rattrapage ? | |
-| Q-DEC-06 | Le rang de compétition `1, 1, 3` s’applique-t-il aux trimestres et à l’année ? | |
+| Q-DEC-06 | Le rang de compétition `1, 1, 3` s’applique-t-il aux trimestres et à l’année ? | 29/10/2026 : rang de compétition sélectionné comme règle de départ ; application à chaque période et à l’année à faire valider. |
 | Q-DEC-07 | Les ex æquo sont-ils déterminés avant ou après arrondi de la moyenne ? | |
 | Q-DEC-08 | Les élèves incomplets apparaissent-ils dans le classement et, si oui, à quel endroit ? | |
 | Q-DEC-09 | Quelles décisions officielles existent : passage, redoublement, ajournement, exclusion, orientation ou autres ? | |
-| Q-DEC-10 | La décision est-elle entièrement calculée ou le conseil peut-il la modifier ? Avec quel motif et quelle approbation ? | |
+| Q-DEC-10 | La décision est-elle entièrement calculée ou le conseil peut-il la modifier ? Avec quel motif et quelle approbation ? | 29/10/2026 : circuit général à confirmer ; pour ACA-PROP-001, orientation vers la délibération sans décision automatique sélectionnée. |
 | Q-DEC-11 | L’assiduité ou la conduite influence-t-elle la décision académique ? Selon quelle règle ? | |
 | Q-DEC-12 | Comment gérer un élève arrivé ou parti en cours d’année dans les moyennes et le classement ? | |
 | Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | |

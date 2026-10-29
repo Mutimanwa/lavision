@@ -278,7 +278,42 @@ Pour chaque modèle, relever : titre, identifiants, mentions obligatoires, langu
 
 Les structures reçues sont détaillées dans les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md) et [5e HP](09_ANALYSE_BULLETIN_5E_HP.md). Les valeurs réelles ne deviennent des fixtures de réussite qu’après arbitrage des écarts et validation métier ; les incohérences peuvent en revanche préparer des tests de détection et de blocage.
 
-## 13. Fiche d’acceptation d’un exemple
+## 13. Cas ACA-PROP-001 — pondération, arrondi et double seuil
+
+**Statut :** exemple entièrement fictif préparé le 29/10/2026 à partir des réponses d’atelier ; calcul et décision encore à faire valider.
+
+### Configuration candidate
+
+- notes saisies en points bruts sur 20 pour les trois cours ;
+- maximum distinct du coefficient ;
+- pourcentage de chaque cours arrondi à une décimale, au pair le plus proche, avant la moyenne générale ;
+- moyenne générale pondérée par les coefficients `2, 1, 1` ;
+- affichage final à une décimale avec le même mode d’arrondi ;
+- seuil de départ de 50 % pour chaque cours et pour la moyenne générale.
+
+| Cours | Points bruts | Maximum | Pourcentage exact | Pourcentage arrondi | Coefficient |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Mathématiques | 13,45 | 20 | 67,25 % | 67,2 % | 2 |
+| Français | 15,5 | 20 | 77,5 % | 77,5 % | 1 |
+| Sciences | 9 | 20 | 45,0 % | 45,0 % | 1 |
+
+```text
+Moyenne = (67,2×2 + 77,5×1 + 45,0×1) / (2 + 1 + 1)
+        = 64,225 %
+Affichage au pair à une décimale = 64,2 %
+```
+
+| Contrôle | Résultat calculé |
+| --- | --- |
+| Moyenne générale supérieure ou égale à 50 % | oui : 64,2 % |
+| Tous les cours supérieurs ou égaux à 50 % | non : Sciences à 45,0 % |
+| Décision finale | dossier à délibérer sélectionné le 29/10/2026 ; validation de la direction restante |
+
+**Réponse du 29/10/2026 :** présenter le dossier au conseil sans décision finale automatique, en affichant la réussite de la moyenne générale et le cours sous le seuil.
+
+**Validateur métier, date et décision :** à compléter
+
+## 14. Fiche d’acceptation d’un exemple
 
 | Champ | À compléter |
 | --- | --- |

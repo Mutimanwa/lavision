@@ -1,6 +1,6 @@
 # Registre des décisions de cadrage
 
-**Version :** 0.5 — 28 octobre 2026
+**Version :** 0.6 — 29 octobre 2026
 **Statut :** registre actif pendant M0
 
 ## 1. Règle de tenue du registre
@@ -28,21 +28,22 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 
 | ID | Question à trancher | Propriétaire attendu | Preuve nécessaire | État |
 | --- | --- | --- | --- | --- |
-| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Base RDC et deux bulletins : 2 semestres/4 périodes au secondaire ; 3 trimestres/6 périodes au primaire ; adoption locale à confirmer |
-| ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | 1ère/2e : période sur 20/30/60 ; 5e HP : sur 10/20/40/50/100 ; programme actuel à confirmer |
-| ACA-003 | Coefficients et agrégation des évaluations/matières | pédagogie | bulletin recalculé | Pas de coefficient séparé visible ; 5e HP confirme des schémas avec et sans examen ; plusieurs écarts de report à arbitrer |
-| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Des tirets n’ajoutent pas de points dans certains totaux 5e HP, sans légende ; zéro/absence/dispense et publication à distinguer |
-| ACA-005 | Précision, mode et étapes d’arrondi | pédagogie | cas de frontière | Pourcentages 5e HP compatibles avec une troncature à une décimale ; hypothèse à confirmer compte tenu des écarts |
-| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Proposé : compétition `1, 1, 3` ; un rang annuel est visible en 5e HP, sans cas d’ex æquo |
-| ACA-007 | Seuil, notes éliminatoires, compensation et appréciations | direction | exemples de décision | Ouvert ; une décision après repêchage ne suffit pas à établir un seuil |
+| ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Structure par cycle sélectionnée le 29/10/2026 : 2 semestres/4 périodes au secondaire, 3 trimestres/6 périodes au primaire ; validation locale et fenêtres à confirmer |
+| ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | Note maximale et définition par programme de cours sélectionnées le 29/10/2026 ; maxima locaux, pas de saisie et conversions à confirmer sur exemples |
+| ACA-003 | Coefficients et agrégation des évaluations/matières | pédagogie | bulletin recalculé | Moyenne pondérée par un coefficient distinct du maximum sélectionnée le 29/10/2026 ; coefficients par programme, agrégation des évaluations et schémas avec examen à confirmer |
+| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Note obtenue, absence et cellule non saisie distinguées le 29/10/2026 ; pas de dispense distincte pour le pilote à ce stade, effet calculatoire et rattrapages à confirmer |
+| ACA-005 | Précision, mode et étapes d’arrondi | pédagogie | cas de frontière | Arrondi de chaque cours avant la moyenne, à une décimale et au pair le plus proche, sélectionné le 29/10/2026 ; précision interne et arrondi annuel à confirmer |
+| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Compétition `1, 1, 3` sélectionnée le 29/10/2026 comme règle de départ ; arrondi préalable, application annuelle et dossiers incomplets à confirmer |
+| ACA-007 | Seuil, notes éliminatoires, compensation et appréciations | direction | exemples de décision | Seuil de 50 % par cours et sur la moyenne générale sélectionné le 29/10/2026 comme règle de départ ; cas moyenne générale ≥ 50 % avec cours < 50 % envoyé à la délibération le 29/10/2026 ; autres décisions, compensation et mentions à confirmer |
 | ACA-008 | Calcul annuel et règles de passage/redoublement | direction | exemple annuel | T.G. = somme des semestres sur plusieurs lignes, mais écarts 5e HP ; seuils et décisions à confirmer |
-| ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Ouvert ; définir aussi le contrôle des totaux incohérents avant publication |
-| ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Ouvert |
+| ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Ouvert — « À confirmer » enregistré le 29/10/2026 pour les bulletins incomplets ; ne pas transformer le comportement du prototype en règle validée |
+| ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Ouvert — circuit de décision du conseil laissé « À confirmer » le 29/10/2026 ; aucune dérogation automatique retenue |
 | ACA-011 | Appel, statuts, retards, justificatifs et alertes d’assiduité | vie scolaire | cas quotidien et par séance | Ouvert |
 | ACA-012 | Contenu exact des bulletins et procès-verbaux | pédagogie/direction | modèles anonymisés | Formulaires `IGE/P.S/005` et `IGE/P.S/019` inventoriés ; version actuelle et procès-verbaux à confirmer |
 | ACA-013 | Parcours 7E/8E, TENASOSP/EXETAT, résultat et certification | direction/scolarité | base RDC sourcée + documents récents anonymisés | Base nationale identifiée ; processus local et document exact à confirmer |
 | ACA-014 | Organisation des sections, options et programmes de cours | scolarité/pédagogie | exemples réels de sections/options et programmes | 5e HP = Humanités pédagogiques selon l’utilisateur ; formulaire Pédagogie générale ; libellés et catalogue local à confirmer |
-| ACA-015 | Première/deuxième délibération et repêchage | direction/pédagogie | exemples de décisions et instructions applicables | Exemple 5e HP avec pourcentages et passage ; branches, seuil, effet sur le T.G. et décision finale à clarifier |
+| ACA-015 | Première/deuxième délibération et repêchage | direction/pédagogie | exemples de décisions et instructions applicables | Cas ACA-PROP-001 orienté vers la délibération le 29/10/2026 ; première/deuxième délibération, repêchage, seuils et effet sur le T.G. à clarifier |
+| ACA-016 | Niveaux inclus dans le premier pilote | direction/scolarité | liste des classes, sections et options participantes | Secondaire uniquement sélectionné le 29/10/2026 ; périmètre précis à faire valider |
 
 ## 4. Décisions financières ouvertes
 

@@ -4,7 +4,9 @@ import {
   SERVICE_NAME,
   type VersionResponse,
 } from "@lavision/contracts";
+import { Public } from "../auth/auth.decorators.js";
 
+@Public()
 @Controller("version")
 export class VersionController {
   @Get()

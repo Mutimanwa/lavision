@@ -33,12 +33,19 @@ describe("contrats du socle", () => {
 
     expect(document.openapi).toBe("3.1.0");
     expect(document.servers[0]?.url).toBe("/api/v1");
-    expect(Object.keys(document.paths)).toEqual([
-      "/health/live",
-      "/health/ready",
-      "/version",
-    ]);
+    expect(Object.keys(document.paths)).toEqual(
+      expect.arrayContaining([
+        "/health/live",
+        "/health/ready",
+        "/version",
+        "/auth/login",
+        "/auth/mfa/verify",
+        "/auth/sessions/{id}",
+      ]),
+    );
     expect(document.components.schemas.ProblemDetails).toBeDefined();
+    expect(document.components.schemas.MfaRequiredResponse).toBeDefined();
+    expect(document.components.securitySchemes.sessionCookie).toBeDefined();
   });
 
   it("valide le contrat d’erreur RFC 9457 étendu", () => {

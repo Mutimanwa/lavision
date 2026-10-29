@@ -7,11 +7,11 @@ Le dépôt est un monorepo **Next.js / NestJS / PostgreSQL**. Il contient le pro
 ## État actuel
 
 - **Web et desktop :** prototype fonctionnel local avec Next.js, TypeScript, Tailwind CSS et Tauri. Les données de démonstration restent dans `localStorage` jusqu’au raccordement prévu en M2.
-- **API :** socle NestJS/Fastify versionné sous `/api/v1`, contrats Zod/OpenAPI, erreurs normalisées et endpoints techniques.
-- **Base :** PostgreSQL/Prisma, migration initiale et seed fictif pour organisations, sites, utilisateurs et appartenances.
+- **API :** socle NestJS/Fastify versionné sous `/api/v1`, contrats Zod/OpenAPI, erreurs normalisées, endpoints techniques et noyau d’authentification #6.
+- **Base :** PostgreSQL/Prisma, migrations du socle et de l’authentification, seed fictif pour organisations, sites, utilisateurs et appartenances.
 - **CI :** tests unitaires et d’intégration PostgreSQL, typecheck, lint, builds Web/API et installateurs Windows.
 
-> **Limites :** aucune authentification réelle, habilitation effective, route métier publique, donnée réelle ou infrastructure de production n’est livrée dans ce premier incrément. Le moteur académique officiel et la finance/paie restent dans leurs issues dédiées. Le sélecteur de rôle du frontend est uniquement un aperçu UX.
+> **Limites :** le frontend n’est pas encore raccordé à l’API et le RBAC métier/audit complet reste en #7. Aucune donnée réelle, règle officielle ou infrastructure de production n’est livrée. Le moteur académique officiel et la finance/paie restent dans leurs issues dédiées. Le sélecteur de rôle du frontend est uniquement un aperçu UX.
 
 ## Structure du monorepo
 
@@ -25,7 +25,7 @@ apps/
 │   └── out/                   # export statique généré, non versionné
 └── api/                       # API NestJS/Fastify
     ├── prisma/                # schéma, migrations et seed fictif
-    ├── src/modules/           # modules système et infrastructure
+    ├── src/modules/           # système, infrastructure et authentification #6
     ├── src/database/          # client PostgreSQL/Prisma partagé
     ├── test/integration/      # tests sur PostgreSQL réel
     └── openapi/openapi.json   # contrat OpenAPI 3.1 généré
@@ -74,6 +74,8 @@ Endpoints disponibles sur `http://localhost:3001` :
 | `GET /api/v1/health/ready` | vérification réelle de PostgreSQL |
 | `GET /api/v1/version` | nom et versions du service/API |
 | `GET /api/v1/openapi.json` | document OpenAPI 3.1 |
+
+Les routes `/api/v1/auth/*` couvrent désormais invitation, sessions, récupération et MFA. Elles sont décrites avec leurs critères de sécurité dans [`docs/API.md`](docs/API.md) ; le frontend reste à raccorder.
 
 Pour arrêter les conteneurs : `docker compose down`. Le volume local peut être supprimé explicitement avec `docker compose down -v` si toutes les données locales jetables peuvent être perdues.
 

@@ -17,14 +17,34 @@ const messages: Record<number, { title: string; detail: string; code: string }> 
     detail: "La requête n’est pas valide.",
     code: ERROR_CODES.VALIDATION_ERROR,
   },
+  401: {
+    title: "Non authentifié",
+    detail: "Une authentification valide est requise.",
+    code: ERROR_CODES.UNAUTHORIZED,
+  },
+  403: {
+    title: "Accès refusé",
+    detail: "La session ne permet pas cette action.",
+    code: ERROR_CODES.FORBIDDEN,
+  },
   404: {
     title: "Non trouvé",
     detail: "La ressource demandée est introuvable.",
     code: ERROR_CODES.NOT_FOUND,
   },
+  409: {
+    title: "Conflit",
+    detail: "La ressource est en conflit avec son état actuel.",
+    code: ERROR_CODES.USER_CONFLICT,
+  },
+  429: {
+    title: "Trop de tentatives",
+    detail: "Réessayez après l’expiration de la limitation temporaire.",
+    code: ERROR_CODES.RATE_LIMITED,
+  },
   503: {
     title: "Service indisponible",
-    detail: "La base de données n’est pas disponible.",
+    detail: "Une dépendance nécessaire est indisponible.",
     code: ERROR_CODES.DATABASE_UNAVAILABLE,
   },
   500: {

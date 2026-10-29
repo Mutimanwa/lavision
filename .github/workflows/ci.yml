@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://lavision:lavision_ci@localhost:5432/lavision_test?schema=public
+      AUTH_ENCRYPTION_KEY: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+      AUTH_COOKIE_SECURE: "false"
     services:
       postgres:
         image: postgres:16.4-alpine

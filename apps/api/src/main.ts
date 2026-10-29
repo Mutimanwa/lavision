@@ -8,7 +8,7 @@ import {
 } from "@nestjs/platform-fastify";
 import { API_PREFIX } from "@lavision/contracts";
 import { AppModule } from "./app.module.js";
-import { ProblemDetailsFilter } from "./common/filters/problem-details.filter.js";
+import { configureApp } from "./app.setup.js";
 
 async function bootstrap(): Promise<void> {
   const adapter = new FastifyAdapter({
@@ -21,8 +21,7 @@ async function bootstrap(): Promise<void> {
     adapter,
   );
 
-  app.setGlobalPrefix(API_PREFIX.replace(/^\//, ""));
-  app.useGlobalFilters(new ProblemDetailsFilter());
+  await configureApp(app);
   app.enableShutdownHooks();
 
   const port = Number.parseInt(process.env.PORT ?? "3001", 10);

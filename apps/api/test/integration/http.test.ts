@@ -6,19 +6,19 @@ import {
 } from "@nestjs/platform-fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { AppModule } from "../../src/app.module.js";
-import { ProblemDetailsFilter } from "../../src/common/filters/problem-details.filter.js";
+import { configureApp } from "../../src/app.setup.js";
 
 let app: NestFastifyApplication;
 
 describe("HTTP et PostgreSQL", () => {
   beforeAll(async () => {
+    process.env.AUTH_ENCRYPTION_KEY ??= Buffer.alloc(32, 7).toString("base64");
     app = await NestFactory.create<NestFastifyApplication>(
       AppModule,
       new FastifyAdapter({ genReqId: () => randomUUID() }),
       { logger: false },
     );
-    app.setGlobalPrefix("api/v1");
-    app.useGlobalFilters(new ProblemDetailsFilter());
+    await configureApp(app);
     await app.init();
     await app.getHttpAdapter().getInstance().ready();
   });

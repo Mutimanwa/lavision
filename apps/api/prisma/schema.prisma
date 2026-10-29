@@ -19,15 +19,50 @@ enum MembershipStatus {
   SUSPENDED
 }
 
+enum Role {
+  TECHNICAL_ADMIN  @map("technical_admin")
+  DIRECTION        @map("direction")
+  ACADEMIC_MANAGER @map("academic_manager")
+  SCHOOL_SECRETARY @map("school_secretary")
+  STUDENT_AFFAIRS  @map("student_affairs")
+  TEACHER          @map("teacher")
+  ACCOUNTANT       @map("accountant")
+  CASHIER          @map("cashier")
+  HR_MANAGER       @map("hr_manager")
+  EMPLOYEE         @map("employee")
+  GUARDIAN         @map("guardian")
+  STUDENT          @map("student")
+  AUDITOR          @map("auditor")
+}
+
+enum AuthTokenKind {
+  INVITATION
+  PASSWORD_RESET
+  MFA_LOGIN
+  MFA_SETUP
+}
+
+enum AuthEventOutcome {
+  SUCCESS
+  FAILURE
+  RATE_LIMITED
+}
+
+enum AuthRateAction {
+  LOGIN
+  MFA
+  PASSWORD_RESET
+}
+
 model Organization {
-  id           String                   @id @default(uuid()) @db.Uuid
-  code         String                   @unique @db.VarChar(32)
-  name         String                   @db.VarChar(160)
-  createdAt    DateTime                 @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime                 @updatedAt @db.Timestamptz(6)
-  archivedAt   DateTime?                @db.Timestamptz(6)
-  sites        Site[]
-  memberships  OrganizationMembership[]
+  id          String                   @id @default(uuid()) @db.Uuid
+  code        String                   @unique @db.VarChar(32)
+  name        String                   @db.VarChar(160)
+  createdAt   DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime                 @updatedAt @db.Timestamptz(6)
+  archivedAt  DateTime?                @db.Timestamptz(6)
+  sites       Site[]
+  memberships OrganizationMembership[]
 
   @@map("organizations")
 }
@@ -48,30 +83,145 @@ model Site {
 }
 
 model User {
-  id          String                   @id @default(uuid()) @db.Uuid
-  email       String                   @unique @db.Citext
-  displayName String                   @db.VarChar(160)
-  status      UserStatus               @default(INVITED)
-  createdAt   DateTime                 @default(now()) @db.Timestamptz(6)
-  updatedAt   DateTime                 @updatedAt @db.Timestamptz(6)
-  archivedAt  DateTime?                @db.Timestamptz(6)
-  memberships OrganizationMembership[]
+  id            String                   @id @default(uuid()) @db.Uuid
+  email         String                   @unique @db.Citext
+  displayName   String                   @db.VarChar(160)
+  status        UserStatus               @default(INVITED)
+  passwordHash  String?
+  authVersion   Int                      @default(0)
+  lastLoginAt   DateTime?                @db.Timestamptz(6)
+  createdAt     DateTime                 @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime                 @updatedAt @db.Timestamptz(6)
+  archivedAt    DateTime?                @db.Timestamptz(6)
+  memberships   OrganizationMembership[]
+  sessions      AuthSession[]
+  oneTimeTokens AuthOneTimeToken[]
+  mfaCredential MfaCredential?
+  recoveryCodes MfaRecoveryCode[]
+  authEvents    AuthEvent[]
 
   @@map("users")
 }
 
 model OrganizationMembership {
-  id             String           @id @default(uuid()) @db.Uuid
-  organizationId String           @db.Uuid
-  userId         String           @db.Uuid
-  status         MembershipStatus @default(ACTIVE)
-  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
-  updatedAt      DateTime         @updatedAt @db.Timestamptz(6)
-  archivedAt     DateTime?        @db.Timestamptz(6)
-  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  user           User             @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  id              String           @id @default(uuid()) @db.Uuid
+  organizationId  String           @db.Uuid
+  userId          String           @db.Uuid
+  status          MembershipStatus @default(ACTIVE)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt      DateTime?        @db.Timestamptz(6)
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  roleAssignments RoleAssignment[]
 
   @@unique([organizationId, userId])
   @@index([userId])
   @@map("organization_memberships")
+}
+
+model RoleAssignment {
+  id           String                 @id @default(uuid()) @db.Uuid
+  membershipId String                 @db.Uuid
+  role         Role
+  createdAt    DateTime               @default(now()) @db.Timestamptz(6)
+  archivedAt   DateTime?              @db.Timestamptz(6)
+  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([membershipId, role])
+  @@index([role])
+  @@map("role_assignments")
+}
+
+model AuthSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  tokenHash        String    @unique @db.Char(64)
+  csrfTokenHash    String    @db.Char(64)
+  authVersion      Int
+  mfaVerifiedAt    DateTime? @db.Timestamptz(6)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(6)
+  lastSeenAt       DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt        DateTime  @db.Timestamptz(6)
+  absoluteExpiresAt DateTime @db.Timestamptz(6)
+  revokedAt        DateTime? @db.Timestamptz(6)
+  revocationReason String?   @db.VarChar(64)
+  userAgent        String?   @db.VarChar(512)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+  @@map("auth_sessions")
+}
+
+model AuthOneTimeToken {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @db.Uuid
+  kind        AuthTokenKind
+  tokenHash   String        @unique @db.Char(64)
+  attemptCount Int          @default(0)
+  createdAt   DateTime      @default(now()) @db.Timestamptz(6)
+  expiresAt   DateTime      @db.Timestamptz(6)
+  consumedAt  DateTime?     @db.Timestamptz(6)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, kind, consumedAt])
+  @@map("auth_one_time_tokens")
+}
+
+model MfaCredential {
+  id                   String    @id @default(uuid()) @db.Uuid
+  userId               String    @unique @db.Uuid
+  secretCiphertext     String    @db.Text
+  confirmedAt          DateTime? @db.Timestamptz(6)
+  lastAcceptedTimeStep Int?
+  createdAt            DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime  @updatedAt @db.Timestamptz(6)
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("mfa_credentials")
+}
+
+model MfaRecoveryCode {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  codeHash  String    @db.Char(64)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  usedAt    DateTime? @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, codeHash])
+  @@index([userId, usedAt])
+  @@map("mfa_recovery_codes")
+}
+
+model AuthEvent {
+  id          String           @id @default(uuid()) @db.Uuid
+  userId      String?          @db.Uuid
+  action      String           @db.VarChar(64)
+  outcome     AuthEventOutcome
+  reason      String?          @db.VarChar(64)
+  requestId   String           @db.Uuid
+  subjectHash String?          @db.Char(64)
+  ipHash      String?          @db.Char(64)
+  userAgent   String?          @db.VarChar(512)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(6)
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@map("auth_events")
+}
+
+model AuthRateBucket {
+  id             String         @id @default(uuid()) @db.Uuid
+  action         AuthRateAction
+  keyHash        String         @db.Char(64)
+  windowStartedAt DateTime      @db.Timestamptz(6)
+  failureCount   Int            @default(0)
+  blockedUntil   DateTime?      @db.Timestamptz(6)
+  updatedAt      DateTime       @updatedAt @db.Timestamptz(6)
+
+  @@unique([action, keyHash])
+  @@map("auth_rate_buckets")
 }

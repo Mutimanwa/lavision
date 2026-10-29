@@ -10,7 +10,9 @@ import {
   type ReadinessResponse,
 } from "@lavision/contracts";
 import { PrismaService } from "../infrastructure/prisma.service.js";
+import { Public } from "../auth/auth.decorators.js";
 
+@Public()
 @Controller("health")
 export class HealthController {
   constructor(private readonly prisma: PrismaService) {}

@@ -48,8 +48,8 @@ Ce Dockerfile ne contient pas l’API NestJS. Une image API et sa stratégie de 
 Le workflow `.github/workflows/ci.yml` :
 
 1. démarre un service PostgreSQL 16 jetable ;
-2. applique les migrations et le seed fictif via la procédure d’initialisation documentée ;
-3. exécute les tests unitaires et PostgreSQL, OpenAPI, le typecheck et le lint ;
+2. applique les migrations du socle et de l’authentification puis le seed fictif via la procédure d’initialisation documentée ;
+3. exécute les tests unitaires et PostgreSQL, dont les parcours #6, OpenAPI, le typecheck et le lint ;
 4. construit l’API et le frontend, puis conserve `apps/web/out/` comme artefact temporaire ;
 5. compile les installateurs Windows après la réussite de ces contrôles.
 
@@ -61,12 +61,12 @@ Dans Arena, le serveur Web est lié à `0.0.0.0:3000`, ce qui permet au proxy d�
 
 ## 6. Limites actuelles
 
-Un hébergement statique publie le **prototype local**. Chaque visiteur dispose de son propre jeu de données dans son navigateur. L’API initialisée par #5 ne contient encore aucune route métier publique et le frontend ne lui est pas raccordé.
+Un hébergement statique publie le **prototype local**. Chaque visiteur dispose de son propre jeu de données dans son navigateur. L’API contient le noyau d’authentification #6, mais le frontend ne lui est pas encore raccordé et aucune route métier n’est ouverte.
 
 Avant une mise en production avec des données réelles :
 
-1. livrer l’authentification/MFA et le RBAC/audit côté serveur ;
-2. raccorder les repositories frontend à l’API authentifiée ;
+1. livrer le RBAC/audit complet de #7 et raccorder les repositories frontend à l’API authentifiée ;
+2. appliquer les exigences ADR-006 au client Tauri (navigateur système, PKCE, rotation et coffre OS) ;
 3. choisir l’hébergement, les domaines, les RPO/RTO et la politique de sauvegarde ;
 4. activer HTTPS, les en-têtes de sécurité, la supervision et les alertes ;
 5. tester la restauration sur un environnement vierge ;

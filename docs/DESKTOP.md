@@ -64,6 +64,10 @@ Dans le prototype actuel, les données restent dans la WebView locale et ne sont
 
 La cible M1 validée est **online-first** : le client se connectera à l’API en HTTPS, sans accès direct à PostgreSQL, Redis ou S3. Le raccordement du frontend est prévu en M2 après l’authentification et les autorisations. Tout mode hors ligne robuste fera l’objet d’une conception et d’une validation séparées ; il n’est pas simulé par #5.
 
+## Exigences pour le raccordement authentifié
+
+Le shell Tauri ne doit pas recevoir directement les cookies de session ni les jetons durables dans la WebView. Lors du raccordement M2, appliquer ADR-006 : ouvrir le parcours dans le **navigateur système**, utiliser **PKCE**, échanger des jetons courts avec rotation et conserver les secrets dans le **coffre de l’OS**. Aucun jeton durable ne doit être placé dans `localStorage` ou dans un fichier de la WebView. L’API reste la seule autorité pour les sessions, la MFA et la révocation.
+
 ## Avant diffusion aux utilisateurs
 
 - tester l’installateur sur une machine Windows propre ;

@@ -30,6 +30,8 @@ Les fixtures utilisent uniquement des organisations, programmes et valeurs ficti
 9. une simulation complète mais hors portée qui ne permet pas la publication de la candidate ;
 10. un snapshot qui conserve le maximum de sa version après publication d’une version future.
 
+Un scénario distinct publie aussi `0–20` dans un premier établissement fictif et `0–120` dans un second, vérifie les deux résolutions et refuse la lecture croisée de leurs ensembles.
+
 Le run CI PostgreSQL associé au commit courant constitue la preuve d’intégration ; un sandbox sans PostgreSQL ne suffit pas.
 
 ## 3. Limites explicites avant recette métier

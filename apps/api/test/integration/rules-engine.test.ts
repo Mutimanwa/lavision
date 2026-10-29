@@ -274,6 +274,44 @@ describe("Moteur de règles versionné #39", () => {
     expect(history.json().revisions.length).toBeGreaterThanOrEqual(5);
   });
 
+  it("isole deux établissements qui publient des barèmes différents avec le même catalogue", async () => {
+    const firstOrganization = await createOrganization(prisma, "FIRST");
+    const secondOrganization = await createOrganization(prisma, "SECOND");
+    const firstCreator = await actor(firstOrganization.id, Role.ACADEMIC_MANAGER);
+    const firstDirection = await actor(firstOrganization.id, Role.DIRECTION);
+    const secondCreator = await actor(secondOrganization.id, Role.ACADEMIC_MANAGER);
+    const secondDirection = await actor(secondOrganization.id, Role.DIRECTION);
+    const firstSet = await createSet(firstOrganization.id, firstCreator.session);
+    const secondSet = await createSet(secondOrganization.id, secondCreator.session);
+    const firstVersion = await createVersion(firstSet, firstCreator.session, versionInput(firstOrganization.id, [
+      { key: "academic.grading.scale_min", value: 0 },
+      { key: "academic.grading.scale_max", value: 20 },
+      { key: "academic.pass.mark", value: 10 },
+    ], [{ scopeType: "organization", scopeId: firstOrganization.id }]));
+    const secondVersion = await createVersion(secondSet, secondCreator.session, versionInput(secondOrganization.id, [
+      { key: "academic.grading.scale_min", value: 0 },
+      { key: "academic.grading.scale_max", value: 120 },
+      { key: "academic.pass.mark", value: 60 },
+    ], [{ scopeType: "organization", scopeId: secondOrganization.id }]));
+    await publishVersion(firstVersion.id, firstOrganization.id, firstCreator.session, firstDirection.session, "2026-01-01");
+    await publishVersion(secondVersion.id, secondOrganization.id, secondCreator.session, secondDirection.session, "2026-01-01");
+
+    const resolve = async (organizationId: string, ruleSetId: string, session: { token: string; csrfToken: string }) => http().inject({
+      method: "POST",
+      url: "/api/v1/rules/resolve",
+      headers: sessionHeaders(session),
+      payload: { organizationId, ruleSetId, asOf: "2026-10-01", scope: {} },
+    });
+    const first = await resolve(firstOrganization.id, firstSet, firstCreator.session);
+    const second = await resolve(secondOrganization.id, secondSet, secondCreator.session);
+    expect(first.statusCode).toBe(200);
+    expect(second.statusCode).toBe(200);
+    expect(first.json().values.find((entry: { key: string }) => entry.key === "academic.grading.scale_max").value).toBe("20");
+    expect(second.json().values.find((entry: { key: string }) => entry.key === "academic.grading.scale_max").value).toBe("120");
+    const crossTenant = await resolve(secondOrganization.id, firstSet, secondCreator.session);
+    expect(crossTenant.statusCode).toBe(404);
+  });
+
   it("rejette une formule, une portée étrangère et une soumission réellement incomplète", async () => {
     const organization = await createOrganization(prisma);
     const otherOrganization = await createOrganization(prisma, "OTHER");
@@ -390,7 +428,7 @@ describe("Moteur de règles versionné #39", () => {
       payload: { organizationId: organization.id, reason: "La simulation hors portée ne doit pas suffire." },
     });
     expect(blockedPublish.statusCode).toBe(409);
-    expect(blockedPublish.json().code).toBe("SIMULATION_REQUIRED");
+    expect(blockedPublish.json().issues[0].code).toBe("SIMULATION_REQUIRED");
 
     const competing = await createVersion(setId, creator, versionInput(organization.id, [
       { key: "academic.grading.scale_max", value: 30 },

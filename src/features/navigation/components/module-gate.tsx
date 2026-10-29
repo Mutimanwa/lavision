@@ -5,15 +5,12 @@ import { ArrowLeft, Blocks, ShieldX } from "lucide-react";
 import { EmptyState } from "@/components/ui";
 import { useWorkspace } from "@/features/auth/hooks/use-workspace";
 import { useModules } from "../hooks/use-modules";
-
-function normalizePath(path: string): string {
-  return path === "/" ? path : path.replace(/\/+$/, "");
-}
+import { findModuleByHref } from "../services/module-state";
 
 export function ModuleGate({ pathname, children }: { pathname: string; children: React.ReactNode }) {
   const { role, roleDefinition } = useWorkspace();
   const { modules } = useModules();
-  const currentModule = modules.find((module) => module.href && normalizePath(module.href) === normalizePath(pathname));
+  const currentModule = findModuleByHref(modules, pathname);
 
   if (!currentModule) return children;
   const roleAllowed = currentModule.roles.includes(role);

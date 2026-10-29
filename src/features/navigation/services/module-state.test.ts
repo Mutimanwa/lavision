@@ -5,7 +5,13 @@ import {
   type ModuleDefinition,
   type ModuleId,
 } from "@/features/navigation/data/modules";
-import { canRoleOpenModule, resolveModule } from "@/features/navigation/services/module-state";
+import {
+  canRoleOpenModule,
+  findModuleByHref,
+  getRoleModuleHref,
+  resolveModule,
+  resolveModules,
+} from "@/features/navigation/services/module-state";
 
 function definition(id: ModuleId): ModuleDefinition {
   const resolved = MODULE_DEFINITIONS.find((item) => item.id === id);
@@ -60,5 +66,26 @@ describe("résolution des modules par rôle", () => {
     const resolved = resolveModule(definition("settings"), createSeedState(), { settings: false });
     expect(resolved.enabled).toBe(true);
     expect(resolved.status).toBe("active");
+  });
+
+  it("retrouve un module malgré la requête et le slash final de l’URL", () => {
+    const modules = resolveModules(createSeedState(), {});
+    expect(findModuleByHref(modules, "/notes")?.id).toBe("grades");
+    expect(findModuleByHref(modules, "/bulletins/?eleve=STU-001#resultats")?.id).toBe("reports");
+  });
+
+  it("préserve les liens accessibles, y compris leurs paramètres", () => {
+    const modules = resolveModules(createSeedState(), {});
+    const href = "/bulletins/?eleve=STU-001";
+    expect(getRoleModuleHref(modules, "teacher", href)).toBe(href);
+    expect(getRoleModuleHref(modules, "teacher", "/modules/")).toBe("/modules/");
+  });
+
+  it("redirige les raccourcis vers le catalogue si le rôle ou l’état ne permet pas l’ouverture", () => {
+    const state = createSeedState();
+    const modules = resolveModules(state, { students: false, grades: false });
+    expect(getRoleModuleHref(modules, "direction", "/eleves/?eleve=STU-001")).toBe("/modules/");
+    expect(getRoleModuleHref(modules, "teacher", "/notes/")).toBe("/modules/");
+    expect(getRoleModuleHref(modules, "teacher", "/eleves/")).toBe("/modules/");
   });
 });

@@ -35,7 +35,7 @@ import { getFullName } from "@/lib/academic";
 import { isRoleId, ROLE_DEFINITIONS } from "@/features/auth/data/roles";
 import { useWorkspace } from "@/features/auth/hooks/use-workspace";
 import { useModules } from "@/features/navigation/hooks/use-modules";
-import { canRoleOpenModule } from "@/features/navigation/services/module-state";
+import { canRoleOpenModule, getRoleModuleHref } from "@/features/navigation/services/module-state";
 import { ModuleGate } from "@/features/navigation/components/module-gate";
 import { OnboardingGuide } from "@/features/onboarding/components/onboarding-guide";
 import { useOnboarding } from "@/features/onboarding/hooks/use-onboarding";
@@ -140,6 +140,8 @@ function NavigationSections({ onNavigate }: { onNavigate?: () => void }) {
 function GlobalSearch() {
   const { state } = useSchool();
   const { role } = useWorkspace();
+  const { modules } = useModules();
+  const canSearchStudents = getRoleModuleHref(modules, role, "/eleves/") === "/eleves/";
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -167,7 +169,7 @@ function GlobalSearch() {
     ).slice(0, 5);
   }, [query, state.students]);
 
-  if (role !== "direction" && role !== "school_secretary") return null;
+  if (!canSearchStudents) return null;
 
   return (
     <div className="global-search">
@@ -222,6 +224,9 @@ interface SchoolNotification {
 function Notifications() {
   const { state } = useSchool();
   const { role } = useWorkspace();
+  const { modules } = useModules();
+  const canOpenStudents = getRoleModuleHref(modules, role, "/eleves/") === "/eleves/";
+  const canOpenGrades = getRoleModuleHref(modules, role, "/notes/") === "/notes/";
   const [open, setOpen] = useState(false);
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
@@ -232,7 +237,7 @@ function Notifications() {
   const missing = Math.max(0, expected - currentGrades);
   const notifications: SchoolNotification[] = [];
 
-  if (pending > 0 && (role === "direction" || role === "school_secretary")) {
+  if (pending > 0 && canOpenStudents) {
     notifications.push({
       id: `inscriptions-${pending}`,
       title: `${pending} inscription${pending > 1 ? "s" : ""} à valider`,
@@ -243,7 +248,7 @@ function Notifications() {
       icon: UserRoundPlus,
     });
   }
-  if (missing > 0 && (role === "direction" || role === "academic_manager" || role === "teacher")) {
+  if (missing > 0 && canOpenGrades) {
     notifications.push({
       id: `notes-${state.settings.currentTerm}-${missing}`,
       title: `${missing} note${missing > 1 ? "s" : ""} à compléter`,
@@ -266,7 +271,7 @@ function Notifications() {
     return () => document.removeEventListener("mousedown", closeOutside);
   }, [open]);
 
-  if (!["direction", "academic_manager", "school_secretary", "teacher"].includes(role)) return null;
+  if (!canOpenStudents && !canOpenGrades) return null;
 
   const content = (
     <>

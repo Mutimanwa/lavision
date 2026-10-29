@@ -59,3 +59,23 @@ export function resolveModules(state: AppState, preferences: ModulePreferences):
 export function canRoleOpenModule(module: ResolvedModule, role: RoleId): boolean {
   return module.roles.includes(role) && (module.status === "active" || module.status === "configuring");
 }
+
+function normalizePath(path: string): string {
+  const pathname = path.split(/[?#]/, 1)[0];
+  return pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
+}
+
+export function findModuleByHref(modules: readonly ResolvedModule[], href: string): ResolvedModule | undefined {
+  const normalized = normalizePath(href);
+  return modules.find((module) => module.href && normalizePath(module.href) === normalized);
+}
+
+export function getRoleModuleHref(
+  modules: readonly ResolvedModule[],
+  role: RoleId,
+  href: string,
+  fallback = "/modules/",
+): string {
+  const linkedModule = findModuleByHref(modules, href);
+  return linkedModule && !canRoleOpenModule(linkedModule, role) ? fallback : href;
+}

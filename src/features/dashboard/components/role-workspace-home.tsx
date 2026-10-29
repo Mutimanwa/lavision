@@ -12,7 +12,7 @@ import {
 import { Badge, Notice, PageHeader, type BadgeTone } from "@/components/ui";
 import { useWorkspace } from "@/features/auth/hooks/use-workspace";
 import { useModules } from "@/features/navigation/hooks/use-modules";
-import { canRoleOpenModule, type ResolvedModule } from "@/features/navigation/services/module-state";
+import { canRoleOpenModule, getRoleModuleHref, type ResolvedModule } from "@/features/navigation/services/module-state";
 import { useSchool } from "@/features/school/hooks/use-school";
 import { FirstStepsCard } from "@/features/onboarding/components/first-steps-card";
 import { getRoleMetrics } from "../services/role-metrics";
@@ -50,10 +50,7 @@ export function RoleWorkspaceHome() {
   const { modules } = useModules();
   const metrics = getRoleMetrics(role, state);
   const roleModules = modules.filter((module) => module.roles.includes(role));
-  const availableHref = (href: string) => {
-    const linkedModule = modules.find((module) => module.href === href);
-    return linkedModule && !canRoleOpenModule(linkedModule, role) ? "/modules/" : href;
-  };
+  const availableHref = (href: string) => getRoleModuleHref(modules, role, href);
   const primaryHref = availableHref(workspace.primaryAction.href);
   const activeCount = roleModules.filter((module) => module.status === "active").length;
   const setupCount = roleModules.filter((module) => module.status === "configuring").length;

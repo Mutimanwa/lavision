@@ -13,10 +13,13 @@ import {
 } from "lucide-react";
 import { Modal } from "@/components/ui";
 import { useWorkspace } from "@/features/auth/hooks/use-workspace";
+import { useModules } from "@/features/navigation/hooks/use-modules";
+import { getRoleModuleHref } from "@/features/navigation/services/module-state";
 import { useOnboarding } from "../hooks/use-onboarding";
 
 export function OnboardingGuide() {
-  const { roleDefinition, workspace } = useWorkspace();
+  const { role, roleDefinition, workspace } = useWorkspace();
+  const { modules } = useModules();
   const {
     open,
     step,
@@ -26,6 +29,8 @@ export function OnboardingGuide() {
     nextStep,
     previousStep,
   } = useOnboarding();
+  const primaryHref = getRoleModuleHref(modules, role, workspace.primaryAction.href);
+  const primaryActionAvailable = primaryHref === workspace.primaryAction.href;
 
   const steps = [
     {
@@ -40,7 +45,9 @@ export function OnboardingGuide() {
     },
     {
       title: "Votre première action",
-      description: workspace.firstTask,
+      description: primaryActionAvailable
+        ? workspace.firstTask
+        : "L’action habituelle n’est pas disponible dans la configuration actuelle. Consultez le catalogue pour connaître l’état du module et les prérequis avant de reprendre.",
       icon: MousePointer2,
     },
     {
@@ -82,10 +89,10 @@ export function OnboardingGuide() {
         ))}
       </div>
       <div className="onboarding-illustration" aria-hidden="true"><Icon size={28} /></div>
-      <p className="onboarding-description">{current.description}</p>
+      <p className="onboarding-description" aria-live="polite" aria-atomic="true">{current.description}</p>
       {step === 2 && (
-        <Link className="button button-secondary button-full onboarding-action" href={workspace.primaryAction.href} onClick={dismissGuide}>
-          {workspace.primaryAction.label} <ArrowRight size={16} />
+        <Link className="button button-secondary button-full onboarding-action" href={primaryHref} onClick={dismissGuide}>
+          {primaryActionAvailable ? workspace.primaryAction.label : "Consulter l’état du module"} <ArrowRight size={16} />
         </Link>
       )}
       <div className="onboarding-preview-note"><Eye size={15} /><span>Aperçu d’interface local. Le choix du rôle ne constitue pas une authentification ni une habilitation.</span></div>

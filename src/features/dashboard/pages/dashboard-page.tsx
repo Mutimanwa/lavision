@@ -26,6 +26,7 @@ import { useWorkspace } from "@/features/auth/hooks/use-workspace";
 import { RoleWorkspaceHome } from "../components/role-workspace-home";
 import { FirstStepsCard } from "@/features/onboarding/components/first-steps-card";
 import { useModules } from "@/features/navigation/hooks/use-modules";
+import { getRoleModuleHref } from "@/features/navigation/services/module-state";
 
 export function Dashboard() {
   const { role } = useWorkspace();
@@ -37,10 +38,7 @@ function DirectionDashboard() {
   const { state } = useSchool();
   const { modules } = useModules();
   const [activityQuery, setActivityQuery] = useState("");
-  const moduleHref = (href: string) => {
-    const linkedModule = modules.find((module) => module.href && href.startsWith(module.href));
-    return linkedModule?.status === "disabled" ? "/modules/" : href;
-  };
+  const moduleHref = (href: string) => getRoleModuleHref(modules, "direction", href);
   const activeStudents = state.students.filter((student) => student.status === "Actif");
   const pendingStudents = state.students.filter((student) => student.status === "En attente");
   const activeStudentIds = new Set(activeStudents.map((student) => student.id));
@@ -261,7 +259,7 @@ function DirectionDashboard() {
                     <td><Badge tone={student.status === "Actif" ? "green" : student.status === "En attente" ? "amber" : "red"} dot>{student.status}</Badge></td>
                     <td className="table-actions-heading">
                       <TableMenu label={`Actions pour ${getFullName(student)}`}>
-                        <Link href={`/eleves/?eleve=${student.id}`}><Eye size={16} /> Voir le dossier</Link>
+                        <Link href={moduleHref(`/eleves/?eleve=${student.id}`)}><Eye size={16} /> Voir le dossier</Link>
                         <Link href={moduleHref(`/bulletins/?eleve=${student.id}`)}><FileText size={16} /> Voir le bulletin</Link>
                       </TableMenu>
                     </td>

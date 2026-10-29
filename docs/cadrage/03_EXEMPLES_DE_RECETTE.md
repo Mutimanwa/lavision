@@ -278,7 +278,7 @@ Joindre une version anonymisée ou inventorier les champs sans copier de donnée
 
 Pour chaque modèle, relever : titre, identifiants, mentions obligatoires, langue, signatures, cachets, pied de page, règles de pagination, destinataires, format papier, durée de conservation et procédure de rectification.
 
-Les structures reçues sont détaillées dans les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md) et [5e HP](09_ANALYSE_BULLETIN_5E_HP.md). Les valeurs réelles ne deviennent des fixtures de réussite qu’après arbitrage des écarts et validation métier ; les incohérences peuvent en revanche préparer des tests de détection et de blocage.
+Les structures reçues sont détaillées dans les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md) et [5e HP](09_ANALYSE_BULLETIN_5E_HP.md). Le [recueil 2024–2025](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md), dont les formulaires restent utilisés cette année selon la réponse du 29/10/2026, fait l’objet d’une analyse séparée. Les valeurs réelles ne deviennent des fixtures de réussite qu’après arbitrage des écarts et validation métier ; les incohérences peuvent en revanche préparer des tests de détection et de blocage.
 
 ## 13. Cas ACA-PROP-001 — pondération, arrondi et double seuil
 
@@ -411,7 +411,32 @@ La normalisation des poids sur les périodes présentes et le traitement d’un 
 
 **Validateur métier, date et décision :** à compléter
 
-## 19. Fiche d’acceptation d’un exemple
+## 19. Cas ACA-PROP-007 — programme et maximum configurés par établissement
+
+**Statut :** exemple de configuration préparé le 29/10/2026 à partir de la réponse utilisateur ; la valeur `120` est illustrative et reste à confirmer lors de la publication locale.
+
+| Champ du brouillon | Valeur de l’exemple |
+| --- | --- |
+| Portée | établissement et année scolaire en cours |
+| Programme | Commerciale & Gestion |
+| Cours | Comptabilité |
+| Maximum du cours | 120 points |
+| Rattachement | cours du programme ou cours propre à une option, à préciser dans la grille |
+| Schéma avec ou sans examen | à choisir explicitement avant publication |
+
+**Résultats attendus :**
+
+- la valeur s’applique uniquement à l’établissement, au programme et à l’année sélectionnés ;
+- un autre programme peut définir un autre maximum pour Comptabilité sans modification du code ;
+- les autres sections, options et établissements ne sont pas modifiés ;
+- un cours propre à une option n’est pas automatiquement facultatif pour l’élève ;
+- les maxima généraux sont recalculés depuis la composition du programme, sans total général saisi manuellement ;
+- le résultat officiel reste indisponible tant que le schéma d’évaluation et les autres règles obligatoires ne sont pas publiés ;
+- les bulletins historiques conservent leur programme et leur maximum d’origine.
+
+**Validateur métier, date et valeur définitive :** à compléter par l’établissement
+
+## 20. Fiche d’acceptation d’un exemple
 
 | Champ | À compléter |
 | --- | --- |

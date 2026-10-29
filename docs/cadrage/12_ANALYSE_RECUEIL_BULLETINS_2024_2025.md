@@ -2,7 +2,7 @@
 
 **Consultation :** 29 octobre 2026
 
-**Statut :** analyse de sources secondaires ; structures et totaux à faire confirmer
+**Statut :** analyse de sources secondaires ; usage des formulaires cette année confirmé par l’utilisateur, structures et totaux locaux à faire confirmer
 
 **Références :** issues #2 et #39
 
@@ -140,25 +140,34 @@ Il ne faut pas fusionner ces variantes ni choisir une valeur sur la base du seul
 
 ## 7. Conséquences pour lavision
 
-1. Identifier un programme par **année scolaire, cycle, année d’étude, section, option et version du formulaire**, pas seulement par son intitulé court.
-2. Configurer les branches et maxima par programme annuel, avec des schémas « avec examen » et « sans examen » par branche.
-3. Représenter séparément domaines, sous-domaines et sous-totaux lorsque le modèle les exige.
-4. Calculer les maxima généraux depuis les branches réellement présentes et contrôler chaque total avant publication.
-5. Conserver ENAFEP, TENASOSP et EXETAT comme épreuves et résultats distincts du calcul scolaire interne ; leurs règles de combinaison doivent être configurées et validées par contexte.
-6. Ne jamais appliquer le bloc `50/50` de la 8e CTEB ou du primaire terminal à toutes les classes.
-7. Prévoir des modèles de documents distincts pour bulletin périodique, bulletin annuel, repêchage, résultat national et document provisoire/incomplet.
-8. Conserver le résultat calculé, la décision administrative et la validation officielle séparés, conformément aux réponses M0 déjà enregistrées.
-9. N’importer comme fixtures que les programmes réellement utilisés par lavision, après confirmation des totaux et des règles par le responsable compétent.
+1. Utiliser les formulaires toujours en cours comme modèles de départ sourcés, sans figer leurs listes dans le code.
+2. Permettre à chaque établissement de configurer ses sections, options, cours disponibles et cours propres aux options.
+3. Identifier un programme par **année scolaire, cycle, année d’étude, section, option et version du formulaire**, pas seulement par son intitulé court.
+4. Configurer les branches et maxima par programme annuel, avec des schémas « avec examen » et « sans examen » par branche ; l’exemple Comptabilité `120` points reste local et configurable.
+5. Représenter séparément domaines, sous-domaines et sous-totaux lorsque le modèle les exige.
+6. Calculer les maxima généraux depuis les branches réellement présentes et contrôler chaque total avant publication.
+7. Conserver ENAFEP, TENASOSP et EXETAT comme épreuves et résultats distincts du calcul scolaire interne ; leurs règles de combinaison doivent être configurées et validées par contexte.
+8. Ne jamais appliquer le bloc `50/50` de la 8e CTEB ou du primaire terminal à toutes les classes.
+9. Prévoir des modèles de documents distincts pour bulletin périodique, bulletin annuel, repêchage, résultat national et document provisoire/incomplet.
+10. Conserver le résultat calculé, la décision administrative et la validation officielle séparés, conformément aux réponses M0 déjà enregistrées.
+11. Publier une version locale du programme sans réécrire les configurations et documents historiques.
 
-## 8. Questions restant à valider
+## 8. Réponses du 29 octobre 2026 et points restant à valider
 
-1. Quelles sections, options et années d’étude sont effectivement offertes par lavision ?
-2. Les formulaires 2024–2025 correspondent-ils aux modèles actuellement utilisés, ou existe-t-il une édition 2025–2026/2026–2027 ?
-3. Les totaux reconstitués sont-ils confirmés par les maxima généraux imprimés sur les modèles officiels ?
-4. Pratique d’enseignement, Pratique professionnelle et activités complémentaires sont-elles toujours sans examen dans les programmes retenus ?
-5. Le bloc école/TENASOSP `50 + 50` est-il confirmé pour la 8e CTEB et quel est son fondement officiel ?
-6. Que signifie la zone `MEC 1000` visible sur certaines terminales techniques et à quelles sections s’applique-t-elle ?
-7. Quelles règles de repêchage, de deuxième délibération, d’Application et de Conduite sont applicables à chaque programme ?
-8. Quels sous-totaux de domaines doivent apparaître sur les bulletins de lavision ?
+### Réponses enregistrées
 
-**Prochaine preuve attendue :** la liste des programmes réellement offerts et, pour chacun, un modèle officiel ou un exemplaire anonymisé permettant de confirmer les branches, maxima, schémas d’examen et totaux.
+- Les formulaires du recueil 2024–2025 et des séries associées sont toujours utilisés pendant l’année en cours.
+- Chaque établissement configure ses sections, ses options, les cours disponibles et les cours propres aux options.
+- Le maximum est défini par cours dans le programme local. L’exemple donné est **Comptabilité : 120 points** en Commerciale & Gestion ; il ne constitue pas une valeur nationale ou un défaut pour les autres programmes.
+
+### Points restant à valider
+
+1. Qui crée, vérifie et publie les sections, options et programmes dans chaque établissement ?
+2. Les totaux reconstitués sont-ils confirmés par les maxima généraux des formulaires utilisés et par les grilles locales publiées ?
+3. Pratique d’enseignement, Pratique professionnelle et activités complémentaires sont-elles toujours sans examen dans les programmes retenus ?
+4. Le bloc école/TENASOSP `50 + 50` est-il confirmé pour la 8e CTEB et quel est son fondement officiel ?
+5. Que signifie la zone `MEC 1000` visible sur certaines terminales techniques et à quelles sections s’applique-t-elle ?
+6. Quelles règles de repêchage, de deuxième délibération, d’Application et de Conduite sont applicables à chaque programme ?
+7. Quels sous-totaux de domaines doivent apparaître sur les bulletins et quels cours sont réellement facultatifs pour les élèves ?
+
+**Prochaine preuve attendue :** un brouillon de grille initiale créé par l’établissement à partir du formulaire en usage, avec sections, options, cours, maxima et schémas d’examen. L’utilisateur n’a pas à deviner ces valeurs pendant le développement ; elles sont renseignées et validées dans la configuration locale.

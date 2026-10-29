@@ -1,8 +1,8 @@
 # Configuration métier avancée
 
-**Version :** 0.1 — 28 octobre 2026
+**Version :** 0.2 — 29 octobre 2026
 **Écran cible :** Paramètres → Configuration scolaire
-**Références :** issues #2 et #39, décision DEC-007
+**Références :** issues #2 et #39, décisions DEC-007 et DEC-009
 **Statut :** orientation produit validée ; spécification détaillée à consolider pendant M0/M1
 
 ## 1. Décision et objectif
@@ -25,6 +25,7 @@ Cette exigence approfondit le moteur de règles déjà prévu. Elle n’ajoute p
 
 | Catégorie | Traitement |
 | --- | --- |
+| Sections, options, programmes de cours et cours propres aux options | référentiels configurables par établissement et année, avec composition versionnée et publication contrôlée |
 | Barèmes, composantes, agrégations, arrondis, rangs, décisions | configurable par les portées autorisées |
 | Tarifs, remises, paiements, caisse, numérotation | configurable avec permissions financières |
 | Congés, temps de travail, variables et validations RH/paie | configurable avec permissions dédiées et validation compétente |
@@ -51,6 +52,8 @@ Si une nouvelle variable métier est découverte pendant le développement, elle
 | Snapshot documentaire | copie immutable de la configuration résolue utilisée par un calcul ou document officiel |
 
 Une définition appartient au catalogue produit. Une version de configuration appartient à l’établissement. Cette séparation permet de faire évoluer le logiciel sans modifier les valeurs déjà publiées par une école.
+
+Les sections, options et cours sont aussi des **référentiels métier identifiés**, pas de simples textes stockés dans une règle. Leur composition dans un programme annuel, les maxima et les contraintes de publication sont versionnés. Le schéma M1 devra distinguer ces entités des définitions techniques du moteur de règles.
 
 ## 4. Parcours dans Paramètres → Configuration scolaire
 
@@ -90,6 +93,21 @@ L’interface doit répondre à la question : **« pourquoi cette valeur s’app
 6. faire vérifier puis publier selon les permissions du domaine.
 
 Une version publiée ne possède pas de bouton de modification. « Revenir à une ancienne règle » crée une nouvelle version datée qui reprend les valeurs choisies.
+
+### 4.4 Configuration initiale des sections, options et programmes
+
+Le parcours académique doit permettre à une personne autorisée de :
+
+1. choisir l’établissement, l’année et, si disponible, un formulaire source toujours en usage ;
+2. créer ou reprendre les sections dans un brouillon local ;
+3. créer les options et leurs rattachements autorisés ;
+4. organiser les cours disponibles et les cours propres à chaque option dans les programmes annuels ;
+5. préciser pour chaque cours son maximum, son ordre, son regroupement et son schéma avec ou sans examen ;
+6. distinguer le rattachement à une option du caractère obligatoire ou facultatif pour l’élève ;
+7. contrôler les maxima généraux calculés et simuler un bulletin ;
+8. faire valider puis publier la version locale, sans modifier les années ou documents historiques.
+
+**Exemple donné le 29/10/2026 :** dans un programme Commerciale & Gestion, l’établissement peut définir le cours Comptabilité avec un maximum de `120` points. Cette valeur illustre la configurabilité ; elle n’est ni un défaut national ni une valeur imposée aux autres programmes. Le schéma d’examen et les règles de synthèse restent à configurer explicitement.
 
 ## 5. Héritage et résolution des conflits
 
@@ -174,6 +192,7 @@ Une nouvelle stratégie de calcul peut nécessiter une évolution développée e
 - type, bornes, précision et unité ;
 - champs obligatoires et valeurs non ambiguës ;
 - dépendances entre règles et compatibilité des stratégies ;
+- maximum positif et schéma d’évaluation explicite pour chaque cours du programme ; totaux généraux dérivés de la composition, jamais saisis comme vérité indépendante ;
 - périodes cohérentes et absence de chevauchement interdit ;
 - dénominateurs et domaines de calcul valides ;
 - portée et permissions de l’utilisateur ;
@@ -197,7 +216,7 @@ Le rapport de simulation est conservé avec la demande de publication. Les même
 
 | Domaine | Exemples de règles variables à couvrir |
 | --- | --- |
-| Référentiels et calendrier | années, périodes, fenêtres, capacités, jours non ouvrés |
+| Référentiels et calendrier | années, sections, options, programmes et cours, périodes, fenêtres, capacités, jours non ouvrés |
 | Académique | barèmes, schémas avec/sans examen, coefficients éventuels, agrégation, notes manquantes, arrondis, rangs, repêchage, décisions |
 | Assiduité et vie scolaire | modes d’appel, statuts, retards, justificatifs, alertes, visibilité des incidents |
 | Finance | devises, tarifs, remises, échéanciers, affectations, avoirs, caisse, numérotation, approbations |
@@ -252,6 +271,8 @@ Les noms physiques des tables restent à définir dans l’ADR et le schéma Pri
 13. Un retour à une ancienne configuration crée une nouvelle version datée et auditée.
 14. Une personne sans permission du domaine ne peut ni modifier ni publier la règle, quelle que soit la requête envoyée.
 15. Toute règle variable découverte dans un module est référencée dans le catalogue avant la recette du module.
+16. Deux établissements peuvent définir des sections, options, compositions de cours et maxima différents sans modifier le code.
+17. Un maximum de `120` points pour Comptabilité dans un programme Commerciale & Gestion ne modifie ni les autres programmes ni les documents historiques.
 
 ## 14. Découpage de réalisation proposé
 

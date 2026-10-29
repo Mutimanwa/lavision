@@ -1,7 +1,7 @@
 # Dossier de cadrage métier M0
 
 **Projet :** lavision
-**Version :** 0.5 — 29 octobre 2026
+**Version :** 0.6 — 29 octobre 2026
 **Issues concernées :** [#2](https://github.com/Mutimanwa/lavision/issues/2), [#3](https://github.com/Mutimanwa/lavision/issues/3), [#4](https://github.com/Mutimanwa/lavision/issues/4) et préparation de [#39](https://github.com/Mutimanwa/lavision/issues/39)
 **Statut :** dossier de travail à compléter avec l’établissement pilote
 
@@ -73,7 +73,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | Catalogue de règles configurable | Préparé ; configuration avancée spécifiée | couverture exhaustive, valeurs, portées et contraintes validées |
 | Questionnaire de l’établissement pilote | Préparé ; premiers éléments à confirmer | réponses locales sur les sections/options, les barèmes par cours et les documents |
 | Base officielle RDC | Consultée et sourcée | confirmation de son adoption par le pilote et des instructions applicables à chaque année |
-| Exemples académiques chiffrés | Modèles 1ère/2e, 5e HP et recueil 2024–2025 analysés ; totaux reconstitués et écarts documentés | programmes réellement offerts, totaux officiels, règles de pourcentage/repêchage et exemples validés avec l’établissement |
+| Exemples académiques chiffrés | Modèles 1ère/2e, 5e HP et recueil 2024–2025 analysés ; formulaires du recueil toujours utilisés cette année selon la réponse du 29/10/2026 | grilles initiales configurées par chaque établissement, totaux, règles de pourcentage/repêchage et exemples validés |
 | Exemples financiers chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemple de paie | Trame uniquement | exemple validé par un expert local |
 | Matrice des permissions | Catalogue initial de 13 rôles et matrice proposée | validation de la direction, portées nominatives et scénarios de test associés |

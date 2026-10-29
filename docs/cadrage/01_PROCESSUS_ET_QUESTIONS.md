@@ -52,13 +52,20 @@ Dossier incomplet, jumeaux avec les mêmes responsables, élève déjà inscrit 
 **Approbateur :** à nommer
 
 ```text
-Création de l’année → sites/niveaux/programmes → classes et matières
+Création de l’année → sites/niveaux → sections et options
+       → programmes annuels → cours disponibles et cours propres aux options
+       → maxima et schémas d’évaluation par cours → classes et affectations
        → périodes et calendrier → affectations enseignantes → activation
        → clôture des périodes → clôture de l’année
 ```
 
+**Orientation confirmée le 29/10/2026 :** chaque établissement configure ses sections, ses options, les cours disponibles, les cours propres aux options et leurs maxima. Les formulaires du recueil 2024–2025, toujours utilisés cette année, servent de modèles de départ ; les valeurs locales restent versionnées et soumises à publication.
+
 ### Points à confirmer
 
+- Qui crée, vérifie et publie les sections, options et programmes de chaque établissement ?
+- Quels cours sont communs, propres à une option ou réellement facultatifs pour les élèves ?
+- Quel maximum et quel schéma d’évaluation chaque cours utilise-t-il dans chaque programme annuel ?
 - Quels types de périodes sont utilisés : trimestres, semestres, séquences ou combinaison ?
 - Une période possède-t-elle des dates de saisie et de publication distinctes de ses dates pédagogiques ?
 - Quels référentiels varient selon le site, le niveau, la filière ou le programme ?

@@ -55,6 +55,9 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 | `calendar.period.publication_window` | dates bornées | période | aucune fenêtre dans le prototype | direction |
 | `calendar.year.closure_policy` | énumération | établissement | clôture puis réouverture autorisée et motivée | direction |
 | `calendar.non_working_days` | liste de dates | site, année | calendrier à fournir | scolarité |
+| `academic.section.catalog` | liste structurée | établissement, année | sections créées et organisées par chaque établissement ; aucune liste nationale figée dans le code | scolarité |
+| `academic.option.catalog` | liste structurée | établissement, année, section | options et rattachements configurés localement, avec versions et publication | scolarité |
+| `academic.program.course_catalog` | liste structurée | programme, année | cours disponibles, cours propres aux options, ordre, domaines et caractère obligatoire/facultatif ; composition versionnée | pédagogie |
 | `academic.class.capacity_enforcement` | énumération | niveau | bloquant ou avertissement à choisir | direction |
 | `academic.student.unique_matricule_scope` | énumération | établissement | matricule unique dans l’établissement | secrétariat |
 | `academic.enrollment.single_primary_class` | booléen | établissement | une affectation principale à une date donnée | secrétariat |
@@ -64,7 +67,7 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 | Clé candidate | Type | Portée candidate | Point de départ à valider | Validation |
 | --- | --- | --- | --- | --- |
 | `academic.grading.scale_min` | décimal exact | programme, matière | `0` dans le prototype | pédagogie |
-| `academic.grading.scale_max` | décimal exact | programme, matière | `20` dans le prototype ; autres barèmes à prévoir | pédagogie |
+| `academic.grading.scale_max` | décimal exact | établissement, programme, matière | maximum configuré par programme annuel ; exemple Comptabilité `120` points en Commerciale & Gestion donné le 29/10/2026, sans valeur imposée aux autres contextes | pédagogie |
 | `academic.grading.input_increment` | décimal exact | programme | pas de limite de pas explicite dans le prototype | pédagogie |
 | `academic.grading.conversion_mode` | énumération | programme | aucune conversion ; définir si plusieurs barèmes coexistent | pédagogie |
 | `academic.subject.coefficient` | décimal positif borné | programme, matière | aucun coefficient séparé visible sur les deux bulletins ; ne pas doubler la pondération portée par les maxima | pédagogie |
@@ -108,6 +111,7 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 - une pondération annuelle obligatoire absente produit `non calculable`, jamais un poids égal ou un pourcentage implicite ;
 - un document provisoire/incomplet et son rang provisoire sont explicitement séparés des résultats officiels et de la décision annuelle ;
 - chaque branche utilise un schéma explicite ; une branche sans examen ne doit ni exiger ni recevoir une note d’examen ;
+- un cours propre à une option n’est pas réputé facultatif pour l’élève sans règle explicite ; rattachement à l’option et caractère obligatoire/facultatif sont distincts ;
 - totaux de semestre, T.G., totaux généraux et maxima généraux réconciliés avant publication, sans correction silencieuse des écarts ;
 - aucune règle de compensation ne doit produire une note ou une décision hors domaine ;
 - résultat académique calculé, décision administrative et validation officielle sont distincts ; aucun libellé officiel n’est appliqué sans référence vérifiée pour le niveau et la section ;

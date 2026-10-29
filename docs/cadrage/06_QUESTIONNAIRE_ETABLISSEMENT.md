@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.9 — 29 octobre 2026
+**Version :** 0.10 — 29 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -27,7 +27,8 @@ Ces éléments proviennent des échanges. Ils sont reformulés pour vérificatio
 | Les ex æquo utilisent le rang de compétition `1, 1, 3`. | règle de départ sélectionnée le 29/10/2026 | validation par la direction ; moyenne arrondie ou non et comportement annuel à préciser |
 | Un modèle vierge de bulletin 1ère/2e secondaire a été fourni. | structure analysée | bulletin rempli, arrondis, pourcentage, décisions et repêchage à confirmer |
 | Un bulletin rempli de 5e HP — Humanités pédagogiques, formulaire Pédagogie générale — a été fourni. | structure et contrôles analysés ; 22 branches et cinq profils de maxima | écarts manuscrits, tirets, troncature/arrondi, repêchage et application actuelle à confirmer |
-| Un recueil tiers de bulletins 2024–2025 et plusieurs séries séparées ont été comparés. | structures par cycle, programmes annuels, maxima et blocs nationaux relevés ; totaux reconstitués dans le document 12 | authenticité, édition applicable, programmes réellement offerts et totaux officiels à confirmer |
+| Un recueil tiers de bulletins 2024–2025 et plusieurs séries séparées ont été comparés. | structures par cycle, programmes annuels, maxima et blocs nationaux relevés ; totaux reconstitués dans le document 12 | authenticité des sources tierces, correspondance de chaque formulaire avec la grille locale et totaux à confirmer |
+| Les formulaires du recueil 2024–2025 sont toujours utilisés cette année ; sections, options, cours et maxima sont configurés par chaque établissement. | réponse du 29/10/2026 — DEC-009 | grilles initiales, responsables de publication et valeurs locales ; Comptabilité `120` points reste un exemple configurable, pas un défaut général |
 | Toutes les règles métier variables doivent être personnalisables et pouvoir changer au fil du temps, même si certaines réponses sont encore inconnues. | orientation produit validée le 28/10/2026 — DEC-007 | catalogue exhaustif, versions datées, simulation et état « à configurer » ; aucune valeur officielle inventée |
 
 La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs questions de structure et d’épreuves nationales. Les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md), [5e HP](09_ANALYSE_BULLETIN_5E_HP.md) et du [recueil 2024–2025](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md) répondent partiellement à Q-STR-05, Q-STR-06, Q-STR-10, Q-EVAL-04, Q-EVAL-06, Q-EVAL-07, Q-EVAL-11, Q-EVAL-13, Q-EVAL-15, Q-EVAL-20 à Q-EVAL-22 et Q-DEC-15. Les réponses restantes doivent surtout préciser l’application locale actuelle, les écarts constatés et les règles de délibération.
@@ -42,20 +43,20 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-STR-02 | Quels sont les noms officiels et les abréviations des classes, notamment 7E et 8E ? | |
 | Q-STR-03 | Les classes 7E et 8E appartiennent-elles au même cycle ? Quelle classe précède et quelle classe suit chacune ? | |
 | Q-STR-04 | Combien de sites, sections, options et classes physiques faut-il gérer la première année ? | |
-| Q-STR-05 | Quelle est la différence exacte entre **cycle**, **section**, **option**, **filière**, **programme** et **classe** dans votre organisation ? | 29/10/2026 : hiérarchie proposée année scolaire → établissement → classe académique ; section, option, niveau et programme sont rattachés à cette classe. Définitions de filière et cycle à préciser. |
-| Q-STR-06 | La section est-elle choisie avant l’option ? Donner deux ou trois exemples réels de combinaisons section/option. | |
+| Q-STR-05 | Quelle est la différence exacte entre **cycle**, **section**, **option**, **filière**, **programme** et **classe** dans votre organisation ? | 29/10/2026 : hiérarchie proposée année scolaire → établissement → classe académique ; sections et options sont configurées par chaque établissement, puis rattachées avec le niveau et le programme à la classe. Définitions de filière et cycle à préciser. |
+| Q-STR-06 | La section est-elle choisie avant l’option ? Donner deux ou trois exemples réels de combinaisons section/option. | 29/10/2026 : les sections, options et leurs combinaisons sont configurées par l’établissement ; l’ordre de choix et les exemples initiaux seront renseignés dans sa grille, sans liste imposée par le code. |
 | Q-STR-07 | Une même option peut-elle exister dans plusieurs sections ? Son programme est-il alors identique ? | |
 | Q-STR-08 | À quel moment l’élève choisit-il sa section et son option ? Qui valide ce choix ? | 29/10/2026 : à l’entrée dans les Humanités, après la 8e / le TENASOSP ; position exacte par rapport au résultat officiel et validateur à confirmer. |
 | Q-STR-09 | Peut-on changer de section ou d’option en cours d’année ? Comment reporter les notes déjà obtenues ? | |
-| Q-STR-10 | Le programme des cours est-il défini par classe, section, option ou combinaison des trois ? | 29/10/2026 : programme rattaché à la classe académique dans la hiérarchie proposée, avec section, option, niveau et année scolaire ; exemples de combinaisons à fournir. |
+| Q-STR-10 | Le programme des cours est-il défini par classe, section, option ou combinaison des trois ? | 29/10/2026 : programme rattaché à la classe académique, avec section, option, niveau et année scolaire ; chaque établissement organise les cours disponibles et ceux propres aux options dans ses programmes annuels. |
 | Q-STR-11 | Un programme change-t-il selon l’année scolaire tout en conservant le même nom ? | 29/10/2026 : variations observées entre le bulletin historique 5e HP et Pédagogie générale 2024–2025, ainsi qu’entre deux variantes de Commerciale & Gestion ; fréquence et versions applicables à lavision à confirmer. |
-| Q-STR-12 | Quels cours sont communs, obligatoires ou propres à une option ? | |
+| Q-STR-12 | Quels cours sont communs, obligatoires ou propres à une option ? | 29/10/2026 : composition définie par l’établissement dans chaque programme ; cours communs, cours propres aux options et cours réellement facultatifs doivent être distingués. Grille initiale à publier localement. |
 | Q-STR-13 | Un élève peut-il suivre un cours facultatif ou supplémentaire hors de son programme principal ? | |
 | Q-STR-14 | Comment appelle-t-on l’enseignant responsable d’une classe et l’enseignant d’un cours ? | |
 | Q-STR-15 | Plusieurs enseignants peuvent-ils donner le même cours à des groupes différents ? | |
 | Q-STR-16 | Quelles capacités maximales et quels groupes ou salles doivent être respectés ? | |
 | Q-STR-17 | Quelles langues sont utilisées pour les intitulés officiels des cycles, sections, options et cours ? | |
-| Q-STR-18 | Existe-t-il un référentiel officiel ou interne qui décrit déjà cette structure ? Lequel et quelle version ? | |
+| Q-STR-18 | Existe-t-il un référentiel officiel ou interne qui décrit déjà cette structure ? Lequel et quelle version ? | 29/10/2026 : les formulaires du recueil 2024–2025 sont toujours utilisés cette année et servent de modèles de départ ; chaque établissement conserve sa propre version configurée des sections, options et programmes. |
 
 ## Bloc 2 — Épreuves nationales, certification et passage vers une section
 
@@ -86,10 +87,10 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 
 | ID | Question | Réponse |
 | --- | --- | --- |
-| Q-EVAL-01 | Pour un cours donné, que signifie exactement le nombre associé au cours : note maximale, coefficient, crédit, pourcentage ou autre ? | 29/10/2026 : note maximale sélectionnée ; exemples par programme à faire valider. |
+| Q-EVAL-01 | Pour un cours donné, que signifie exactement le nombre associé au cours : note maximale, coefficient, crédit, pourcentage ou autre ? | 29/10/2026 : note maximale sélectionnée et configurée par l’établissement pour chaque programme de cours ; exemple Comptabilité `120` points en Commerciale & Gestion, sans valeur imposée aux autres contextes. |
 | Q-EVAL-02 | Donner un exemple complet pour un cours commun : intitulé, section/option, barème, coefficient et évaluations. | |
 | Q-EVAL-03 | Donner le même exemple pour un cours d’option dont la règle est différente. | |
-| Q-EVAL-04 | La note maximale est-elle propre à chaque évaluation, à chaque cours ou à chaque programme ? | 29/10/2026 : niveau programme de cours sélectionné, avec variations possibles par classe, section, option et année. |
+| Q-EVAL-04 | La note maximale est-elle propre à chaque évaluation, à chaque cours ou à chaque programme ? | 29/10/2026 : niveau programme de cours sélectionné, avec configuration par établissement et variations possibles par classe, section, option et année. |
 | Q-EVAL-05 | Les notes sont-elles saisies sur leur barème brut puis converties ? Si oui, vers quel barème et avec quelle formule déterminée ? | |
 | Q-EVAL-06 | Le coefficient d’un cours peut-il changer selon la section, l’option, la période ou l’année ? | 29/10/2026 : variations par programme et année à prévoir ; les formulaires analysés font varier les maxima mais n’affichent pas de coefficient indépendant. Le coefficient distinct retenu pour le calcul local reste à valider sans doubler la pondération des maxima. |
 | Q-EVAL-07 | Le calendrier RDC 2026–2027 prévoit 2 semestres/4 périodes au secondaire et 3 trimestres/6 périodes au primaire. Quel découpage chaque niveau de l’école applique-t-il ? | 29/10/2026 : structure par cycle sélectionnée ; validation locale par la scolarité restante. |
@@ -135,7 +136,7 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 
 | ID | Question | Réponse |
 | --- | --- | --- |
-| Q-DOC-01 | Quels documents sont produits par période et par année ? | 29/10/2026 : bulletin provisoire ou relevé incomplet proposé en cas de note obligatoire manquante ; choix du modèle et autres documents à inventorier. |
+| Q-DOC-01 | Quels documents sont produits par période et par année ? | 29/10/2026 : bulletin provisoire ou relevé incomplet proposé en cas de note obligatoire manquante ; formulaires du recueil toujours utilisés cette année comme modèles de départ, avec adaptations locales et autres documents à inventorier. |
 | Q-DOC-02 | Quels champs figurent sur un bulletin : école, élève, classe, section, option, cours, notes, coefficients, rangs, appréciations et signatures ? | 29/10/2026 : identités école/élève/classe, section/option, branches, maxima, périodes, examens, T.G., totaux, pourcentage, place, application, conduite, décision et signatures observés selon les modèles ; domaines, repêchage et bloc national varient. Champs locaux obligatoires à valider. |
 | Q-DOC-03 | Le bulletin affiche-t-il les notes brutes, converties, pondérées ou plusieurs représentations ? | |
 | Q-DOC-04 | Faut-il afficher le détail des séquences et évaluations ou seulement la synthèse ? | |

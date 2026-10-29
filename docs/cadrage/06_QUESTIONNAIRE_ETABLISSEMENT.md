@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.8 — 29 octobre 2026
+**Version :** 0.9 — 29 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -27,9 +27,10 @@ Ces éléments proviennent des échanges. Ils sont reformulés pour vérificatio
 | Les ex æquo utilisent le rang de compétition `1, 1, 3`. | règle de départ sélectionnée le 29/10/2026 | validation par la direction ; moyenne arrondie ou non et comportement annuel à préciser |
 | Un modèle vierge de bulletin 1ère/2e secondaire a été fourni. | structure analysée | bulletin rempli, arrondis, pourcentage, décisions et repêchage à confirmer |
 | Un bulletin rempli de 5e HP — Humanités pédagogiques, formulaire Pédagogie générale — a été fourni. | structure et contrôles analysés ; 22 branches et cinq profils de maxima | écarts manuscrits, tirets, troncature/arrondi, repêchage et application actuelle à confirmer |
+| Un recueil tiers de bulletins 2024–2025 et plusieurs séries séparées ont été comparés. | structures par cycle, programmes annuels, maxima et blocs nationaux relevés ; totaux reconstitués dans le document 12 | authenticité, édition applicable, programmes réellement offerts et totaux officiels à confirmer |
 | Toutes les règles métier variables doivent être personnalisables et pouvoir changer au fil du temps, même si certaines réponses sont encore inconnues. | orientation produit validée le 28/10/2026 — DEC-007 | catalogue exhaustif, versions datées, simulation et état « à configurer » ; aucune valeur officielle inventée |
 
-La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs questions de structure et d’épreuves nationales. Les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md) et [5e HP](09_ANALYSE_BULLETIN_5E_HP.md) répondent partiellement à Q-STR-05, Q-STR-06, Q-STR-10, Q-EVAL-04, Q-EVAL-06, Q-EVAL-07, Q-EVAL-11, Q-EVAL-13, Q-EVAL-15, Q-EVAL-20 à Q-EVAL-22 et Q-DEC-15. Les réponses restantes doivent surtout préciser l’application locale actuelle, les écarts constatés et les règles de délibération.
+La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs questions de structure et d’épreuves nationales. Les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md), [5e HP](09_ANALYSE_BULLETIN_5E_HP.md) et du [recueil 2024–2025](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md) répondent partiellement à Q-STR-05, Q-STR-06, Q-STR-10, Q-EVAL-04, Q-EVAL-06, Q-EVAL-07, Q-EVAL-11, Q-EVAL-13, Q-EVAL-15, Q-EVAL-20 à Q-EVAL-22 et Q-DEC-15. Les réponses restantes doivent surtout préciser l’application locale actuelle, les écarts constatés et les règles de délibération.
 
 ## Bloc 1 — Structure scolaire, cycles, sections et options
 
@@ -47,7 +48,7 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-STR-08 | À quel moment l’élève choisit-il sa section et son option ? Qui valide ce choix ? | 29/10/2026 : à l’entrée dans les Humanités, après la 8e / le TENASOSP ; position exacte par rapport au résultat officiel et validateur à confirmer. |
 | Q-STR-09 | Peut-on changer de section ou d’option en cours d’année ? Comment reporter les notes déjà obtenues ? | |
 | Q-STR-10 | Le programme des cours est-il défini par classe, section, option ou combinaison des trois ? | 29/10/2026 : programme rattaché à la classe académique dans la hiérarchie proposée, avec section, option, niveau et année scolaire ; exemples de combinaisons à fournir. |
-| Q-STR-11 | Un programme change-t-il selon l’année scolaire tout en conservant le même nom ? | |
+| Q-STR-11 | Un programme change-t-il selon l’année scolaire tout en conservant le même nom ? | 29/10/2026 : variations observées entre le bulletin historique 5e HP et Pédagogie générale 2024–2025, ainsi qu’entre deux variantes de Commerciale & Gestion ; fréquence et versions applicables à lavision à confirmer. |
 | Q-STR-12 | Quels cours sont communs, obligatoires ou propres à une option ? | |
 | Q-STR-13 | Un élève peut-il suivre un cours facultatif ou supplémentaire hors de son programme principal ? | |
 | Q-STR-14 | Comment appelle-t-on l’enseignant responsable d’une classe et l’enseignant d’un cours ? | |
@@ -76,7 +77,7 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-ETAT-12 | Que se passe-t-il en cas d’échec, d’absence ou de réclamation ? | |
 | Q-ETAT-13 | Le choix de la section et de l’option intervient-il avant ou après la publication du résultat ou du certificat ? | |
 | Q-ETAT-14 | Le résultat du TENASOSP influence-t-il les sections ou options accessibles ? Selon quelles règles ? | |
-| Q-ETAT-15 | Le résultat national doit-il apparaître sur le bulletin scolaire interne ou rester dans un dossier distinct ? | |
+| Q-ETAT-15 | Le résultat national doit-il apparaître sur le bulletin scolaire interne ou rester dans un dossier distinct ? | 29/10/2026 : blocs ENAFEP/TENASOSP/EXETAT observés sur certains formulaires terminaux du recueil ; affichage local à confirmer, sans confondre reproduction du résultat et calcul par lavision. |
 | Q-ETAT-16 | Quels documents officiels anonymisés peuvent servir de modèles pour ce parcours ? | |
 
 ## Bloc 3 — Cours, évaluations, barèmes et pondérations
@@ -90,16 +91,16 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-EVAL-03 | Donner le même exemple pour un cours d’option dont la règle est différente. | |
 | Q-EVAL-04 | La note maximale est-elle propre à chaque évaluation, à chaque cours ou à chaque programme ? | 29/10/2026 : niveau programme de cours sélectionné, avec variations possibles par classe, section, option et année. |
 | Q-EVAL-05 | Les notes sont-elles saisies sur leur barème brut puis converties ? Si oui, vers quel barème et avec quelle formule déterminée ? | |
-| Q-EVAL-06 | Le coefficient d’un cours peut-il changer selon la section, l’option, la période ou l’année ? | |
+| Q-EVAL-06 | Le coefficient d’un cours peut-il changer selon la section, l’option, la période ou l’année ? | 29/10/2026 : variations par programme et année à prévoir ; les formulaires analysés font varier les maxima mais n’affichent pas de coefficient indépendant. Le coefficient distinct retenu pour le calcul local reste à valider sans doubler la pondération des maxima. |
 | Q-EVAL-07 | Le calendrier RDC 2026–2027 prévoit 2 semestres/4 périodes au secondaire et 3 trimestres/6 périodes au primaire. Quel découpage chaque niveau de l’école applique-t-il ? | 29/10/2026 : structure par cycle sélectionnée ; validation locale par la scolarité restante. |
 | Q-EVAL-08 | Que représente localement une « séquence » : séance didactique de 50 minutes, période du calendrier, évaluation ou ensemble d’évaluations ? | |
 | Q-EVAL-09 | Quels types d’évaluations existent : interrogations, devoirs, travaux pratiques, examens ou autres ? | |
 | Q-EVAL-10 | Comment obtient-on la note d’une séquence pour un cours ? Donner un exemple chiffré. | |
-| Q-EVAL-11 | Comment obtient-on la note trimestrielle d’un cours à partir des séquences et de l’examen éventuel ? | 29/10/2026 : structure variable par programme de cours ; schémas avec ou sans examen et poids des composantes à définir. |
+| Q-EVAL-11 | Comment obtient-on la note trimestrielle d’un cours à partir des séquences et de l’examen éventuel ? | 29/10/2026 : structure variable par programme de cours ; schémas avec ou sans examen confirmés sur plusieurs formulaires 2024–2025. Avec examen : semestre = deux périodes + examen ; sans examen : semestre = deux périodes. Valeurs locales à valider. |
 | Q-EVAL-12 | Chaque composante possède-t-elle un poids ou un pourcentage ? Leur total doit-il être égal à une valeur précise ? | |
 | Q-EVAL-13 | Comment calcule-t-on la moyenne générale d’un trimestre à partir des cours ? | 29/10/2026 : moyenne pondérée des pourcentages de cours par un coefficient distinct du maximum ; valeurs par programme à fournir. |
 | Q-EVAL-14 | Les cours facultatifs ou supplémentaires entrent-ils dans la moyenne générale ? | |
-| Q-EVAL-15 | Comment calcule-t-on le résultat annuel : moyenne des trimestres, cumul des points, examen annuel ou autre ? | 29/10/2026 : combinaison des périodes et d’un examen annuel distinct ; structure du calcul séparée des paramètres de pondération, sans valeur par défaut. |
+| Q-EVAL-15 | Comment calcule-t-on le résultat annuel : moyenne des trimestres, cumul des points, examen annuel ou autre ? | 29/10/2026 : combinaison des périodes et d’un examen annuel distinct ; structure du calcul séparée des paramètres de pondération, sans valeur par défaut. Un bloc école/TENASOSP `50 + 50 = 100` est observé sur la 8e CTEB du recueil, uniquement comme résultat final à valider, pas comme règle annuelle générale. |
 | Q-EVAL-16 | Les trimestres ont-ils des poids différents ? | 29/10/2026 : poids configurés ultérieurement selon les règles validées par l’autorité scolaire compétente en RDC ; ni poids égaux ni pourcentages implicites retenus. |
 | Q-EVAL-17 | Existe-t-il une note minimale par cours, une note éliminatoire ou une compensation entre cours ? | |
 | Q-EVAL-18 | Quel est le seuil de réussite et s’applique-t-il au cours, au trimestre, à l’année ou à plusieurs niveaux ? | 29/10/2026 : 50 % sélectionné comme règle de départ pour chaque cours et la moyenne générale ; exemples de décision à faire valider. |
@@ -128,18 +129,18 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-DEC-12 | Comment gérer un élève arrivé ou parti en cours d’année dans les moyennes et le classement ? | 29/10/2026 : calcul sur les seules périodes présentes sélectionné ; périodes non suivies non inventées et résultat annuel officiel soumis à une règle minimale de présence validée ; normalisation des poids à préciser. |
 | Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | 29/10/2026 : circuit distinct de rectification avec validation pédagogique, autorisation administrative et traçabilité intégrale proposé ; personnes et délégations à définir. |
 | Q-DEC-14 | Une rectification produit-elle une nouvelle version du document et comment les destinataires sont-ils informés ? | 29/10/2026 : nouvelle version et diffusion corrective proposées, sans réécriture de l’ancienne ; canal et destinataires des notifications à définir. |
-| Q-DEC-15 | Quelles règles s’appliquent à la première délibération, au repêchage et à la deuxième délibération prévus dans le calendrier secondaire ? | |
+| Q-DEC-15 | Quelles règles s’appliquent à la première délibération, au repêchage et à la deuxième délibération prévus dans le calendrier secondaire ? | 29/10/2026 : zones de repêchage observées sur plusieurs modèles non terminaux ; seuils, branches éligibles, nombre de tentatives et effet sur le T.G. restent à documenter. |
 
 ## Bloc 5 — Bulletins et autres documents académiques
 
 | ID | Question | Réponse |
 | --- | --- | --- |
 | Q-DOC-01 | Quels documents sont produits par période et par année ? | 29/10/2026 : bulletin provisoire ou relevé incomplet proposé en cas de note obligatoire manquante ; choix du modèle et autres documents à inventorier. |
-| Q-DOC-02 | Quels champs figurent sur un bulletin : école, élève, classe, section, option, cours, notes, coefficients, rangs, appréciations et signatures ? | |
+| Q-DOC-02 | Quels champs figurent sur un bulletin : école, élève, classe, section, option, cours, notes, coefficients, rangs, appréciations et signatures ? | 29/10/2026 : identités école/élève/classe, section/option, branches, maxima, périodes, examens, T.G., totaux, pourcentage, place, application, conduite, décision et signatures observés selon les modèles ; domaines, repêchage et bloc national varient. Champs locaux obligatoires à valider. |
 | Q-DOC-03 | Le bulletin affiche-t-il les notes brutes, converties, pondérées ou plusieurs représentations ? | |
 | Q-DOC-04 | Faut-il afficher le détail des séquences et évaluations ou seulement la synthèse ? | |
 | Q-DOC-05 | Quelles mentions obligatoires, signatures, cachets, langues et mises en page faut-il respecter ? | |
-| Q-DOC-06 | Quel document atteste de la réussite au concours d’État et quel document atteste de la scolarité interne ? | |
+| Q-DOC-06 | Quel document atteste de la réussite au concours d’État et quel document atteste de la scolarité interne ? | 29/10/2026 : les formulaires 8e CTEB et terminaux examinés contiennent des zones de résultat national ou de diplôme ; le certificat/diplôme officiel distinct et son autorité restent à documenter. |
 | Q-DOC-07 | Quel est le contenu du procès-verbal de délibération ? | |
 | Q-DOC-08 | Qui prépare, vérifie, valide, signe et diffuse chaque document ? | 29/10/2026 : validation pédagogique puis autorisation administrative proposées pour les résultats ; préparateurs, signataires et délégations à confirmer. |
 | Q-DOC-09 | Quand un parent ou un élève peut-il consulter ou télécharger chaque document ? | 29/10/2026 : après publication contrôlée, y compris pour le document provisoire/incomplet clairement identifié ; règles par type de document à compléter. |
@@ -252,4 +253,4 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 3. **Avant chaque domaine :** Q-ASS, Q-FIN et Q-RH avec leurs propriétaires respectifs.
 4. **Avant l’architecture finale et la mise en production :** Q-SEC et Q-OPS.
 
-Pour la suite, l’utilisateur n’a pas à deviner les réponses. Les questions restent une liste de contrôle pour les ateliers avec les responsables compétents. Chaque inconnue est associée à un paramètre de la [configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md), à un propriétaire et à une preuve attendue. Les bulletins 1ère/2e et 5e HP servent à préparer les types de règles et les simulations, pas à imposer leurs valeurs. Avant toute production de résultats officiels, les règles obligatoires applicables devront être renseignées, simulées et publiées par une personne autorisée.
+Pour la suite, l’utilisateur n’a pas à deviner les réponses. Les questions restent une liste de contrôle pour les ateliers avec les responsables compétents. Chaque inconnue est associée à un paramètre de la [configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md), à un propriétaire et à une preuve attendue. Les bulletins 1ère/2e, 5e HP et le recueil 2024–2025 servent à préparer les types de règles et les simulations, pas à imposer leurs valeurs. Avant toute production de résultats officiels, les règles obligatoires applicables devront être renseignées, simulées et publiées par une personne autorisée.

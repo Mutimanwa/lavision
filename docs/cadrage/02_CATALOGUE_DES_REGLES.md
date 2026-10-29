@@ -72,6 +72,7 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 | `academic.evaluation.term_schema` | énumération + paramètres fixes | programme, matière | schémas « périodes + examen » et « périodes sans examen » observés ; valeurs à valider | pédagogie |
 | `academic.average.subject_aggregation` | énumération | programme | moyenne pondérée des notes par matière à préciser | pédagogie |
 | `academic.average.report_aggregation` | énumération | niveau, programme | moyenne pondérée dans le prototype ; bulletins à base de sommes de points et de maxima à prendre en charge | pédagogie |
+| `academic.report.grouping_schema` | liste structurée | programme, document | groupes de maxima ou domaines/sous-domaines avec sous-totaux observés ; ordre et regroupements à valider | pédagogie |
 | `academic.average.missing_policy` | énumération | niveau, programme | note absente différente de zéro ; les tirets du bulletin 5e HP exigent des statuts explicites | pédagogie |
 | `academic.average.exemption_policy` | énumération | programme | absent du prototype ; ne pas réduire un maximum sans règle validée | pédagogie |
 | `academic.average.provisional_display` | booléen | niveau | moyenne provisoire visible sur dossier incomplet dans le moteur actuel | pédagogie |
@@ -88,6 +89,7 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 | `academic.pass.resit_policy` | liste structurée | niveau, programme | absent du prototype | direction |
 | `academic.year.aggregation` | énumération + poids bornés | niveau, programme | structure séparée des poids versionnés proposée le 29/10/2026 ; aucune valeur par défaut, validation par l’autorité compétente requise | direction |
 | `academic.year.decision_policy` | liste structurée | niveau, section, programme | passage et redoublement proposés comme décisions finales, ajournement comme état avant délibération ; textes applicables à vérifier | direction |
+| `academic.national_exam.result_block` | objet à schéma fixe | programme, document | blocs ENAFEP, TENASOSP et EXETAT distincts observés ; maxima, combinaison et portée à valider, sans `50/50` par défaut | direction/scolarité |
 | `academic.year.midyear_policy` | énumération + règles bornées | niveau, programme | calcul sur les seules périodes présentes proposé le 29/10/2026 ; éligibilité annuelle à valider | scolarité/direction |
 | `academic.decision.attendance_policy` | liste structurée bornée | niveau, programme | effet configurable proposé le 29/10/2026, sans règle ni seuil par défaut | direction |
 | `academic.decision.conduct_policy` | liste structurée bornée | niveau, programme | effet configurable proposé le 29/10/2026, sans règle ni seuil par défaut | direction |
@@ -196,6 +198,7 @@ Les valeurs de cette section restent volontairement sans proposition chiffrée. 
 | --- | --- | --- | --- | --- |
 | `document.template.versioning` | énumération | type de document | modèle versionné et figé sur publication | direction |
 | `document.required_fields` | liste structurée | type de document | inventaire à partir des modèles officiels | propriétaire du document |
+| `document.template.identity` | objet à schéma fixe | type de document, année, programme | intitulé, code de formulaire, édition et programme ; le code seul ne suffit pas à identifier une version | propriétaire du document |
 | `document.publication.workflow` | liste structurée | type de document | validation pédagogique puis autorisation administrative proposées pour les résultats ; préparateur, signataire et délégations à confirmer | direction |
 | `document.language` | énumération | type de document | français et autres langues à confirmer | direction |
 | `document.authenticity.mode` | énumération | type de document | identifiant/QR éventuel sans donnée publique sensible | direction |

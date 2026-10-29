@@ -234,6 +234,8 @@ L’utilisateur a indiqué ne pas connaître ces réponses avec certitude. Elles
 9. **Décisions :** comment enregistrez-vous la première décision conditionnelle puis la décision finale de deuxième délibération ?
 10. **Classement :** le rang annuel utilise-t-il le pourcentage exact ou affiché, et comment traite-t-on les ex æquo et dossiers incomplets ?
 
+La comparaison avec les formulaires 2024–2025 est détaillée dans le [document 12](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md). Les différences de branches et de totaux confirment que ce bulletin historique ne doit pas servir de programme générique.
+
 ## 13. Prochaine preuve nécessaire
 
 Pour convertir cette analyse en règles validées, il faut encore :

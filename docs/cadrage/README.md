@@ -1,7 +1,7 @@
 # Dossier de cadrage métier M0
 
 **Projet :** lavision
-**Version :** 0.4 — 29 octobre 2026
+**Version :** 0.5 — 29 octobre 2026
 **Issues concernées :** [#2](https://github.com/Mutimanwa/lavision/issues/2), [#3](https://github.com/Mutimanwa/lavision/issues/3), [#4](https://github.com/Mutimanwa/lavision/issues/4) et préparation de [#39](https://github.com/Mutimanwa/lavision/issues/39)
 **Statut :** dossier de travail à compléter avec l’établissement pilote
 
@@ -33,6 +33,7 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Analyse du bulletin 5e HP](09_ANALYSE_BULLETIN_5E_HP.md) | comparer une option des humanités et contrôler un bulletin rempli | 22 branches, deux schémas d’agrégation, incohérences et questions ciblées documentés |
 | [Configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md) | permettre toutes les variations de règles dans le temps sans code arbitraire | parcours, héritage, versions, simulation, permissions, snapshots et critères d’acceptation |
 | [Interfaces par rôle et activation progressive](11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md) | définir les espaces de travail, menus et premiers pas de chaque rôle | matrice d’interfaces, prérequis d’activation, guide et scénarios UX validés |
+| [Analyse du recueil de bulletins 2024–2025](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md) | comparer les formulaires par cycle, année, section et option | structures, maxima reconstitués, épreuves nationales et points de validation documentés |
 | [ADR de l’architecture cible](../adr/README.md) | vérifier les choix techniques et les menaces avant le backend | huit ADR, schéma des flux et stratégie de retour arrière proposés |
 
 ## 3. Ateliers proposés
@@ -72,7 +73,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 | Catalogue de règles configurable | Préparé ; configuration avancée spécifiée | couverture exhaustive, valeurs, portées et contraintes validées |
 | Questionnaire de l’établissement pilote | Préparé ; premiers éléments à confirmer | réponses locales sur les sections/options, les barèmes par cours et les documents |
 | Base officielle RDC | Consultée et sourcée | confirmation de son adoption par le pilote et des instructions applicables à chaque année |
-| Exemples académiques chiffrés | Modèles 1ère/2e et 5e HP analysés ; contrôles et écarts documentés | arbitrage des anomalies, règles de pourcentage/repêchage et exemples corrigés validés avec l’établissement |
+| Exemples académiques chiffrés | Modèles 1ère/2e, 5e HP et recueil 2024–2025 analysés ; totaux reconstitués et écarts documentés | programmes réellement offerts, totaux officiels, règles de pourcentage/repêchage et exemples validés avec l’établissement |
 | Exemples financiers chiffrés | Préparé avec hypothèses explicites | résultats recalculés et acceptés |
 | Exemple de paie | Trame uniquement | exemple validé par un expert local |
 | Matrice des permissions | Catalogue initial de 13 rôles et matrice proposée | validation de la direction, portées nominatives et scénarios de test associés |

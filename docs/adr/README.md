@@ -1,27 +1,27 @@
 # Décisions d’architecture de lavision
 
-**Version :** 0.1 — 29 octobre 2026
+**Version :** 0.2 — 29 octobre 2026
 
 **Référence :** issue #3, jalon M0
 
-**Statut :** propositions à valider par le tech lead et le représentant métier
+**Statut :** architecture acceptée par le représentant produit le 29/10/2026 pour démarrer M1 ; revues techniques, sécurité et exploitation à poursuivre avant clôture de #3 et production
 
-Ces ADR décrivent la cible de production. Ils ne signalent ni une API déjà déployée ni une validation finale de l’issue #3. Le frontend et le shell Tauri actuels restent un prototype local jusqu’à la réalisation du M1.
+Ces ADR décrivent la cible retenue pour M1. Leur validation produit autorise l’initialisation de l’issue #5, mais ne signale ni une API déjà déployée ni la clôture de l’issue #3. Le frontend et le shell Tauri actuels restent un prototype local jusqu’à leur connexion au socle.
 
 ## 1. Index
 
 | ADR | Sujet | Statut |
 | --- | --- | --- |
-| [ADR-001](ADR-001_MONOLITHE_MODULAIRE.md) | API NestJS en monolithe modulaire et monorepo | Proposé |
-| [ADR-002](ADR-002_POSTGRESQL_PRISMA.md) | PostgreSQL, Prisma et migrations réversibles | Proposé |
-| [ADR-003](ADR-003_CONTRATS_OPENAPI.md) | Contrats partagés, validations et OpenAPI | Proposé |
-| [ADR-004](ADR-004_STOCKAGE_OBJET.md) | Fichiers privés sur stockage S3 compatible | Proposé |
-| [ADR-005](ADR-005_TACHES_ASYNCHRONES.md) | Worker, outbox et Redis/BullMQ | Proposé |
-| [ADR-006](ADR-006_AUTHENTIFICATION.md) | Sessions, MFA et authentification desktop | Proposé |
-| [ADR-007](ADR-007_DESKTOP_TAURI.md) | Distribution et sécurité du desktop Tauri | Proposé |
-| [ADR-008](ADR-008_ENVIRONNEMENTS.md) | Environnements, déploiement, sauvegardes et retour arrière | Proposé |
+| [ADR-001](ADR-001_MONOLITHE_MODULAIRE.md) | API NestJS en monolithe modulaire et monorepo | Accepté pour M1 |
+| [ADR-002](ADR-002_POSTGRESQL_PRISMA.md) | PostgreSQL, Prisma et migrations réversibles | Accepté pour M1 |
+| [ADR-003](ADR-003_CONTRATS_OPENAPI.md) | Contrats partagés, validations et OpenAPI | Accepté pour M1 |
+| [ADR-004](ADR-004_STOCKAGE_OBJET.md) | Fichiers privés sur stockage S3 compatible | Accepté pour M1 |
+| [ADR-005](ADR-005_TACHES_ASYNCHRONES.md) | Worker, outbox et Redis/BullMQ | Accepté pour M1 |
+| [ADR-006](ADR-006_AUTHENTIFICATION.md) | Sessions, MFA et authentification desktop | Accepté pour M1 |
+| [ADR-007](ADR-007_DESKTOP_TAURI.md) | Distribution et sécurité du desktop Tauri | Accepté pour M1 |
+| [ADR-008](ADR-008_ENVIRONNEMENTS.md) | Environnements, déploiement, sauvegardes et retour arrière | Accepté pour M1 |
 
-## 2. Architecture cible proposée
+## 2. Architecture cible retenue pour M1
 
 ```mermaid
 flowchart LR
@@ -64,7 +64,7 @@ flowchart LR
 
 Les clients n’accèdent jamais directement à PostgreSQL, Redis ou au bucket. L’API applique les permissions et les portées ; le worker applique les mêmes contrats métier et ne reçoit pas de secret inutile dans les charges des jobs.
 
-## 3. Frontières de domaines proposées
+## 3. Frontières de domaines retenues
 
 - **Identité et accès** : comptes, sessions, MFA, rôles, permissions et portées ;
 - **Établissement** : sites, années, périodes, classes et référentiels ;
@@ -110,4 +110,4 @@ Aucun `migrate reset`, aucune suppression de volume et aucune restauration sur l
 | Sécurité/confidentialité | contrôles d’accès, fichiers, sessions et conservation |
 | DevOps | staging, sauvegardes, restauration et retour arrière |
 
-L’issue #3 ne pourra être clôturée qu’après validation explicite de ces choix et de leurs preuves de mise en œuvre.
+Le représentant produit a validé les huit ADR le 29/10/2026 et autorisé le démarrage de #5. L’issue #3 reste ouverte jusqu’aux revues du tech lead, de la sécurité et de DevOps, ainsi qu’aux preuves de mise en œuvre. Les fournisseurs, RPO/RTO et durées de conservation restent des décisions de production séparées.

@@ -1,14 +1,15 @@
 # ADR-007 — Desktop Tauri
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead, desktop et sécurité
 
 ## Contexte
 
 Le shell Tauri et les builds Windows CI existent déjà. La production doit cependant empêcher le client desktop de devenir un accès privilégié à la base ou un stockage de secrets en clair. Le mode hors ligne multiutilisateur n’est pas un acquis de la v1.
 
-## Décision proposée
+## Décision
 
 Conserver **Tauri** et le même frontend Next.js statique pour Windows. Le client de production est **online-first** et communique uniquement en HTTPS avec l’API ; il ne reçoit aucun accès direct à PostgreSQL, Redis ou S3.
 

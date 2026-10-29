@@ -1,14 +1,15 @@
 # ADR-006 — Authentification, sessions et MFA
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead, sécurité et représentant métier
 
 ## Contexte
 
 Le sélecteur de rôle du prototype est une aide UX, pas une habilitation. La cible doit gérer des sessions révocables, des rôles combinables, des portées et une MFA pour les profils sensibles. Le web et Tauri ne peuvent pas stocker leurs secrets de la même façon.
 
-## Décision proposée
+## Décision
 
 Utiliser des **sessions opaques révocables**, enregistrées côté serveur sous forme hashée, plutôt que des JWT de longue durée sans révocation. Les mots de passe sont hashés avec **Argon2id** et une politique de paramètres documentée lors de M1.
 

@@ -1,14 +1,15 @@
 # ADR-005 — Worker et tâches asynchrones
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead et DevOps
 
 ## Contexte
 
 Les imports, exports volumineux, notifications et antivirus ne doivent pas bloquer une requête HTTP. Un simple traitement dans le processus API serait perdu au redémarrage et pourrait dupliquer un effet lors d’un retry.
 
-## Décision proposée
+## Décision
 
 Utiliser un **worker séparé**, **Redis/BullMQ** pour les files et une **outbox transactionnelle PostgreSQL**. L’écriture métier et l’événement outbox sont confirmés dans la même transaction. Un relais publie ensuite les jobs ; les consommateurs sont idempotents.
 

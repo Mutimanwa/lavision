@@ -1,6 +1,6 @@
 # Proposition de permissions et de confidentialité
 
-**Statut :** atelier A4 en cours — premières réponses du 29/10/2026, validation de la direction et des propriétaires restante
+**Statut :** base M1 validée par le représentant produit le 29/10/2026 — habilitations nominatives, conservation et validation des propriétaires restantes
 **Référence :** issue #4
 **Validation attendue :** direction et propriétaires des domaines
 
@@ -15,11 +15,11 @@
 7. **Audit ciblé :** journaliser les opérations sensibles sans copier de secrets ou de contenus inutiles dans les logs.
 8. **Refus côté serveur :** masquer un bouton ne constitue jamais une autorisation.
 
-Ces principes sont des propositions de sécurité. La matrice nominative et les portées réelles doivent être validées avant l’implémentation M1.
+Ces principes constituent la base de sécurité acceptée pour M1. Ils ne créent aucune habilitation effective : les personnes, rôles et portées doivent être attribués explicitement, puis revus par les propriétaires.
 
 ## 2. Catalogue initial des rôles et portées
 
-Le catalogue ci-dessous constitue la proposition de référence à faire valider par la direction. Les identifiants sont stabilisés dans `src/features/auth/data/roles.ts` pour éviter les divergences entre les futurs écrans, l’API et les tests.
+Le catalogue ci-dessous constitue la base de rôles acceptée pour M1, sous réserve des habilitations nominatives et des revues de domaine. Les identifiants sont stabilisés dans `src/features/auth/data/roles.ts` pour éviter les divergences entre les futurs écrans, l’API et les tests.
 
 | Identifiant | Rôle | Portée candidate | Besoin principal | Restriction importante proposée |
 | --- | --- | --- | --- | --- |
@@ -58,7 +58,7 @@ Ce catalogue ne constitue pas encore une habilitation effective. Il devra être 
 
 ## 3. Matrice d’actions proposée
 
-La liste des rôles autorisés ci-dessous est un point de départ. Elle ne constitue pas une habilitation effective.
+La liste ci-dessous sert de base aux contrôles M1. Elle ne constitue pas une habilitation effective tant que les rôles et portées ne sont pas attribués à des personnes.
 
 | Action | Rôles candidats | Portée et conditions | Refus à tester |
 | --- | --- | --- | --- |
@@ -94,7 +94,7 @@ La liste des rôles autorisés ci-dessous est un point de départ. Elle ne const
 
 ## 4. Permissions du moteur de règles
 
-Proposition de séparation à valider :
+Séparation retenue pour M1 ; les habilitations nominatives restent à attribuer :
 
 | Permission | Objet |
 | --- | --- |
@@ -102,7 +102,13 @@ Proposition de séparation à valider :
 | `rules.academic.draft` | créer ou modifier un brouillon académique |
 | `rules.academic.simulate` | exécuter une simulation sans publier |
 | `rules.academic.submit` | soumettre un brouillon contrôlé et simulé pour validation |
-| `rules.academic.review` | vérifier la portée, les valeurs, la source et le rapport de simulation |
+| `rules.academic.review` | effectuer la validation pédagogique de la portée, des valeurs, de la source et du rapport de simulation |
+| `rules.academic.approve` | approuver une version validée avant publication, sans la publier soi-même automatiquement |
+| `referentials.academic.read` | consulter les sections, options et programmes accessibles |
+| `referentials.academic.draft` | préparer les sections, options, cours et programmes en brouillon |
+| `referentials.academic.review` | vérifier les référentiels scolaires selon le circuit propre à leur domaine |
+| `referentials.academic.approve` | approuver les référentiels scolaires avant publication |
+| `referentials.academic.publish` | publier les référentiels approuvés sans modifier les versions historiques |
 | `rules.academic.publish` | publier une version après contrôles |
 | `rules.finance.*` | mêmes opérations pour le domaine financier |
 | `rules.hr.*` | mêmes opérations pour congés et personnel |
@@ -110,7 +116,7 @@ Proposition de séparation à valider :
 | `rules.archive` | archiver sans supprimer les versions référencées |
 | `rules.audit.read` | consulter l’historique autorisé des changements |
 
-Aucune permission de brouillon ne permet de modifier une version publiée. La simulation ne doit pas créer d’effet métier ni diffuser de document.
+Les permissions `referentials.*` et `rules.*` sont distinctes : valider un référentiel scolaire ne vaut pas validation d’une règle académique. Aucune permission de brouillon ne permet de modifier une version publiée. La simulation ne doit pas créer d’effet métier ni diffuser de document. Les quatre étapes — préparation, validation, approbation et publication — restent traçables même si une même personne est autorisée à en cumuler certaines après décision explicite.
 
 ## 5. Classification des données à valider
 

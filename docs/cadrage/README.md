@@ -1,7 +1,7 @@
 # Dossier de cadrage métier M0
 
 **Projet :** lavision
-**Version :** 0.6 — 29 octobre 2026
+**Version :** 0.7 — 29 octobre 2026
 **Issues concernées :** [#2](https://github.com/Mutimanwa/lavision/issues/2), [#3](https://github.com/Mutimanwa/lavision/issues/3), [#4](https://github.com/Mutimanwa/lavision/issues/4) et préparation de [#39](https://github.com/Mutimanwa/lavision/issues/39)
 **Statut :** dossier de travail à compléter avec l’établissement pilote
 
@@ -34,7 +34,8 @@ Le périmètre fonctionnel de la v1 n’est pas élargi par ces ateliers. Ils pr
 | [Configuration métier avancée](10_CONFIGURATION_METIER_AVANCEE.md) | permettre toutes les variations de règles dans le temps sans code arbitraire | parcours, héritage, versions, simulation, permissions, snapshots et critères d’acceptation |
 | [Interfaces par rôle et activation progressive](11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md) | définir les espaces de travail, menus et premiers pas de chaque rôle | matrice d’interfaces, prérequis d’activation, guide et scénarios UX validés |
 | [Analyse du recueil de bulletins 2024–2025](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md) | comparer les formulaires par cycle, année, section et option | structures, maxima reconstitués, épreuves nationales et points de validation documentés |
-| [ADR de l’architecture cible](../adr/README.md) | vérifier les choix techniques et les menaces avant le backend | huit ADR, schéma des flux et stratégie de retour arrière proposés |
+| [ADR de l’architecture cible](../adr/README.md) | vérifier les choix techniques et les menaces avant le backend | huit ADR acceptés pour M1, schéma des flux et retour arrière |
+| [Revue de sortie M0](13_REVUE_DE_SORTIE_M0.md) | vérifier les conditions de démarrage du socle sans clôturer les ateliers restants | feu vert tracé pour #5, limites et points non bloquants explicites |
 
 ## 3. Ateliers proposés
 
@@ -86,7 +87,7 @@ Les ateliers A1 à A3 peuvent être conduits séparément. A4 consolide leurs be
 
 ## 6. Passage au développement
 
-Après validation des décisions structurantes :
+La [revue de sortie M0](13_REVUE_DE_SORTIE_M0.md) du 29/10/2026 autorise le démarrage de **#5** sur la base des validations produit enregistrées. Les issues #2, #3 et #4 restent ouvertes pour leurs validations et preuves restantes. L’ordre de réalisation reste :
 
 1. convertir les exemples acceptés en fixtures de test anonymisées ;
 2. faire valider les ADR proposés de l’issue #3 avec les contraintes constatées ;

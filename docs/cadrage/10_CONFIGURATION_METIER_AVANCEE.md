@@ -1,8 +1,8 @@
 # Configuration métier avancée
 
-**Version :** 0.2 — 29 octobre 2026
+**Version :** 0.3 — 29 octobre 2026
 **Écran cible :** Paramètres → Configuration scolaire
-**Références :** issues #2 et #39, décisions DEC-007 et DEC-009
+**Références :** issues #2 et #39, décisions DEC-007, DEC-009 et DEC-010
 **Statut :** orientation produit validée ; spécification détaillée à consolider pendant M0/M1
 
 ## 1. Décision et objectif
@@ -85,12 +85,14 @@ L’interface doit répondre à la question : **« pourquoi cette valeur s’app
 
 ### 4.3 Modification
 
-1. créer un brouillon à partir de zéro, d’un modèle sourcé ou d’une version existante ;
-2. modifier les valeurs dans des champs adaptés à leur type ;
-3. renseigner le motif, la source, la portée et la date d’effet ;
-4. laisser l’API contrôler les valeurs et les dépendances ;
-5. simuler le résultat et examiner les différences ;
-6. faire vérifier puis publier selon les permissions du domaine.
+1. **préparer** un brouillon à partir de zéro, d’un modèle sourcé ou d’une version existante ;
+2. modifier les valeurs dans des champs adaptés à leur type et renseigner motif, source, portée et date d’effet ;
+3. laisser l’API contrôler les valeurs et les dépendances, puis simuler le résultat ;
+4. faire effectuer la **validation pédagogique** du brouillon et de sa simulation ;
+5. faire **approuver** la version validée par la fonction autorisée ;
+6. faire **publier** la version approuvée par la fonction détentrice de cette permission.
+
+Référentiels scolaires et règles académiques suivent chacun ces quatre étapes, avec des permissions et des validateurs qui peuvent différer. La validation d’un programme de cours ne vaut donc pas automatiquement validation d’une règle de calcul.
 
 Une version publiée ne possède pas de bouton de modification. « Revenir à une ancienne règle » crée une nouvelle version datée qui reprend les valeurs choisies.
 
@@ -105,7 +107,7 @@ Le parcours académique doit permettre à une personne autorisée de :
 5. préciser pour chaque cours son maximum, son ordre, son regroupement et son schéma avec ou sans examen ;
 6. distinguer le rattachement à une option du caractère obligatoire ou facultatif pour l’élève ;
 7. contrôler les maxima généraux calculés et simuler un bulletin ;
-8. faire valider puis publier la version locale, sans modifier les années ou documents historiques.
+8. faire successivement valider pédagogiquement, approuver et publier la version locale selon le circuit des référentiels, sans modifier les années ou documents historiques.
 
 **Exemple donné le 29/10/2026 :** dans un programme Commerciale & Gestion, l’établissement peut définir le cours Comptabilité avec un maximum de `120` points. Cette valeur illustre la configurabilité ; elle n’est ni un défaut national ni une valeur imposée aux autres programmes. Le schéma d’examen et les règles de synthèse restent à configurer explicitement.
 

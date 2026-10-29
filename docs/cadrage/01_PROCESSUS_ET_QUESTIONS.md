@@ -59,7 +59,7 @@ Création de l’année → sites/niveaux → sections et options
        → clôture des périodes → clôture de l’année
 ```
 
-**Orientation confirmée le 29/10/2026 :** chaque établissement configure ses sections, ses options, les cours disponibles, les cours propres aux options et leurs maxima. Les formulaires du recueil 2024–2025, toujours utilisés cette année, servent de modèles de départ ; les valeurs locales restent versionnées et soumises à publication.
+**Orientation confirmée le 29/10/2026 :** chaque établissement configure ses sections, ses options, les cours disponibles, les cours propres aux options et leurs maxima. Les formulaires du recueil 2024–2025, toujours utilisés cette année, servent de modèles de départ ; les valeurs locales restent versionnées et suivent préparation → validation pédagogique → approbation → publication. Les référentiels scolaires et les règles académiques peuvent avoir des validateurs différents.
 
 ### Points à confirmer
 

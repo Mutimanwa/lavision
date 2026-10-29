@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.10 — 29 octobre 2026
+**Version :** 0.11 — 29 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -29,6 +29,7 @@ Ces éléments proviennent des échanges. Ils sont reformulés pour vérificatio
 | Un bulletin rempli de 5e HP — Humanités pédagogiques, formulaire Pédagogie générale — a été fourni. | structure et contrôles analysés ; 22 branches et cinq profils de maxima | écarts manuscrits, tirets, troncature/arrondi, repêchage et application actuelle à confirmer |
 | Un recueil tiers de bulletins 2024–2025 et plusieurs séries séparées ont été comparés. | structures par cycle, programmes annuels, maxima et blocs nationaux relevés ; totaux reconstitués dans le document 12 | authenticité des sources tierces, correspondance de chaque formulaire avec la grille locale et totaux à confirmer |
 | Les formulaires du recueil 2024–2025 sont toujours utilisés cette année ; sections, options, cours et maxima sont configurés par chaque établissement. | réponse du 29/10/2026 — DEC-009 | grilles initiales, responsables de publication et valeurs locales ; Comptabilité `120` points reste un exemple configurable, pas un défaut général |
+| Le circuit de configuration comporte préparation, validation pédagogique, approbation et publication ; référentiels et règles ont des permissions distinctes. | réponse du 29/10/2026 — DEC-010 | fonctions nominatives et éventuelle séparation des personnes à attribuer par établissement |
 | Toutes les règles métier variables doivent être personnalisables et pouvoir changer au fil du temps, même si certaines réponses sont encore inconnues. | orientation produit validée le 28/10/2026 — DEC-007 | catalogue exhaustif, versions datées, simulation et état « à configurer » ; aucune valeur officielle inventée |
 
 La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs questions de structure et d’épreuves nationales. Les analyses des bulletins [1ère/2e](08_ANALYSE_BULLETIN_1E_2E.md), [5e HP](09_ANALYSE_BULLETIN_5E_HP.md) et du [recueil 2024–2025](12_ANALYSE_RECUEIL_BULLETINS_2024_2025.md) répondent partiellement à Q-STR-05, Q-STR-06, Q-STR-10, Q-EVAL-04, Q-EVAL-06, Q-EVAL-07, Q-EVAL-11, Q-EVAL-13, Q-EVAL-15, Q-EVAL-20 à Q-EVAL-22 et Q-DEC-15. Les réponses restantes doivent surtout préciser l’application locale actuelle, les écarts constatés et les règles de délibération.
@@ -226,7 +227,7 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-SEC-03 | Quelles classes et matières un enseignant peut-il voir en dehors de ses affectations ? | 29/10/2026 : consultation du suivi et des incidents disciplinaires de sa classe principale ; écriture limitée à ses cours assignés. Données médicales à confirmer. |
 | Q-SEC-04 | Qui peut publier les résultats, valider une remise, clôturer une caisse ou valider une paie ? | 29/10/2026 : validation pédagogique puis autorisation administrative proposées pour les résultats ; autres opérations et personnes nommées à confirmer. |
 | Q-SEC-05 | Quelles opérations exigent deux personnes distinctes ? | 29/10/2026 : deux fonctions de validation proposées pour les résultats ; obligation de personnes distinctes et autres opérations à confirmer. |
-| Q-SEC-06 | Qui peut modifier et publier les règles académiques, financières et RH ? | |
+| Q-SEC-06 | Qui peut modifier et publier les règles académiques, financières et RH ? | 29/10/2026 : préparation, validation pédagogique, approbation et publication sont distinctes pour la configuration ; référentiels scolaires et règles académiques ont des permissions séparées et peuvent avoir des validateurs différents. Fonctions nominatives à attribuer. |
 | Q-SEC-07 | Quels profils doivent utiliser une authentification multifacteur ? | 29/10/2026 : profils sensibles ; liste exacte, portails familiaux et procédure de récupération à faire valider. |
 | Q-SEC-08 | Quelles données sont particulièrement sensibles et qui peut exporter chaque catégorie ? | 29/10/2026 : permission d’export séparée, avec motif et approbation tracée pour les exports sensibles ; données médicales laissées à confirmer, sans ajout de champ dans la v1. |
 | Q-SEC-09 | Quelles durées de conservation et quelles procédures d’accès ou de rectification faut-il appliquer ? | 29/10/2026 : validation par la direction avec avis juridique, administratif et informatique ; durées et procédures détaillées à fournir. |

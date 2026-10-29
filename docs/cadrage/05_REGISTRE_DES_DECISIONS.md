@@ -1,6 +1,6 @@
 # Registre des décisions de cadrage
 
-**Version :** 0.10 — 29 octobre 2026
+**Version :** 0.11 — 29 octobre 2026
 **Statut :** registre actif pendant M0
 
 ## 1. Règle de tenue du registre
@@ -24,6 +24,9 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | DEC-007 | Toutes les règles métier variables du périmètre doivent être personnalisables de manière avancée et pouvoir changer au fil du temps, y compris lorsque leurs valeurs sont encore inconnues pendant le cadrage. | Validé — arbitrage produit du 28/10/2026 | catalogue exhaustif, portées, versions datées, simulation et état explicite « à configurer » ; aucune valeur inventée ni repli silencieux ; voir [spécification](10_CONFIGURATION_METIER_AVANCEE.md) |
 | DEC-008 | Les espaces de travail sont adaptés aux rôles, avec activation progressive des menus et guide de première utilisation contextualisé, non bloquant et rechargeable. | Validé — demande produit du 28/10/2026 | navigation calculée selon permissions, portées et prérequis ; activation séparée de la progression personnelle ; voir [spécification des interfaces](11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md) |
 | DEC-009 | Chaque établissement configure ses sections, options, programmes de cours, cours propres aux options et maxima. Les formulaires du recueil 2024–2025 restent utilisés cette année et servent de modèles de départ. | Validé — réponse produit du 29/10/2026 | référentiels et programmes locaux versionnés, simulation et publication ; exemple Comptabilité `120` points en Commerciale & Gestion sans valeur par défaut générale ni réécriture de l’historique |
+| DEC-010 | La configuration suit quatre étapes : préparation, validation pédagogique, approbation et publication. Référentiels scolaires et règles académiques sont distincts et peuvent avoir des validateurs différents. | Validé — réponse produit du 29/10/2026 | permissions et circuits séparés ; aucune étape ne saute les contrôles ni ne modifie une version publiée |
+| DEC-011 | Les huit ADR sont acceptés pour l’implémentation M1 et le démarrage de #5. | Validé — réponse produit du 29/10/2026 | revues tech lead/sécurité/DevOps et preuves de mise en œuvre toujours requises ; hébergement, RPO/RTO et production non validés |
+| DEC-012 | La base des 13 rôles, les portées, le refus par défaut, l’administration technique limitée et les scénarios SEC-01 à SEC-20 servent de fondation à M1. | Validé — réponse produit du 29/10/2026 | habilitations nominatives, médical, conservation et validation des propriétaires restent à compléter ; aucune habilitation effective n’est créée par cette décision |
 
 ## 3. Décisions académiques ouvertes
 
@@ -38,7 +41,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | ACA-007 | Seuil, notes éliminatoires, compensation et appréciations | direction | exemples de décision | Seuil de 50 % par cours et sur la moyenne générale sélectionné le 29/10/2026 comme règle de départ ; cas moyenne générale ≥ 50 % avec cours < 50 % envoyé à la délibération le 29/10/2026 ; passage et redoublement proposés comme décisions finales, ajournement comme état avant délibération ; textes applicables, compensation et mentions à confirmer |
 | ACA-008 | Calcul annuel et règles de passage/redoublement | direction | exemple annuel | Combinaison des périodes et d’un examen annuel distinct sélectionnée le 29/10/2026 ; structure séparée des poids versionnés, sans valeur par défaut, à configurer après validation de l’autorité scolaire compétente en RDC ; résultat calculé, décision administrative et validation officielle séparés ; bloc école/TENASOSP `50 + 50` observé sur la seule 8e CTEB du recueil, sans adoption générique ; T.G. et seuils à confirmer sur exemple |
 | ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Proposé le 29/10/2026 — publier un bulletin provisoire ou un relevé incomplet, sans note inventée ni décision annuelle définitive ; modèle, mentions et validation de la Direction à confirmer |
-| ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Validation pédagogique puis autorisation administrative proposées le 29/10/2026 pour publication et rectification, avec circuits distincts et traçabilité intégrale ; approbateurs nommés, délégations, réouverture et notification à définir ; dérogation du conseil non tranchée et textes par niveau/section à vérifier |
+| ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Pour la configuration, préparation → validation pédagogique → approbation → publication validées le 29/10/2026, avec circuits distincts pour référentiels et règles ; pour les résultats, validation pédagogique puis autorisation administrative conservées ; approbateurs nommés, délégations, réouverture et notification à définir ; dérogation du conseil non tranchée et textes par niveau/section à vérifier |
 | ACA-011 | Appel, statuts, retards, justificatifs et alertes d’assiduité | vie scolaire | cas quotidien et par séance | Effet de l’assiduité et de la conduite configurable par programme proposé le 29/10/2026, sans seuil par défaut ; appel, justificatifs, alertes et règles applicables à confirmer |
 | ACA-012 | Contenu exact des bulletins et procès-verbaux | pédagogie/direction | modèles anonymisés | Formulaires `/005` et `/019` inventoriés ; recueil 2024–2025 : `/007`, `/008`, `/012`, `/024`–`/027`, `/042`–`/045`, `/052`–`/055` et autres modèles comparés dans le document 12 ; utilisation des formulaires du recueil pendant l’année en cours confirmée par la réponse du 29/10/2026 ; authenticité de chaque source et procès-verbaux à confirmer |
 | ACA-013 | Parcours 7E/8E, TENASOSP/EXETAT, résultat et certification | direction/scolarité | base RDC sourcée + documents récents anonymisés | Choix section/option à l’entrée des Humanités après 8e/TENASOSP sélectionné le 29/10/2026 ; bloc de résultat final école/TENASOSP observé sur le modèle 8e CTEB du recueil ; fondement, certification et séquence exacte à confirmer |
@@ -82,7 +85,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 
 | ID | Question à trancher | Propriétaire attendu | Preuve nécessaire | État |
 | --- | --- | --- | --- | --- |
-| SEC-001 | Rôles, permissions combinables et portées par site/classe/matière | direction | matrice validée | Rôles combinables, suivi disciplinaire de la classe principale et accès famille limité aux contenus publiés sélectionnés le 29/10/2026 ; matrice nominative à valider |
+| SEC-001 | Rôles, permissions combinables et portées par site/classe/matière | direction | matrice validée | Base des 13 rôles, rôles combinables, portées et scénarios SEC validée par le représentant produit le 29/10/2026 ; matrice nominative et propriétaires à valider |
 | SEC-002 | Accès aux données médicales, disciplinaires, financières et RH | direction | scénarios d’accès | Incidents de la classe principale accessibles au professeur principal sélectionné le 29/10/2026 ; médical à confirmer, restrictions finance/RH à valider |
 | SEC-003 | Profils soumis à MFA et procédure de récupération | direction/administrateur | politique validée | MFA pour profils sensibles sélectionnée le 29/10/2026 ; liste exacte, portails et récupération à confirmer |
 | SEC-004 | Séparation préparateur/validateur/payeur selon les opérations | direction | circuit nominatif | Validation pédagogique et autorisation administrative proposées pour les résultats le 29/10/2026 ; personnes distinctes et autres domaines à confirmer |
@@ -102,7 +105,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | RUL-001 | Ordre de priorité des héritages et traitement des adaptations concurrentes | direction + tech lead | Ouvert |
 | RUL-002 | Portées autorisées pour chaque règle | propriétaires des domaines | Ouvert |
 | RUL-003 | Date d’effet, fuseau et publication programmée | direction + tech lead | Versions datées et planification requises par DEC-007 ; fuseau, limites exactes et annulation à préciser |
-| RUL-004 | Approbation à une ou plusieurs personnes par domaine | direction | Ouvert |
+| RUL-004 | Approbation à une ou plusieurs personnes par domaine | direction | Quatre étapes validées pour la configuration le 29/10/2026 ; identité des approbateurs et séparation éventuelle des personnes à préciser par domaine |
 | RUL-005 | Duplication entre années/établissements et contrôles à refaire | propriétaires des domaines | Ouvert |
 | RUL-006 | Jeu minimal de simulations obligatoires avant publication | propriétaires des domaines + QA | Ouvert |
 

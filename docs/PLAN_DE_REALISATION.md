@@ -1,6 +1,6 @@
 # Plan de réalisation — lavision
 
-**Version :** 1.2 — 28 octobre 2026
+**Version :** 1.3 — 29 octobre 2026
 **Document associé :** [Cahier des charges](CAHIER_DES_CHARGES.md)
 **Backlog GitHub :** [Index des 38 issues](BACKLOG.md) · [Vue GitHub](https://github.com/Mutimanwa/lavision/issues)
 
@@ -70,7 +70,7 @@ Les estimations sont exprimées en jours-personnes de développement/recette, ho
 
 **Sortie :** aucune règle critique ne reste implicite ; les modèles de documents et les cas limites sont disponibles.
 
-Le [dossier de cadrage métier](cadrage/README.md) prépare les ateliers de l’issue #2 et la matrice de l’issue #4 : processus, catalogue de règles, exemples chiffrés, interfaces par rôle, activation guidée et registre des décisions. Il s’agit d’un support de validation, pas d’une validation déjà acquise.
+Le [dossier de cadrage métier](cadrage/README.md) prépare les ateliers de l’issue #2 et la matrice de l’issue #4 : processus, catalogue de règles, exemples chiffrés, interfaces par rôle, activation guidée et registre des décisions. La [revue de sortie M0](cadrage/13_REVUE_DE_SORTIE_M0.md) du 29/10/2026 donne un feu vert limité à l’initialisation de #5 après validation produit des choix structurants. Elle ne clôture pas #2, #3 ou #4 et ne vaut pas validation des règles locales, de l’hébergement ou de la production.
 
 ### M1 — Socle production et sécurité
 

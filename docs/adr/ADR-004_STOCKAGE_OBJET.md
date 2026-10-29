@@ -1,14 +1,15 @@
 # ADR-004 — Stockage objet et fichiers
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead, sécurité et DevOps
 
 ## Contexte
 
 Les dossiers d’élèves, documents du personnel et justificatifs ne doivent pas être exposés par une URL permanente. Les fichiers peuvent contenir un malware, un type différent de celui annoncé ou des données hors de la portée de l’utilisateur.
 
-## Décision proposée
+## Décision
 
 Utiliser un **stockage S3 compatible privé**, chiffré par le fournisseur, avec métadonnées et statut de sécurité dans PostgreSQL. Les buckets publics et l’accès direct avec des identifiants S3 côté client sont interdits.
 

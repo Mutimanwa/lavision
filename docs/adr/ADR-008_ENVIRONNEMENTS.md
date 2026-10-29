@@ -1,14 +1,15 @@
 # ADR-008 — Environnements et exploitation
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead, DevOps et Direction
 
 ## Contexte
 
 Aucun hébergement de production définitif n’est encore choisi. Les migrations, sauvegardes et retours arrière doivent être conçus avant l’initialisation de l’API afin d’éviter une infrastructure dépendante d’un poste ou d’un secret partagé.
 
-## Décision proposée
+## Décision
 
 Prévoir quatre contextes : **local**, **CI**, **staging** et **production**. Docker Compose fournit localement PostgreSQL, Redis et un S3 compatible. La CI utilise des services isolés et des données fictives. Staging et production utilisent des images immuables construites une seule fois puis promues.
 

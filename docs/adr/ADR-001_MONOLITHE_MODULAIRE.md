@@ -1,14 +1,15 @@
 # ADR-001 — API en monolithe modulaire
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead et représentant métier
 
 ## Contexte
 
 Les domaines de lavision partagent des inscriptions, des règles versionnées, des publications et des transactions financières. Des microservices multiplieraient les transactions distribuées et l’exploitation avant que les volumes ne le justifient. Le frontend doit néanmoins cesser d’être la source de vérité.
 
-## Décision proposée
+## Décision
 
 Utiliser **NestJS avec l’adaptateur Fastify** pour une API REST versionnée `/api/v1`, livrée comme un monolithe modulaire. Le worker est un processus séparé issu du même dépôt et des mêmes modules métier, pas un service indépendant.
 

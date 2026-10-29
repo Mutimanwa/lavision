@@ -1,14 +1,15 @@
 # ADR-003 — Contrats partagés et OpenAPI
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead, frontend et API
 
 ## Contexte
 
 Le web, Tauri et les intégrations doivent utiliser les mêmes contrats. Partager seulement des types TypeScript ne valide rien à l’exécution et peut laisser le client envoyer une moyenne ou une décision qu’il n’a pas le droit de fixer.
 
-## Décision proposée
+## Décision
 
 Définir les schémas de requêtes et de réponses dans `packages/contracts` avec **Zod**, puis publier un document **OpenAPI 3.1** généré à partir des contrats de l’API NestJS. Les types du client sont générés ou dérivés de ces sources ; ils ne sont pas recopiés à la main.
 

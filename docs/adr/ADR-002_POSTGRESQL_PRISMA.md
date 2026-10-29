@@ -1,14 +1,15 @@
 # ADR-002 — PostgreSQL, Prisma et migrations
 
 - **Date :** 29 octobre 2026
-- **Statut :** proposé
+- **Statut :** accepté pour M1
+- **Validation produit :** 29 octobre 2026
 - **Décideurs attendus :** tech lead et DevOps
 
 ## Contexte
 
 Les inscriptions, notes, publications, encaissements et règles exigent des contraintes relationnelles et des transactions. Les valeurs calculées ne doivent pas dépendre d’un état local de navigateur. La migration de production doit rester réversible au niveau applicatif.
 
-## Décision proposée
+## Décision
 
 Utiliser **PostgreSQL** comme base système de référence et **Prisma Migrate** pour versionner le schéma. La version PostgreSQL et l’image Docker seront épinglées lors de M1 après vérification de compatibilité avec Prisma ; aucune balise `latest` ne sera utilisée.
 

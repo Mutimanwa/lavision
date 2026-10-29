@@ -14,6 +14,11 @@ export const PRISMA_RESOURCE_TYPE: Record<
 > = {
   organization: PrismaResourceType.ORGANIZATION,
   site: PrismaResourceType.SITE,
+  level: PrismaResourceType.LEVEL,
+  room: PrismaResourceType.ROOM,
+  school_year: PrismaResourceType.SCHOOL_YEAR,
+  period: PrismaResourceType.PERIOD,
+  non_working_day: PrismaResourceType.NON_WORKING_DAY,
   class: PrismaResourceType.CLASS,
   subject: PrismaResourceType.SUBJECT,
   student: PrismaResourceType.STUDENT,

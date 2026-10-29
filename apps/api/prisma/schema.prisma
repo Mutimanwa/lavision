@@ -57,6 +57,11 @@ enum AuthRateAction {
 enum AccessResourceType {
   ORGANIZATION @map("organization")
   SITE         @map("site")
+  LEVEL        @map("level")
+  ROOM         @map("room")
+  SCHOOL_YEAR  @map("school_year")
+  PERIOD       @map("period")
+  NON_WORKING_DAY @map("non_working_day")
   CLASS        @map("class")
   SUBJECT      @map("subject")
   STUDENT      @map("student")
@@ -84,6 +89,12 @@ enum AuditOutcome {
   FAILURE
 }
 
+enum SchoolYearStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
 model Organization {
   id          String                   @id @default(uuid()) @db.Uuid
   code        String                   @unique @db.VarChar(32)
@@ -94,6 +105,9 @@ model Organization {
   sites       Site[]
   memberships OrganizationMembership[]
   resources   AccessResource[]
+  levels      AcademicLevel[]
+  rooms       Room[]
+  schoolYears SchoolYear[]
 
   @@map("organizations")
 }
@@ -108,10 +122,124 @@ model Site {
   archivedAt     DateTime?        @db.Timestamptz(6)
   organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   resources      AccessResource[]
+  rooms          Room[]
+  nonWorkingDays NonWorkingDay[]
 
   @@unique([organizationId, code])
   @@index([organizationId])
   @@map("sites")
+}
+
+model AcademicLevel {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  code           String       @db.VarChar(32)
+  name           String       @db.VarChar(160)
+  rank           Int
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([organizationId, code])
+  @@index([organizationId, archivedAt])
+  @@map("academic_levels")
+}
+
+model Room {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  siteId         String       @db.Uuid
+  code           String       @db.VarChar(32)
+  name           String       @db.VarChar(160)
+  capacity       Int?
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  site           Site         @relation(fields: [siteId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([siteId, code])
+  @@index([organizationId, siteId, archivedAt])
+  @@map("rooms")
+}
+
+model SchoolYear {
+  id              String           @id @default(uuid()) @db.Uuid
+  organizationId  String           @db.Uuid
+  code            String           @db.VarChar(32)
+  name            String           @db.VarChar(160)
+  startDate       DateTime         @db.Date
+  endDate         DateTime         @db.Date
+  status          SchoolYearStatus @default(DRAFT)
+  closedAt        DateTime?        @db.Timestamptz(6)
+  closedByUserId  String?          @db.Uuid
+  closureReason   String?          @db.VarChar(500)
+  reopenedAt      DateTime?        @db.Timestamptz(6)
+  reopenedByUserId String?         @db.Uuid
+  reopenReason    String?          @db.VarChar(500)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt      DateTime?        @db.Timestamptz(6)
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  periods         SchoolPeriod[]
+  nonWorkingDays  NonWorkingDay[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId, status, archivedAt])
+  @@map("school_years")
+}
+
+model SchoolPeriod {
+  id           String      @id @default(uuid()) @db.Uuid
+  schoolYearId String      @db.Uuid
+  code         String      @db.VarChar(32)
+  name         String      @db.VarChar(160)
+  sequence     Int
+  startDate    DateTime    @db.Date
+  endDate      DateTime    @db.Date
+  createdAt    DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime    @updatedAt @db.Timestamptz(6)
+  archivedAt   DateTime?   @db.Timestamptz(6)
+  schoolYear   SchoolYear  @relation(fields: [schoolYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([schoolYearId, code])
+  @@unique([schoolYearId, sequence])
+  @@index([schoolYearId, startDate, endDate])
+  @@map("school_periods")
+}
+
+model NonWorkingDay {
+  id           String      @id @default(uuid()) @db.Uuid
+  schoolYearId String      @db.Uuid
+  siteId       String?     @db.Uuid
+  day          DateTime    @db.Date
+  reason       String      @db.VarChar(160)
+  createdAt    DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime    @updatedAt @db.Timestamptz(6)
+  archivedAt   DateTime?   @db.Timestamptz(6)
+  schoolYear   SchoolYear  @relation(fields: [schoolYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  site         Site?       @relation(fields: [siteId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([schoolYearId, siteId, day])
+  @@map("non_working_days")
+}
+
+model ReferentialRevision {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  entityType     String   @db.VarChar(32)
+  entityId       String   @db.Uuid
+  action         String   @db.VarChar(64)
+  reason         String?  @db.VarChar(500)
+  actorUserId    String?  @db.Uuid
+  requestId      String   @db.Uuid
+  before         Json?    @db.JsonB
+  after          Json?    @db.JsonB
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([organizationId, entityType, entityId, createdAt])
+  @@map("referential_revisions")
 }
 
 model User {

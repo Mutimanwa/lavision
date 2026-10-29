@@ -35,7 +35,7 @@ const messages: Record<number, { title: string; detail: string; code: string }> 
   409: {
     title: "Conflit",
     detail: "La ressource est en conflit avec son état actuel.",
-    code: ERROR_CODES.USER_CONFLICT,
+    code: ERROR_CODES.CONFLICT,
   },
   429: {
     title: "Trop de tentatives",

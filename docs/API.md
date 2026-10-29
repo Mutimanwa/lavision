@@ -15,7 +15,7 @@ Le workspace `apps/api` contient le monolithe modulaire NestJS/Fastify avec :
 - gestion technique des rôles/permissions et journal d’audit append-only ;
 - tests unitaires et tests PostgreSQL exécutés en CI.
 
-**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; référentiels scolaires, règles académiques, calculs officiels, raccordement frontend/Tauri et déploiement de production. Le noyau #7 est une brique transverse, pas la recette fonctionnelle de ces modules futurs.
+**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; moteur de règles académiques #39, calculs officiels, raccordement frontend/Tauri et déploiement de production. Les API #8 sont livrées séparément des écrans d’administration, dont le raccordement reste à faire sans réécrire la démonstration existante.
 
 ## 2. Démarrage vierge en une commande
 
@@ -131,18 +131,29 @@ Les futurs modules doivent appeler `assertAuthorized` avant chaque commande et �
 
 La rétention du journal n’est pas fixée arbitrairement ici : elle reste une décision de gouvernance à valider avant production. Aucun événement ne contient de mot de passe, jeton, secret TOTP ou donnée scolaire nominative par défaut.
 
-## 6. Limitation et journalisation
+## 6. Référentiels et calendrier scolaire
+
+Les routes `/api/v1/school` couvrent l’organisation, les sites, niveaux, salles, années scolaires, périodes et jours non ouvrés. Les réponses sont des présentateurs explicites et les entrées sont des contrats Zod stricts. Chaque niveau, salle, année, période et jour est aussi enregistré dans le registre de ressources RBAC avec son organisation, son site éventuel et son parent.
+
+Les années suivent un cycle contrôlé : `DRAFT` → `ACTIVE` → `CLOSED`. L’activation exige au moins une période et une seule année active est autorisée par organisation. Une clôture exige `calendar.close` et un motif ; toute modification ultérieure est refusée. La réouverture exige la permission distincte `calendar.reopen` et un motif, puis remet l’année en `DRAFT` pour correction et nouvelle activation. Les dates de période doivent rester dans l’année ; une contrainte d’exclusion PostgreSQL et les contrôles transactionnels empêchent les chevauchements, y compris en cas de requêtes concurrentes.
+
+Les codes, numéros de séquence et jours non ouvrés ont des contraintes d’unicité. Les référentiels ne sont jamais supprimés physiquement par l’API : les commandes `archive` conservent les lignes et les historiques. Les usages métier futurs devront conserver des références restrictives plutôt que supprimer une ressource utilisée.
+
+Chaque mutation crée, dans la même transaction, une révision avant/après avec acteur, date, `requestId` et motif éventuel, ainsi qu’un événement `AuditService`. `GET /school/history` permet une consultation autorisée et filtrée de ces révisions. Les permissions de préparation des référentiels sont distinctes de celles du calendrier et des futures règles #39. Le cycle `DRAFT`/`ACTIVE`/`CLOSED` décrit ici l’état opérationnel d’une année ; il ne remplace pas le circuit préparation → validation pédagogique → approbation → publication des référentiels académiques versionnés, qui reste à traiter dans #39.
+
+## 7. Limitation et journalisation
 
 Les échecs de connexion sont limités par compte et par IP dans une fenêtre de 15 minutes, avec blocage progressif borné. Les challenges MFA ont en outre un compteur de cinq essais. Les demandes de récupération sont limitées pour réduire le spam et conservent une réponse identique pour les adresses inconnues.
 
 `auth_events` enregistre l’action, le résultat, un motif technique, la date et des hashes HMAC du sujet/IP. Il ne contient ni mot de passe, ni hash de mot de passe, ni jeton brut, ni secret TOTP, ni code de récupération, ni email en clair. Les erreurs SMTP et les détails Prisma ne sont pas renvoyés au client.
 
-## 7. Migration, seed et contrats
+## 8. Migration, seed et contrats
 
 - Schéma : `apps/api/prisma/schema.prisma` ;
 - migration initiale : `20261029140000_initial_core` ;
 - migration #6 : `20261029153000_authentication_mfa` ;
 - migration #7 : `20261029163000_rbac_audit` ;
+- migration #8 : `20261029173000_school_referentials` ;
 - seed : `apps/api/prisma/seed-core.ts` et `packages/testing/src/fixtures.ts` ;
 - contrat versionné : `apps/api/openapi/openapi.json`.
 
@@ -153,7 +164,7 @@ npm run openapi:check  # échoue si le document diffère
 
 Les migrations sont appliquées avec `prisma migrate deploy`, jamais avec `db push`. La migration #6 est additive et ne réécrit pas les documents historiques ni les règles métier.
 
-## 8. Tests et CI
+## 9. Tests et CI
 
 ```bash
 npm test
@@ -161,12 +172,12 @@ npm run test:integration
 npm run typecheck
 ```
 
-Les tests PostgreSQL couvrent les contraintes du socle, les parcours #6 et les scénarios #7 : refus d’une classe ou d’un enfant non rattaché, isolation inter-organisations, gestion cross-tenant, attribution et révocation, portée limitée à une classe, lecture d’audit restreinte et refus UPDATE/DELETE du journal. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
+Les tests PostgreSQL couvrent les contraintes du socle, les parcours #6, les scénarios #7 et les référentiels #8 : refus d’une classe ou d’un enfant non rattaché, isolation inter-organisations, gestion cross-tenant, attribution et révocation, portée limitée à une classe, lecture d’audit restreinte, refus UPDATE/DELETE du journal, activation unique, clôture/réouverture, doublons, chevauchements SQL, archivage et historique avant/après. Ils vérifient aussi la minimisation des événements et l’absence de sessions avant le second facteur.
 
 La CI utilise PostgreSQL 16 isolé, `LAVISION_SKIP_DOCKER=true`, une clé de test non réutilisable et le même chemin de migration/seed que le démarrage local. Le sandbox sans PostgreSQL ne constitue pas une preuve d’intégration.
 
-## 9. Limites d’exploitation
+## 10. Limites d’exploitation
 
 Le frontend n’appelle pas encore cette API : le raccordement Web/Tauri reste prévu en M2. Pour Tauri, ce raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
 
-Avant toute production : brancher les modules métier sur #7, raccorder les clients, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6 ou #7.
+Avant toute production : brancher les modules métier sur #7 et les référentiels #8, raccorder les clients et les écrans d’administration, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6, #7 ou #8.

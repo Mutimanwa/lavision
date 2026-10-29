@@ -5,6 +5,11 @@ import { PERMISSIONS, type Permission } from "./permissions.js";
 export const ACCESS_RESOURCE_TYPES = [
   "organization",
   "site",
+  "level",
+  "room",
+  "school_year",
+  "period",
+  "non_working_day",
   "class",
   "subject",
   "student",

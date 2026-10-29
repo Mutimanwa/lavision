@@ -3,8 +3,12 @@ import "@fontsource-variable/dm-sans";
 import "./globals.css";
 import "./master-layout.css";
 import "./component-library.css";
+import "./workspace.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { SchoolProvider } from "@/features/school/context/school-provider";
+import { WorkspaceProvider } from "@/features/auth/context/workspace-provider";
+import { ModuleProvider } from "@/features/navigation/context/module-provider";
+import { OnboardingProvider } from "@/features/onboarding/context/onboarding-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +32,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="fr">
       <body>
         <SchoolProvider>
-          <AppShell>{children}</AppShell>
+          <WorkspaceProvider>
+            <ModuleProvider>
+              <OnboardingProvider>
+                <AppShell>{children}</AppShell>
+              </OnboardingProvider>
+            </ModuleProvider>
+          </WorkspaceProvider>
         </SchoolProvider>
       </body>
     </html>

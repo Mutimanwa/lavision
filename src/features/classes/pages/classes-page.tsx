@@ -12,12 +12,15 @@ import {
   UserRound,
 } from "lucide-react";
 import { useSchool } from "@/features/school/hooks/use-school";
+import { useWorkspace } from "@/features/auth/hooks/use-workspace";
 import { Badge, Modal, Notice, PageHeader } from "@/components/ui";
 import { FormField, SelectForm } from "@/components/forms";
 import { formatAverage, getClassRanking, round } from "@/lib/academic";
 
 export function ClassManager() {
   const { state, addClass, addSubject, updateSubject } = useSchool();
+  const { role } = useWorkspace();
+  const canManageAcademicRules = role === "direction" || role === "academic_manager";
   const [classModal, setClassModal] = useState(false);
   const [subjectModal, setSubjectModal] = useState(false);
   const [classDraft, setClassDraft] = useState({ name: "", level: "6e", room: "", capacity: 35, headTeacher: "" });
@@ -33,6 +36,7 @@ export function ClassManager() {
   };
 
   const submitSubject = () => {
+    if (!canManageAcademicRules) return;
     if (!subjectDraft.name.trim() || !subjectDraft.code.trim() || subjectDraft.coefficient < 1) return;
     addSubject({ name: subjectDraft.name.trim(), code: subjectDraft.code.trim().toUpperCase(), coefficient: Number(subjectDraft.coefficient) });
     setSubjectDraft({ name: "", code: "", coefficient: 2 });
@@ -64,7 +68,7 @@ export function ClassManager() {
               <h2>{schoolClass.name}</h2><p className="class-level">Niveau {schoolClass.level} · {state.settings.academicYear}</p>
               <div className="class-meta"><span><UserRound size={16} />{schoolClass.headTeacher}</span><span><DoorOpen size={16} />{schoolClass.room}</span></div>
               <div className="class-capacity"><div><span>Effectif</span><strong>{students.length} <small>/ {schoolClass.capacity} places</small></strong></div><div className="progress-track"><span style={{ width: `${occupancy}%` }} /></div><small>{schoolClass.capacity - students.length > 0 ? `${schoolClass.capacity - students.length} places disponibles` : "Capacité maximale atteinte"}</small></div>
-              <div className="class-card-footer"><div><small>Moyenne de classe</small><strong>{formatAverage(average)} <span>/ 20</span></strong></div><Link className="text-link" href="/notes/">Voir les notes <ArrowRight size={15} /></Link></div>
+              <div className="class-card-footer"><div><small>Moyenne de classe</small><strong>{formatAverage(average)} <span>/ 20</span></strong></div><Link className="text-link" href={role === "school_secretary" ? "/eleves/" : "/notes/"}>{role === "school_secretary" ? "Voir les élèves" : "Voir les notes"} <ArrowRight size={15} /></Link></div>
             </article>
           );
         })}
@@ -72,16 +76,17 @@ export function ClassManager() {
       </section>
 
       <section className="card subjects-card">
-        <header className="card-header"><div><p className="eyebrow">Référentiel pédagogique</p><h2>Matières & coefficients</h2><p>Les modifications de coefficient recalculent immédiatement toutes les moyennes.</p></div><button className="button button-secondary" type="button" onClick={() => setSubjectModal(true)}><Plus size={17} /> Ajouter une matière</button></header>
+        <header className="card-header"><div><p className="eyebrow">Référentiel pédagogique</p><h2>Matières & coefficients</h2><p>Les modifications de coefficient recalculent immédiatement toutes les moyennes.</p></div>{canManageAcademicRules && <button className="button button-secondary" type="button" onClick={() => setSubjectModal(true)}><Plus size={17} /> Ajouter une matière</button>}</header>
         <div className="table-wrap"><table className="data-table"><thead><tr><th>Matière</th><th>Code</th><th>Coefficient</th><th>Poids dans le bulletin</th><th>Utilisation</th></tr></thead><tbody>
           {state.subjects.map((subject) => {
             const coefficientTotal = state.subjects.reduce((sum, item) => sum + item.coefficient, 0);
             const gradeTotal = state.grades.filter((grade) => grade.subjectId === subject.id).length;
-            return <tr key={subject.id}><td><div className="subject-name-cell"><span><BookOpen size={17} /></span><strong>{subject.name}</strong></div></td><td><Badge>{subject.code}</Badge></td><td><input className="coefficient-input" type="number" min="1" max="20" value={subject.coefficient} onChange={(event) => updateSubject(subject.id, Math.max(1, Math.min(20, Number(event.target.value))))} aria-label={`Coefficient de ${subject.name}`} /></td><td><div className="weight-cell"><div className="progress-track"><span style={{ width: `${(subject.coefficient / coefficientTotal) * 100}%` }} /></div><small>{Math.round((subject.coefficient / coefficientTotal) * 100)} %</small></div></td><td>{gradeTotal} note{gradeTotal > 1 ? "s" : ""}</td></tr>;
+            return <tr key={subject.id}><td><div className="subject-name-cell"><span><BookOpen size={17} /></span><strong>{subject.name}</strong></div></td><td><Badge>{subject.code}</Badge></td><td>{canManageAcademicRules ? <input className="coefficient-input" type="number" min="1" max="20" value={subject.coefficient} onChange={(event) => updateSubject(subject.id, Math.max(1, Math.min(20, Number(event.target.value))))} aria-label={`Coefficient de ${subject.name}`} /> : <strong>{subject.coefficient}</strong>}</td><td><div className="weight-cell"><div className="progress-track"><span style={{ width: `${(subject.coefficient / coefficientTotal) * 100}%` }} /></div><small>{Math.round((subject.coefficient / coefficientTotal) * 100)} %</small></div></td><td>{gradeTotal} note{gradeTotal > 1 ? "s" : ""}</td></tr>;
           })}
         </tbody><tfoot><tr><td colSpan={2}>Total des coefficients</td><td><strong>{state.subjects.reduce((sum, subject) => sum + subject.coefficient, 0)}</strong></td><td colSpan={2}>Base de calcul des moyennes générales</td></tr></tfoot></table></div>
       </section>
 
+      {!canManageAcademicRules && <Notice title="Consultation scolarité">Les matières et coefficients sont affichés en lecture seule dans cet aperçu. Leur modification est présentée dans l’espace pédagogique.</Notice>}
       <Notice title="Règle de calcul">La moyenne générale est la somme de chaque note multipliée par son coefficient, divisée par la somme des coefficients des matières notées. La proclamation exige néanmoins un dossier complet.</Notice>
 
       <Modal open={classModal} onClose={() => setClassModal(false)} title="Ouvrir une nouvelle classe" description="Elle sera immédiatement proposée dans les inscriptions." footer={<><button className="button button-secondary" type="button" onClick={() => setClassModal(false)}>Annuler</button><button className="button button-primary" type="button" onClick={submitClass}><Plus size={16} /> Créer la classe</button></>}>

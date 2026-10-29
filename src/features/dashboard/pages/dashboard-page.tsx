@@ -22,10 +22,25 @@ import { useSchool } from "@/features/school/hooks/use-school";
 import { Avatar, Badge, PageHeader, TableMenu } from "@/components/ui";
 import { formatAverage, getFullName, getStudentReport } from "@/lib/academic";
 import { toInputDate } from "@/lib/utils";
+import { useWorkspace } from "@/features/auth/hooks/use-workspace";
+import { RoleWorkspaceHome } from "../components/role-workspace-home";
+import { FirstStepsCard } from "@/features/onboarding/components/first-steps-card";
+import { useModules } from "@/features/navigation/hooks/use-modules";
 
 export function Dashboard() {
+  const { role } = useWorkspace();
+  if (role !== "direction") return <RoleWorkspaceHome />;
+  return <DirectionDashboard />;
+}
+
+function DirectionDashboard() {
   const { state } = useSchool();
+  const { modules } = useModules();
   const [activityQuery, setActivityQuery] = useState("");
+  const moduleHref = (href: string) => {
+    const linkedModule = modules.find((module) => module.href && href.startsWith(module.href));
+    return linkedModule?.status === "disabled" ? "/modules/" : href;
+  };
   const activeStudents = state.students.filter((student) => student.status === "Actif");
   const pendingStudents = state.students.filter((student) => student.status === "En attente");
   const activeStudentIds = new Set(activeStudents.map((student) => student.id));
@@ -88,11 +103,13 @@ export function Dashboard() {
         description={`Gérez l’activité de votre établissement. Année scolaire ${state.settings.academicYear}`}
         actions={(
           <>
-            <Link className="button button-secondary" href="/notes/"><ClipboardList size={17} /> Saisir les notes</Link>
-            <Link className="button button-primary" href="/inscriptions/"><Plus size={17} /> Nouvelle inscription</Link>
+            <Link className="button button-secondary" href={moduleHref("/notes/")}><ClipboardList size={17} /> Saisir les notes</Link>
+            <Link className="button button-primary" href={moduleHref("/inscriptions/")}><Plus size={17} /> Nouvelle inscription</Link>
           </>
         )}
       />
+
+      <FirstStepsCard />
 
       <section className="stats-grid" aria-label="Indicateurs clés">
         <article className="card stat-card">
@@ -149,17 +166,17 @@ export function Dashboard() {
         <aside className="card pending-card">
           <header className="card-header"><div><p className="eyebrow">À traiter</p><h2>Actions en attente</h2></div></header>
           <div className="pending-list">
-            <Link href="/inscriptions/">
+            <Link href={moduleHref("/inscriptions/")}>
               <span className="pending-icon"><UserRoundPlus size={19} /></span>
               <span className="pending-copy"><strong>Dossiers d’inscription</strong><small>Vérifier les admissions provisoires</small></span>
               <span className="pending-count">{pendingStudents.length}</span>
             </Link>
-            <Link href="/notes/">
+            <Link href={moduleHref("/notes/")}>
               <span className="pending-icon"><ClipboardList size={19} /></span>
               <span className="pending-copy"><strong>Notes à compléter</strong><small>Période : {state.settings.currentTerm}</small></span>
               <span className="pending-count">{remainingGrades}</span>
             </Link>
-            <Link href="/bulletins/">
+            <Link href={moduleHref("/bulletins/")}>
               <span className="pending-icon"><FileText size={19} /></span>
               <span className="pending-copy"><strong>Bulletins incomplets</strong><small>Contrôler les notes manquantes</small></span>
               <span className="pending-count">{incompleteBulletins}</span>
@@ -170,7 +187,7 @@ export function Dashboard() {
 
       <div className="dashboard-secondary-grid">
         <section className="card class-performance-card">
-          <header className="card-header"><div><p className="eyebrow">Comparatif</p><h2>Performance des classes</h2></div><Link className="text-link" href="/proclamation/" aria-label="Voir les classements"><ArrowRight size={17} /></Link></header>
+          <header className="card-header"><div><p className="eyebrow">Comparatif</p><h2>Performance des classes</h2></div><Link className="text-link" href={moduleHref("/proclamation/")} aria-label="Voir les classements"><ArrowRight size={17} /></Link></header>
           <div className="class-performance-list">
             {topClasses.map((schoolClass, index) => (
               <div className="class-performance-row" key={schoolClass.id}>
@@ -190,7 +207,7 @@ export function Dashboard() {
           <header className="card-header"><div><p className="eyebrow">Suivi</p><h2>Alertes et rappels</h2></div><Badge tone={remainingGrades || pendingStudents.length ? "amber" : "green"}>{remainingGrades + pendingStudents.length}</Badge></header>
           <div className="dashboard-alert-list">
             {remainingGrades > 0 ? (
-              <Link href="/notes/">
+              <Link href={moduleHref("/notes/")}>
                 <span className="dashboard-alert-icon warning"><AlertTriangle size={16} /></span>
                 <span><strong>Saisie des notes incomplète</strong><small>{remainingGrades} notes restantes · {state.settings.currentTerm}</small></span>
                 <span className="dashboard-alert-tag">À faire</span>
@@ -199,7 +216,7 @@ export function Dashboard() {
               <div className="dashboard-alert-static"><span className="dashboard-alert-icon success"><CheckCircle2 size={16} /></span><span><strong>Grille de notes complète</strong><small>Toutes les valeurs attendues sont saisies</small></span></div>
             )}
             {pendingStudents.length > 0 && (
-              <Link href="/eleves/">
+              <Link href={moduleHref("/eleves/")}>
                 <span className="dashboard-alert-icon warning"><UserRoundPlus size={16} /></span>
                 <span><strong>Dossiers élèves à valider</strong><small>{pendingStudents.length} inscription{pendingStudents.length > 1 ? "s" : ""} en attente</small></span>
                 <span className="dashboard-alert-tag">À faire</span>
@@ -216,15 +233,15 @@ export function Dashboard() {
           <div className="quick-illustration" aria-hidden="true"><span><GraduationCap size={24} /></span><i /><span><UserRoundPlus size={23} /></span></div>
           <h2>Développez votre établissement</h2>
           <p>Créez un dossier complet et affectez immédiatement l’élève à sa nouvelle classe.</p>
-          <Link className="button button-primary button-full" href="/inscriptions/"><Plus size={16} /> Nouvelle inscription</Link>
-          <Link className="text-link" href="/presences/"><CalendarCheck2 size={14} /> {attendanceRate === null ? "Faire l’appel · à enregistrer" : `Faire l’appel · ${attendanceRate}% présents`}</Link>
+          <Link className="button button-primary button-full" href={moduleHref("/inscriptions/")}><Plus size={16} /> Nouvelle inscription</Link>
+          <Link className="text-link" href={moduleHref("/presences/")}><CalendarCheck2 size={14} /> {attendanceRate === null ? "Faire l’appel · à enregistrer" : `Faire l’appel · ${attendanceRate}% présents`}</Link>
         </section>
       </div>
 
       <section className="card activity-card">
         <div className="activity-heading">
           <div><h2>Inscriptions récentes</h2><p>Retrouvez rapidement les derniers dossiers enregistrés.</p></div>
-          <Link className="text-link" href="/eleves/">Tous les élèves <ArrowRight size={14} /></Link>
+          <Link className="text-link" href={moduleHref("/eleves/")}>Tous les élèves <ArrowRight size={14} /></Link>
         </div>
         <div className="table-panel-toolbar">
           <div className="table-search"><Search size={16} /><input type="search" value={activityQuery} onChange={(event) => setActivityQuery(event.target.value)} placeholder="Rechercher un élève, un matricule…" aria-label="Rechercher dans les inscriptions récentes" /></div>
@@ -245,7 +262,7 @@ export function Dashboard() {
                     <td className="table-actions-heading">
                       <TableMenu label={`Actions pour ${getFullName(student)}`}>
                         <Link href={`/eleves/?eleve=${student.id}`}><Eye size={16} /> Voir le dossier</Link>
-                        <Link href={`/bulletins/?eleve=${student.id}`}><FileText size={16} /> Voir le bulletin</Link>
+                        <Link href={moduleHref(`/bulletins/?eleve=${student.id}`)}><FileText size={16} /> Voir le bulletin</Link>
                       </TableMenu>
                     </td>
                   </tr>

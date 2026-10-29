@@ -90,3 +90,13 @@ export const ROLE_DEFINITIONS = [
     description: "Consulte les rapports et journaux couverts par son mandat, sans modifier les données.",
   },
 ] as const satisfies readonly RoleDefinition[];
+
+export function isRoleId(value: unknown): value is RoleId {
+  return typeof value === "string" && ROLE_DEFINITIONS.some((role) => role.id === value);
+}
+
+export function getRoleDefinition(roleId: RoleId): RoleDefinition {
+  const role = ROLE_DEFINITIONS.find((item) => item.id === roleId);
+  if (!role) throw new Error(`Rôle inconnu : ${roleId}`);
+  return role;
+}

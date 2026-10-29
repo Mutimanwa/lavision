@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Award,
   Bell,
+  Blocks,
   BookOpenCheck,
   CalendarCheck2,
   CheckCircle2,
@@ -20,7 +21,6 @@ import {
   NotebookPen,
   Search,
   Settings,
-  SlidersHorizontal,
   Sparkles,
   UserRoundPlus,
   UsersRound,
@@ -32,13 +32,25 @@ import { Logo } from "./logo";
 import { Avatar, Modal } from "@/components/ui";
 import { HeaderDropdown } from "./header-dropdown";
 import { getFullName } from "@/lib/academic";
+import { isRoleId, ROLE_DEFINITIONS } from "@/features/auth/data/roles";
+import { useWorkspace } from "@/features/auth/hooks/use-workspace";
+import { useModules } from "@/features/navigation/hooks/use-modules";
+import { canRoleOpenModule } from "@/features/navigation/services/module-state";
+import { ModuleGate } from "@/features/navigation/components/module-gate";
+import { OnboardingGuide } from "@/features/onboarding/components/onboarding-guide";
+import { useOnboarding } from "@/features/onboarding/hooks/use-onboarding";
+import type { ModuleId } from "@/features/navigation/data/modules";
 
-interface NavItem {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-  count?: number;
-}
+const MODULE_ICONS: Partial<Record<ModuleId, LucideIcon>> = {
+  students: UsersRound,
+  enrollments: GraduationCap,
+  classes: BookOpenCheck,
+  attendance: CalendarCheck2,
+  grades: NotebookPen,
+  reports: FileBarChart,
+  proclamation: Award,
+  settings: Settings,
+};
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "Tableau de bord",
@@ -50,79 +62,71 @@ const PAGE_TITLES: Record<string, string> = {
   "/presences": "Présences",
   "/proclamation": "Proclamation",
   "/parametres": "Paramètres",
+  "/modules": "Modules et activation",
 };
 
 function NavigationSections({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { state } = useSchool();
+  const { role } = useWorkspace();
+  const { modules } = useModules();
   const pending = state.students.filter((student) => student.status === "En attente").length;
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     Scolarité: true,
     Évaluations: true,
   });
-
-  const sections: { label: string; collapsible?: boolean; items: NavItem[] }[] = [
-    {
-      label: "Général",
-      items: [{ label: "Tableau de bord", href: "/", icon: LayoutDashboard }],
-    },
-    {
-      label: "Scolarité",
-      collapsible: true,
-      items: [
-        { label: "Élèves", href: "/eleves/", icon: UsersRound },
-        { label: "Inscriptions", href: "/inscriptions/", icon: GraduationCap, count: pending },
-        { label: "Classes & matières", href: "/classes/", icon: BookOpenCheck },
-        { label: "Présences", href: "/presences/", icon: CalendarCheck2 },
-      ],
-    },
-    {
-      label: "Évaluations",
-      collapsible: true,
-      items: [
-        { label: "Notes", href: "/notes/", icon: NotebookPen },
-        { label: "Bulletins", href: "/bulletins/", icon: FileBarChart },
-        { label: "Proclamation", href: "/proclamation/", icon: Award },
-      ],
-    },
-  ];
+  const visibleModules = modules.filter((module) =>
+    module.href
+    && module.section
+    && module.roles.includes(role)
+    && (module.status === "active" || module.status === "configuring"),
+  );
+  const sections = ["Scolarité", "Évaluations"].map((label) => ({
+    label,
+    items: visibleModules.filter((module) => module.section === label),
+  })).filter((section) => section.items.length > 0);
 
   return (
     <nav className="sidebar-nav" aria-label="Navigation principale">
+      <section className="nav-section">
+        <p>Général</p>
+        <Link href="/" className={pathname === "/" ? "active" : ""} aria-current={pathname === "/" ? "page" : undefined} onClick={onNavigate}>
+          <LayoutDashboard size={18} strokeWidth={1.8} /><span>Mon espace</span>
+        </Link>
+      </section>
       {sections.map((section) => {
-        const isOpen = !section.collapsible || openSections[section.label];
+        const isOpen = openSections[section.label];
         return (
           <section className="nav-section" key={section.label}>
-            {section.collapsible ? (
-              <button
-                className="nav-section-toggle"
-                type="button"
-                aria-expanded={isOpen}
-                onClick={() => setOpenSections((current) => ({
-                  ...current,
-                  [section.label]: !current[section.label],
-                }))}
-              >
-                <span>{section.label}</span>
-                <ChevronDown size={14} />
-              </button>
-            ) : (
-              <p>{section.label}</p>
-            )}
+            <button
+              className="nav-section-toggle"
+              type="button"
+              aria-expanded={isOpen}
+              onClick={() => setOpenSections((current) => ({
+                ...current,
+                [section.label]: !current[section.label],
+              }))}
+            >
+              <span>{section.label}</span><ChevronDown size={14} />
+            </button>
             {isOpen && section.items.map((item) => {
-              const Icon = item.icon;
-              const active = pathname === item.href || (item.href !== "/" && pathname === item.href.slice(0, -1));
+              const Icon = MODULE_ICONS[item.id] ?? Blocks;
+              const href = item.href ?? "/";
+              const active = pathname === href || pathname === href.slice(0, -1);
+              const count = item.id === "enrollments" ? pending : 0;
               return (
                 <Link
-                  href={item.href}
-                  key={item.href}
+                  href={href}
+                  key={item.id}
                   className={active ? "active" : ""}
                   aria-current={active ? "page" : undefined}
                   onClick={onNavigate}
+                  title={item.missingPrerequisites.join(" ") || undefined}
                 >
                   <Icon size={18} strokeWidth={1.8} />
                   <span>{item.label}</span>
-                  {item.count ? <span className="nav-count">{item.count}</span> : null}
+                  {count > 0 && <span className="nav-count">{count}</span>}
+                  {item.status === "configuring" && <span className="nav-setup">À configurer</span>}
                 </Link>
               );
             })}
@@ -135,6 +139,7 @@ function NavigationSections({ onNavigate }: { onNavigate?: () => void }) {
 
 function GlobalSearch() {
   const { state } = useSchool();
+  const { role } = useWorkspace();
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -161,6 +166,8 @@ function GlobalSearch() {
       `${getFullName(student)} ${student.matricule}`.toLocaleLowerCase("fr").includes(normalized),
     ).slice(0, 5);
   }, [query, state.students]);
+
+  if (role !== "direction" && role !== "school_secretary") return null;
 
   return (
     <div className="global-search">
@@ -214,6 +221,7 @@ interface SchoolNotification {
 
 function Notifications() {
   const { state } = useSchool();
+  const { role } = useWorkspace();
   const [open, setOpen] = useState(false);
   const [readIds, setReadIds] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
@@ -224,7 +232,7 @@ function Notifications() {
   const missing = Math.max(0, expected - currentGrades);
   const notifications: SchoolNotification[] = [];
 
-  if (pending > 0) {
+  if (pending > 0 && (role === "direction" || role === "school_secretary")) {
     notifications.push({
       id: `inscriptions-${pending}`,
       title: `${pending} inscription${pending > 1 ? "s" : ""} à valider`,
@@ -235,7 +243,7 @@ function Notifications() {
       icon: UserRoundPlus,
     });
   }
-  if (missing > 0) {
+  if (missing > 0 && (role === "direction" || role === "academic_manager" || role === "teacher")) {
     notifications.push({
       id: `notes-${state.settings.currentTerm}-${missing}`,
       title: `${missing} note${missing > 1 ? "s" : ""} à compléter`,
@@ -257,6 +265,8 @@ function Notifications() {
     document.addEventListener("mousedown", closeOutside);
     return () => document.removeEventListener("mousedown", closeOutside);
   }, [open]);
+
+  if (!["direction", "academic_manager", "school_secretary", "teacher"].includes(role)) return null;
 
   const content = (
     <>
@@ -319,16 +329,25 @@ function Notifications() {
 }
 
 function UserPopup({ onHelp }: { onHelp: () => void }) {
+  const router = useRouter();
   const { state } = useSchool();
+  const { role, roleDefinition, workspace, setRole } = useWorkspace();
+  const { modules } = useModules();
+  const { restartGuide } = useOnboarding();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const initials = state.settings.directionName
+  const profileName = role === "direction" ? state.settings.directionName : workspace.profileName;
+  const initials = profileName
     .split(/\s+/)
     .filter(Boolean)
     .map((part) => part[0])
     .slice(0, 2)
     .join("")
     .toUpperCase() || "LV";
+  const quickLinks = modules.filter((module) =>
+    ["settings", "classes", "proclamation"].includes(module.id)
+    && canRoleOpenModule(module, role),
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -339,20 +358,37 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
     return () => document.removeEventListener("mousedown", closeOutside);
   }, [open]);
 
+  const changeRole = (value: string) => {
+    if (!isRoleId(value)) return;
+    setRole(value);
+    setOpen(false);
+    router.push("/");
+  };
+
   const content = (
     <>
+      <div className="workspace-role-preview">
+        <span className="workspace-role-label">Aperçu des interfaces</span>
+        <select aria-label="Choisir un rôle de démonstration" value={role} onChange={(event) => changeRole(event.target.value)}>
+          {ROLE_DEFINITIONS.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+        </select>
+        <small>Changer de rôle modifie uniquement la présentation locale, pas les permissions.</small>
+      </div>
       <div className="user-popup-summary">
         <span className="profile-avatar">{initials}</span>
-        <div><strong>{state.settings.directionName}</strong><small>{state.settings.email}</small><span>Admin / Direction</span></div>
+        <div><strong>{profileName}</strong><small>{workspace.spaceLabel}</small><span>Aperçu · {roleDefinition.label}</span></div>
       </div>
-      <div className="user-popup-school"><strong>{state.settings.schoolName}</strong><small>Année {state.settings.academicYear}</small></div>
+      <div className="user-popup-school"><strong>{state.settings.schoolName}</strong><small>{workspace.scopeLabel}</small></div>
       <nav className="user-popup-links" aria-label="Liens du compte">
-        <Link href="/parametres/" onClick={() => setOpen(false)}><SlidersHorizontal size={16} /> Configuration de l’école</Link>
-        <Link href="/classes/" onClick={() => setOpen(false)}><BookOpenCheck size={16} /> Classes & matières</Link>
-        <Link href="/proclamation/" onClick={() => setOpen(false)}><Award size={16} /> Proclamations</Link>
+        <Link href="/modules/" onClick={() => setOpen(false)}><Blocks size={16} /> Modules et activation</Link>
+        {quickLinks.map((module) => {
+          const Icon = MODULE_ICONS[module.id] ?? Blocks;
+          return <Link key={module.id} href={module.href ?? "/modules/"} onClick={() => setOpen(false)}><Icon size={16} /> {module.label}</Link>;
+        })}
+        <button type="button" onClick={() => { setOpen(false); restartGuide(); }}><Sparkles size={16} /> Relancer le guide</button>
         <button type="button" onClick={() => { setOpen(false); onHelp(); }}><CircleHelp size={16} /> Centre d’aide</button>
       </nav>
-      <div className="user-popup-note"><Database size={14} /> Prototype · données enregistrées localement</div>
+      <div className="user-popup-note"><Database size={14} /> Aperçu UX local · aucune habilitation réelle</div>
     </>
   );
 
@@ -362,13 +398,13 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
         type="button"
         className="user-popup-trigger"
         onClick={() => setOpen((current) => !current)}
-        aria-label="Ouvrir le menu du profil"
+        aria-label={`Ouvrir le menu du profil ${roleDefinition.label}`}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
         <span className="profile-avatar">{initials}</span>
       </button>
-      <HeaderDropdown open={open} onClose={() => setOpen(false)} title="Mon compte">
+      <HeaderDropdown open={open} onClose={() => setOpen(false)} title={`Mon compte · ${roleDefinition.label}`}>
         {content}
       </HeaderDropdown>
     </div>
@@ -378,25 +414,47 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { state, hydrated } = useSchool();
+  const { role, workspace } = useWorkspace();
+  const { modules } = useModules();
+  const { restartGuide } = useOnboarding();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const basePath = pathname === "/" ? "/" : `/${pathname.split("/").filter(Boolean)[0] ?? ""}`;
   const pageTitle = PAGE_TITLES[basePath] ?? "lavision";
+  const canOpen = (id: ModuleId) => {
+    const definition = modules.find((item) => item.id === id);
+    return definition ? canRoleOpenModule(definition, role) : false;
+  };
+  const helpLinks: { id: ModuleId; href: string; icon: LucideIcon; title: string; description: string }[] = [
+    { id: "enrollments", href: "/inscriptions/", icon: GraduationCap, title: "Inscrire", description: "Créer un dossier élève et l’affecter à une classe." },
+    { id: "classes", href: "/classes/", icon: BookOpenCheck, title: "Structurer", description: "Configurer les salles, matières et coefficients." },
+    { id: "grades", href: "/notes/", icon: NotebookPen, title: "Évaluer", description: "Saisir les notes sur 20 et contrôler la complétude." },
+    { id: "proclamation", href: "/proclamation/", icon: ClipboardCheck, title: "Délibérer", description: "Calculer les moyennes, classer puis publier." },
+  ];
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  const moduleLinks = (
+    <>
+      <Link href="/modules/" className={pathname === "/modules/" ? "active" : ""} onClick={mobileOpen ? () => setMobileOpen(false) : undefined}>
+        <Blocks size={18} /><span>Modules</span>
+      </Link>
+      {canOpen("settings") && (
+        <Link href="/parametres/" className={pathname === "/parametres/" ? "active" : ""} onClick={mobileOpen ? () => setMobileOpen(false) : undefined}>
+          <Settings size={18} /><span>Paramètres</span>
+        </Link>
+      )}
+    </>
+  );
+
   return (
     <div className="app-layout">
       <aside className="sidebar">
         <NavigationSections />
-        <div className="sidebar-bottom">
-          <Link href="/parametres/" className={pathname === "/parametres/" ? "active" : ""}>
-            <Settings size={18} /><span>Paramètres</span>
-          </Link>
-        </div>
+        <div className="sidebar-bottom">{moduleLinks}</div>
       </aside>
 
       {mobileOpen && (
@@ -410,9 +468,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </button>
             </div>
             <NavigationSections onNavigate={() => setMobileOpen(false)} />
-            <div className="sidebar-bottom">
-              <Link href="/parametres/" onClick={() => setMobileOpen(false)}><Settings size={18} /><span>Paramètres</span></Link>
-            </div>
+            <div className="sidebar-bottom">{moduleLinks}</div>
           </aside>
         </div>
       )}
@@ -428,30 +484,41 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div className="topbar-actions">
             <Notifications />
-            <Link className="icon-button header-circle-button topbar-action" href="/presences/" aria-label="Ouvrir les présences">
-              <CalendarCheck2 size={18} />
-            </Link>
+            {canOpen("attendance") ? (
+              <Link className="icon-button header-circle-button topbar-action" href="/presences/" aria-label="Ouvrir les présences">
+                <CalendarCheck2 size={18} />
+              </Link>
+            ) : (
+              <Link className="icon-button header-circle-button topbar-action" href="/modules/" aria-label="Ouvrir les modules">
+                <Blocks size={18} />
+              </Link>
+            )}
             <UserPopup onHelp={() => setHelpOpen(true)} />
           </div>
         </header>
-        <main className="page-content" id="main-content">{children}</main>
+        <main className="page-content" id="main-content"><ModuleGate pathname={pathname}>{children}</ModuleGate></main>
         <footer className="app-footer">
           <span>{pageTitle} · {state.settings.academicYear}</span>
           <span><span className="live-dot" /> {hydrated ? "Données enregistrées sur cet appareil" : "Chargement de la sauvegarde locale"}</span>
         </footer>
       </div>
 
-      <Modal open={helpOpen} onClose={() => setHelpOpen(false)} title="Centre d’aide lavision" description={`${state.settings.schoolName} · ${state.settings.academicYear}`} size="medium">
-        <div className="help-intro"><span><Sparkles size={24} /></span><div><h3>Tout pour suivre votre année scolaire</h3><p>Ce prototype couvre le parcours complet, de l’inscription à la proclamation.</p></div></div>
+      <Modal open={helpOpen} onClose={() => setHelpOpen(false)} title="Centre d’aide lavision" description={`${workspace.spaceLabel} · ${state.settings.academicYear}`} size="medium">
+        <div className="help-intro"><span><Sparkles size={24} /></span><div><h3>Un guide adapté à votre espace</h3><p>{workspace.guideIntroduction}</p></div></div>
+        <button className="help-guide-launch" type="button" onClick={() => { setHelpOpen(false); restartGuide(); }}>
+          <Sparkles size={20} /><span><strong>Relancer le guide de prise en main</strong><small>Revoir la navigation, les modules et la première action du rôle.</small></span>
+        </button>
         <div className="help-grid">
-          <Link href="/inscriptions/" onClick={() => setHelpOpen(false)}><GraduationCap size={20} /><strong>1. Inscrire</strong><span>Créer un dossier élève et l’affecter à une classe.</span></Link>
-          <Link href="/classes/" onClick={() => setHelpOpen(false)}><BookOpenCheck size={20} /><strong>2. Structurer</strong><span>Configurer les salles, matières et coefficients.</span></Link>
-          <Link href="/notes/" onClick={() => setHelpOpen(false)}><NotebookPen size={20} /><strong>3. Évaluer</strong><span>Saisir les notes sur 20 et contrôler la complétude.</span></Link>
-          <Link href="/proclamation/" onClick={() => setHelpOpen(false)}><ClipboardCheck size={20} /><strong>4. Délibérer</strong><span>Calculer les moyennes, classer puis publier.</span></Link>
+          {helpLinks.filter((item) => canOpen(item.id)).map((item) => {
+            const Icon = item.icon;
+            return <Link href={item.href} key={item.id} onClick={() => setHelpOpen(false)}><Icon size={20} /><strong>{item.title}</strong><span>{item.description}</span></Link>;
+          })}
+          <Link href="/modules/" onClick={() => setHelpOpen(false)}><Blocks size={20} /><strong>Modules</strong><span>Comprendre les états actifs, à configurer, désactivés et planifiés.</span></Link>
         </div>
-        <div className="help-data-note"><Database size={18} /><p><strong>Environnement de démonstration</strong>Les modifications sont conservées dans ce navigateur. Exportez une sauvegarde JSON depuis les paramètres avant de réinitialiser.</p></div>
+        <div className="help-data-note"><Database size={18} /><p><strong>Environnement de démonstration</strong>Le rôle et les modules modifient la présentation locale. Ils ne remplacent pas l’authentification et les autorisations du futur serveur.</p></div>
         <div className="modal-actions"><button className="button button-primary" type="button" onClick={() => setHelpOpen(false)}>J’ai compris</button></div>
       </Modal>
+      <OnboardingGuide />
     </div>
   );
 }

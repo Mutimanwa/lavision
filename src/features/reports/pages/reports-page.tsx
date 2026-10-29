@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useSchool } from "@/features/school/hooks/use-school";
+import { useWorkspace } from "@/features/auth/hooks/use-workspace";
 import { Badge, EmptyState, Notice, PageHeader } from "@/components/ui";
 import { SearchSelectForm, SelectForm } from "@/components/forms";
 import {
@@ -28,6 +29,8 @@ import { TERMS, type Term } from "@/lib/types";
 
 export function ReportCards() {
   const { state } = useSchool();
+  const { role } = useWorkspace();
+  const canOpenProclamation = role === "direction" || role === "academic_manager";
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryStudent = state.students.find((student) => student.id === searchParams.get("eleve"));
@@ -115,7 +118,7 @@ export function ReportCards() {
       ) : (
         <div className="card no-print"><EmptyState icon={<GraduationCap size={28} />} title="Aucun bulletin disponible" description="Ajoutez d’abord un élève actif dans cette classe." action={<Link className="button button-primary" href="/inscriptions/">Nouvelle inscription</Link>} /></div>
       )}
-      <div className="bulletin-footer-actions no-print"><button className="button button-secondary" type="button" onClick={() => window.print()} disabled={!selectedStudent}><Printer size={17} /> Imprimer ce bulletin</button><Link className="text-link" href="/proclamation/">Aller à la proclamation <ArrowRight size={16} /></Link></div>
+      <div className="bulletin-footer-actions no-print"><button className="button button-secondary" type="button" onClick={() => window.print()} disabled={!selectedStudent}><Printer size={17} /> Imprimer ce bulletin</button><Link className="text-link" href={canOpenProclamation ? "/proclamation/" : "/notes/"}>{canOpenProclamation ? "Aller à la proclamation" : "Retour aux notes"} <ArrowRight size={16} /></Link></div>
     </>
   );
 }

@@ -20,6 +20,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useSchool } from "@/features/school/hooks/use-school";
+import { useWorkspace } from "@/features/auth/hooks/use-workspace";
 import { Avatar, Badge, EmptyState, Modal, Notice, PageHeader, TableMenu } from "@/components/ui";
 import { SelectForm } from "@/components/forms";
 import { formatAverage, getClassRanking as getRanking, getFullName } from "@/lib/academic";
@@ -28,6 +29,8 @@ import { TERMS, type Term } from "@/lib/types";
 
 export function Proclamation() {
   const { state, setPublication } = useSchool();
+  const { role } = useWorkspace();
+  const canPublish = role === "direction";
   const [classId, setClassId] = useState(state.classes[0]?.id ?? "");
   const [term, setTerm] = useState<Term>(state.settings.currentTerm);
   const [confirmation, setConfirmation] = useState<"publish" | "unpublish" | null>(null);
@@ -43,7 +46,7 @@ export function Proclamation() {
   const successRate = complete.length ? Math.round((admitted.length / complete.length) * 100) : 0;
 
   const confirmPublication = () => {
-    if (confirmation) setPublication(classId, term, confirmation === "publish");
+    if (confirmation && canPublish) setPublication(classId, term, confirmation === "publish");
     setConfirmation(null);
   };
 
@@ -60,8 +63,9 @@ export function Proclamation() {
   return (
     <>
       <div className="no-print">
-        <PageHeader eyebrow="Conseil de classe" title="Proclamation des résultats" icon={<Award size={20} />} description="Vérifiez le classement, clôturez les délibérations et publiez les décisions de la classe." actions={<><button className="button button-secondary" type="button" onClick={exportRanking} disabled={!ranking.length}><Download size={17} /> Exporter CSV</button><button className="button button-secondary" type="button" onClick={() => window.print()} disabled={!ranking.length}><Printer size={17} /> Imprimer</button>{publication ? <button className="button button-primary" type="button" onClick={() => setConfirmation("unpublish")}><Unlock size={17} /> Retirer la publication</button> : <button className="button button-primary" type="button" onClick={() => setConfirmation("publish")} disabled={!ranking.length || incomplete.length > 0}><ShieldCheck size={17} /> Publier les résultats</button>}</>} />
+        <PageHeader eyebrow="Conseil de classe" title="Proclamation des résultats" icon={<Award size={20} />} description={canPublish ? "Vérifiez le classement, clôturez les délibérations et publiez les décisions de la classe." : "Vérifiez le classement et préparez les décisions avant leur publication par la Direction."} actions={<><button className="button button-secondary" type="button" onClick={exportRanking} disabled={!ranking.length}><Download size={17} /> Exporter CSV</button><button className="button button-secondary" type="button" onClick={() => window.print()} disabled={!ranking.length}><Printer size={17} /> Imprimer</button>{canPublish && (publication ? <button className="button button-primary" type="button" onClick={() => setConfirmation("unpublish")}><Unlock size={17} /> Retirer la publication</button> : <button className="button button-primary" type="button" onClick={() => setConfirmation("publish")} disabled={!ranking.length || incomplete.length > 0}><ShieldCheck size={17} /> Publier les résultats</button>)}</>} />
         <section className="card proclamation-toolbar"><div><SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={setClassId} /><SelectForm label="Période de délibération" value={term} options={TERMS.map((item) => ({ value: item, label: item }))} onChange={(value) => setTerm(value as Term)} /></div><div className={`publication-status ${publication ? "published" : ""}`}><span>{publication ? <Lock size={19} /> : <Unlock size={19} />}</span><div><strong>{publication ? "Résultats publiés" : "Délibération ouverte"}</strong><small>{publication ? `Publié le ${formatDate(publication.publishedAt)}` : "Les résultats sont encore provisoires"}</small></div></div></section>
+        {!canPublish && <Notice title="Préparation pédagogique">Vous pouvez vérifier les résultats dans cet aperçu. La publication et le retrait restent présentés comme des actions de la Direction.</Notice>}
         {incomplete.length > 0 && <Notice tone="warning" title="La publication est bloquée">{incomplete.length} élève(s) ont au moins une note manquante. Complétez la saisie avant de clôturer la délibération. <Link className="text-link" href="/notes/">Ouvrir les notes</Link></Notice>}
         {publication && <Notice tone="success" title="Proclamation officielle">Les bulletins de cette classe et de cette période portent désormais la mention « Bulletin officiel ».</Notice>}
       </div>

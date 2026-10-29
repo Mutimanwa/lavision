@@ -159,6 +159,6 @@ Tauri embarque `apps/web/out/` dans une WebView native. Rust fournit le shell et
 
 ## 9. Cible M1 et ADR
 
-La cible M1 est un **monolithe modulaire NestJS**, avec PostgreSQL/Prisma, contrats OpenAPI, stockage S3 privé, worker Redis/BullMQ et clients Web/Tauri authentifiés. Seul le premier socle API/PostgreSQL est implémenté ici ; les autres composants restent des évolutions planifiées.
+La cible M1 est un **monolithe modulaire NestJS**, avec PostgreSQL/Prisma, contrats OpenAPI, stockage S3 privé, worker Redis/BullMQ et clients Web/Tauri authentifiés. Le socle API/PostgreSQL, un worker technique Redis/PostgreSQL et les environnements Docker/staging sont implémentés ; BullMQ/outbox, le stockage objet et les consommateurs métier restent des évolutions planifiées.
 
 Les huit ADR sont **acceptés pour M1** depuis le 29 octobre 2026. Leur validation autorise #5 sans clôturer #3 ni valider une infrastructure de production. Les menaces, frontières de domaines, stratégies de retour arrière et exigences d’environnement sont regroupées dans le [dossier des ADR](adr/README.md).

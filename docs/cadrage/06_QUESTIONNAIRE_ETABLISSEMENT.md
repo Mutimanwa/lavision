@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.6 — 29 octobre 2026
+**Version :** 0.7 — 29 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -23,7 +23,7 @@ Ces éléments proviennent des échanges. Ils sont reformulés pour vérificatio
 | La première description évoquait un concours d’État après 7E/8E, puis un certificat et le choix d’une section/option. | reformulé après consultation des sources RDC | les sources identifient le TENASOSP à la fin de 8E ; l’EXETAT est une étape distincte en fin d’humanités |
 | Le nombre associé à un cours représente une note maximale, définie au niveau du programme de cours. | réponses sélectionnées le 29/10/2026 | confirmer les maxima par classe, section, option et année ainsi que les formules de conversion et de synthèse |
 | Le choix initial était trimestres + séquences ; le calendrier RDC 2026–2027 retient 2 semestres et 4 périodes pour le secondaire. | structure par cycle sélectionnée le 29/10/2026 : primaire 3 trimestres/6 périodes, secondaire 2 semestres/4 périodes | validation par la scolarité et précision du sens local de « séquence » |
-| Une note manquante permet une moyenne provisoire. | comportement du prototype ; diffusion d’un bulletin incomplet laissée « À confirmer » le 29/10/2026 | dénominateur, visibilité et blocage éventuel de la publication ; aucune règle définitive retenue |
+| Une note manquante permet une moyenne provisoire et la diffusion proposée d’un bulletin provisoire ou d’un relevé incomplet. | réponses du 29/10/2026, sans note inventée ni décision annuelle définitive | modèle, mentions, rang provisoire et validation officielle à confirmer |
 | Les ex æquo utilisent le rang de compétition `1, 1, 3`. | règle de départ sélectionnée le 29/10/2026 | validation par la direction ; moyenne arrondie ou non et comportement annuel à préciser |
 | Un modèle vierge de bulletin 1ère/2e secondaire a été fourni. | structure analysée | bulletin rempli, arrondis, pourcentage, décisions et repêchage à confirmer |
 | Un bulletin rempli de 5e HP — Humanités pédagogiques, formulaire Pédagogie générale — a été fourni. | structure et contrôles analysés ; 22 branches et cinq profils de maxima | écarts manuscrits, tirets, troncature/arrondi, repêchage et application actuelle à confirmer |
@@ -99,8 +99,8 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-EVAL-12 | Chaque composante possède-t-elle un poids ou un pourcentage ? Leur total doit-il être égal à une valeur précise ? | |
 | Q-EVAL-13 | Comment calcule-t-on la moyenne générale d’un trimestre à partir des cours ? | 29/10/2026 : moyenne pondérée des pourcentages de cours par un coefficient distinct du maximum ; valeurs par programme à fournir. |
 | Q-EVAL-14 | Les cours facultatifs ou supplémentaires entrent-ils dans la moyenne générale ? | |
-| Q-EVAL-15 | Comment calcule-t-on le résultat annuel : moyenne des trimestres, cumul des points, examen annuel ou autre ? | 29/10/2026 : combinaison des périodes et d’un examen annuel distinct sélectionnée ; poids et formule à définir sur exemple. |
-| Q-EVAL-16 | Les trimestres ont-ils des poids différents ? | |
+| Q-EVAL-15 | Comment calcule-t-on le résultat annuel : moyenne des trimestres, cumul des points, examen annuel ou autre ? | 29/10/2026 : combinaison des périodes et d’un examen annuel distinct ; structure du calcul séparée des paramètres de pondération, sans valeur par défaut. |
+| Q-EVAL-16 | Les trimestres ont-ils des poids différents ? | 29/10/2026 : poids configurés ultérieurement selon les règles validées par l’autorité scolaire compétente en RDC ; ni poids égaux ni pourcentages implicites retenus. |
 | Q-EVAL-17 | Existe-t-il une note minimale par cours, une note éliminatoire ou une compensation entre cours ? | |
 | Q-EVAL-18 | Quel est le seuil de réussite et s’applique-t-il au cours, au trimestre, à l’année ou à plusieurs niveaux ? | 29/10/2026 : 50 % sélectionné comme règle de départ pour chaque cours et la moyenne générale ; exemples de décision à faire valider. |
 | Q-EVAL-19 | Quelles appréciations ou mentions existent et quelles sont leurs limites ? | |
@@ -116,33 +116,33 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | --- | --- | --- |
 | Q-DEC-01 | Une moyenne provisoire utilise-t-elle seulement les cours notés ou tous les coefficients du programme ? | 29/10/2026 : seuls les cours notés, avec signalement explicite des notes manquantes et statut provisoire. |
 | Q-DEC-02 | Comment distingue-t-on une note non saisie, une absence, une dispense et un zéro obtenu ? | 29/10/2026 : note obtenue, absence et cellule non saisie distinguées ; pas de dispense distincte retenue pour le pilote à ce stade. |
-| Q-DEC-03 | Qui voit la moyenne provisoire : enseignant, direction, secrétariat, parent ou élève ? | |
-| Q-DEC-04 | Une note obligatoire manquante bloque-t-elle le bulletin individuel, toute la classe ou seulement la décision finale ? | 29/10/2026 : « À confirmer » ; aucune règle de diffusion ou de blocage définitive retenue. |
+| Q-DEC-03 | Qui voit la moyenne provisoire : enseignant, direction, secrétariat, parent ou élève ? | 29/10/2026 : parent et élève peuvent recevoir le document provisoire/incomplet publié ; visibilité interne détaillée à confirmer par rôle. |
+| Q-DEC-04 | Une note obligatoire manquante bloque-t-elle le bulletin individuel, toute la classe ou seulement la décision finale ? | 29/10/2026 : publication proposée d’un bulletin provisoire ou d’un relevé incomplet, sans note inventée ni décision annuelle définitive ; modèle à valider. |
 | Q-DEC-05 | Que se passe-t-il après une absence justifiée ou un rattrapage ? | |
 | Q-DEC-06 | Le rang de compétition `1, 1, 3` s’applique-t-il aux trimestres et à l’année ? | 29/10/2026 : rang de compétition sélectionné comme règle de départ ; application à chaque période et à l’année à faire valider. |
 | Q-DEC-07 | Les ex æquo sont-ils déterminés avant ou après arrondi de la moyenne ? | 29/10/2026 : avant arrondi, sur la précision interne ; deux affichages identiques peuvent donc ne pas être ex æquo. |
-| Q-DEC-08 | Les élèves incomplets apparaissent-ils dans le classement et, si oui, à quel endroit ? | |
+| Q-DEC-08 | Les élèves incomplets apparaissent-ils dans le classement et, si oui, à quel endroit ? | 29/10/2026 : rang provisoire après les dossiers complets sélectionné, séparé du classement officiel ; numérotation exacte à valider sur exemple. |
 | Q-DEC-09 | Quelles décisions officielles existent : passage, redoublement, ajournement, exclusion, orientation ou autres ? | |
 | Q-DEC-10 | La décision est-elle entièrement calculée ou le conseil peut-il la modifier ? Avec quel motif et quelle approbation ? | 29/10/2026 : circuit général à confirmer ; pour ACA-PROP-001, orientation vers la délibération sans décision automatique sélectionnée. |
 | Q-DEC-11 | L’assiduité ou la conduite influence-t-elle la décision académique ? Selon quelle règle ? | |
 | Q-DEC-12 | Comment gérer un élève arrivé ou parti en cours d’année dans les moyennes et le classement ? | |
-| Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | 29/10/2026 : ne pas modifier une publication comme un brouillon ; procédure de rectification contrôlée requise, avec approbateurs encore à définir. |
-| Q-DEC-14 | Une rectification produit-elle une nouvelle version du document et comment les destinataires sont-ils informés ? | 29/10/2026 : préserver les résultats précédemment publiés et tracer les changements ; notification des destinataires à définir. |
+| Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | 29/10/2026 : circuit distinct de rectification avec validation pédagogique, autorisation administrative et traçabilité intégrale proposé ; personnes et délégations à définir. |
+| Q-DEC-14 | Une rectification produit-elle une nouvelle version du document et comment les destinataires sont-ils informés ? | 29/10/2026 : nouvelle version et diffusion corrective proposées, sans réécriture de l’ancienne ; canal et destinataires des notifications à définir. |
 | Q-DEC-15 | Quelles règles s’appliquent à la première délibération, au repêchage et à la deuxième délibération prévus dans le calendrier secondaire ? | |
 
 ## Bloc 5 — Bulletins et autres documents académiques
 
 | ID | Question | Réponse |
 | --- | --- | --- |
-| Q-DOC-01 | Quels documents sont produits par période et par année ? | |
+| Q-DOC-01 | Quels documents sont produits par période et par année ? | 29/10/2026 : bulletin provisoire ou relevé incomplet proposé en cas de note obligatoire manquante ; choix du modèle et autres documents à inventorier. |
 | Q-DOC-02 | Quels champs figurent sur un bulletin : école, élève, classe, section, option, cours, notes, coefficients, rangs, appréciations et signatures ? | |
 | Q-DOC-03 | Le bulletin affiche-t-il les notes brutes, converties, pondérées ou plusieurs représentations ? | |
 | Q-DOC-04 | Faut-il afficher le détail des séquences et évaluations ou seulement la synthèse ? | |
 | Q-DOC-05 | Quelles mentions obligatoires, signatures, cachets, langues et mises en page faut-il respecter ? | |
 | Q-DOC-06 | Quel document atteste de la réussite au concours d’État et quel document atteste de la scolarité interne ? | |
 | Q-DOC-07 | Quel est le contenu du procès-verbal de délibération ? | |
-| Q-DOC-08 | Qui prépare, vérifie, valide, signe et diffuse chaque document ? | |
-| Q-DOC-09 | Quand un parent ou un élève peut-il consulter ou télécharger chaque document ? | |
+| Q-DOC-08 | Qui prépare, vérifie, valide, signe et diffuse chaque document ? | 29/10/2026 : validation pédagogique puis autorisation administrative proposées pour les résultats ; préparateurs, signataires et délégations à confirmer. |
+| Q-DOC-09 | Quand un parent ou un élève peut-il consulter ou télécharger chaque document ? | 29/10/2026 : après publication contrôlée, y compris pour le document provisoire/incomplet clairement identifié ; règles par type de document à compléter. |
 | Q-DOC-10 | Peut-on fournir un modèle anonymisé de chaque document avec un exemple recalculé ? | |
 
 ## Bloc 6 — Admission, inscription et dossiers
@@ -222,8 +222,8 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-SEC-01 | Quelles personnes ou fonctions utilisent lavision et sur quels sites ? | |
 | Q-SEC-02 | Qui peut consulter ou modifier chaque type de dossier ? | 29/10/2026 : rôles combinables ; parent et élève limités aux personnes rattachées et contenus publiés. Le reste de la matrice nominative reste à valider. |
 | Q-SEC-03 | Quelles classes et matières un enseignant peut-il voir en dehors de ses affectations ? | 29/10/2026 : consultation du suivi et des incidents disciplinaires de sa classe principale ; écriture limitée à ses cours assignés. Données médicales à confirmer. |
-| Q-SEC-04 | Qui peut publier les résultats, valider une remise, clôturer une caisse ou valider une paie ? | |
-| Q-SEC-05 | Quelles opérations exigent deux personnes distinctes ? | |
+| Q-SEC-04 | Qui peut publier les résultats, valider une remise, clôturer une caisse ou valider une paie ? | 29/10/2026 : validation pédagogique puis autorisation administrative proposées pour les résultats ; autres opérations et personnes nommées à confirmer. |
+| Q-SEC-05 | Quelles opérations exigent deux personnes distinctes ? | 29/10/2026 : deux fonctions de validation proposées pour les résultats ; obligation de personnes distinctes et autres opérations à confirmer. |
 | Q-SEC-06 | Qui peut modifier et publier les règles académiques, financières et RH ? | |
 | Q-SEC-07 | Quels profils doivent utiliser une authentification multifacteur ? | 29/10/2026 : profils sensibles ; liste exacte, portails familiaux et procédure de récupération à faire valider. |
 | Q-SEC-08 | Quelles données sont particulièrement sensibles et qui peut exporter chaque catégorie ? | 29/10/2026 : permission d’export séparée, avec motif et approbation tracée pour les exports sensibles ; données médicales laissées à confirmer, sans ajout de champ dans la v1. |

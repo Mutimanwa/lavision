@@ -1,6 +1,6 @@
 # Registre des décisions de cadrage
 
-**Version :** 0.6 — 29 octobre 2026
+**Version :** 0.7 — 29 octobre 2026
 **Statut :** registre actif pendant M0
 
 ## 1. Règle de tenue du registre
@@ -31,13 +31,13 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | ACA-001 | Structure des années, périodes, fenêtres de saisie et de publication | scolarité | calendrier réel | Structure par cycle sélectionnée le 29/10/2026 : 2 semestres/4 périodes au secondaire, 3 trimestres/6 périodes au primaire ; validation locale et fenêtres à confirmer |
 | ACA-002 | Barèmes, pas de saisie et conversion éventuelle entre barèmes | pédagogie | exemples de notes | Note maximale et définition par programme de cours sélectionnées le 29/10/2026 ; maxima locaux, pas de saisie et conversions à confirmer sur exemples |
 | ACA-003 | Coefficients et agrégation des évaluations/matières | pédagogie | bulletin recalculé | Moyenne pondérée par coefficient distinct et agrégation variable par programme sélectionnées le 29/10/2026 ; coefficients et poids des composantes avec ou sans examen à confirmer |
-| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Distinction note/absence/non-saisi et moyenne provisoire sur les seuls cours notés sélectionnées le 29/10/2026 ; pas de dispense distincte à ce stade, publication et rattrapages à confirmer |
+| ACA-004 | Traitement des notes absentes, dispenses, absences et rattrapages | pédagogie | cas incomplets | Distinction note/absence/non-saisi et moyenne provisoire sur les seuls cours notés sélectionnées le 29/10/2026 ; diffusion provisoire/incomplète proposée, sans note inventée ni décision annuelle définitive ; rattrapages à confirmer |
 | ACA-005 | Précision, mode et étapes d’arrondi | pédagogie | cas de frontière | Arrondi de chaque cours avant la moyenne, à une décimale et au pair le plus proche, sélectionné le 29/10/2026 ; précision interne et arrondi annuel à confirmer |
-| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Compétition `1, 1, 3` et comparaison avant arrondi sélectionnées le 29/10/2026 ; application annuelle et dossiers incomplets à confirmer |
+| ACA-006 | Classement des ex æquo et des dossiers incomplets | direction | exemple de classement | Compétition `1, 1, 3`, comparaison avant arrondi et rang provisoire des dossiers incomplets après les complets sélectionnés le 29/10/2026 ; exclusion du classement officiel, application annuelle et numérotation provisoire à confirmer sur exemple |
 | ACA-007 | Seuil, notes éliminatoires, compensation et appréciations | direction | exemples de décision | Seuil de 50 % par cours et sur la moyenne générale sélectionné le 29/10/2026 comme règle de départ ; cas moyenne générale ≥ 50 % avec cours < 50 % envoyé à la délibération le 29/10/2026 ; autres décisions, compensation et mentions à confirmer |
-| ACA-008 | Calcul annuel et règles de passage/redoublement | direction | exemple annuel | Combinaison des périodes et d’un examen annuel distinct sélectionnée le 29/10/2026 ; poids, T.G., seuils et décisions à confirmer sur exemple |
-| ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Ouvert — « À confirmer » enregistré le 29/10/2026 pour les bulletins incomplets ; ne pas transformer le comportement du prototype en règle validée |
-| ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Rectification contrôlée, conservation des résultats publiés et traçabilité requises le 29/10/2026 ; approbateurs, réouverture et notification à définir |
+| ACA-008 | Calcul annuel et règles de passage/redoublement | direction | exemple annuel | Combinaison des périodes et d’un examen annuel distinct sélectionnée le 29/10/2026 ; structure séparée des poids versionnés, sans valeur par défaut, à configurer après validation de l’autorité scolaire compétente en RDC ; T.G., seuils et décisions à confirmer sur exemple |
+| ACA-009 | Conditions de blocage et de publication des bulletins | direction | cas complet et incomplet | Proposé le 29/10/2026 — publier un bulletin provisoire ou un relevé incomplet, sans note inventée ni décision annuelle définitive ; modèle, mentions et validation de la Direction à confirmer |
+| ACA-010 | Réouverture, dérogation du conseil et rectification après publication | direction | procédure et approbateurs | Validation pédagogique puis autorisation administrative proposées le 29/10/2026 pour publication et rectification, avec circuits distincts et traçabilité intégrale ; approbateurs nommés, délégations, réouverture et notification à définir |
 | ACA-011 | Appel, statuts, retards, justificatifs et alertes d’assiduité | vie scolaire | cas quotidien et par séance | Ouvert |
 | ACA-012 | Contenu exact des bulletins et procès-verbaux | pédagogie/direction | modèles anonymisés | Formulaires `IGE/P.S/005` et `IGE/P.S/019` inventoriés ; version actuelle et procès-verbaux à confirmer |
 | ACA-013 | Parcours 7E/8E, TENASOSP/EXETAT, résultat et certification | direction/scolarité | base RDC sourcée + documents récents anonymisés | Choix section/option à l’entrée des Humanités après 8e/TENASOSP sélectionné le 29/10/2026 ; résultat, certification et séquence exacte à confirmer |
@@ -83,11 +83,11 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | SEC-001 | Rôles, permissions combinables et portées par site/classe/matière | direction | matrice validée | Rôles combinables, suivi disciplinaire de la classe principale et accès famille limité aux contenus publiés sélectionnés le 29/10/2026 ; matrice nominative à valider |
 | SEC-002 | Accès aux données médicales, disciplinaires, financières et RH | direction | scénarios d’accès | Incidents de la classe principale accessibles au professeur principal sélectionné le 29/10/2026 ; médical à confirmer, restrictions finance/RH à valider |
 | SEC-003 | Profils soumis à MFA et procédure de récupération | direction/administrateur | politique validée | MFA pour profils sensibles sélectionnée le 29/10/2026 ; liste exacte, portails et récupération à confirmer |
-| SEC-004 | Séparation préparateur/validateur/payeur selon les opérations | direction | circuit nominatif | Ouvert |
+| SEC-004 | Séparation préparateur/validateur/payeur selon les opérations | direction | circuit nominatif | Validation pédagogique et autorisation administrative proposées pour les résultats le 29/10/2026 ; personnes distinctes et autres domaines à confirmer |
 | SEC-005 | Exports, motifs, approbations et destinataires externes | direction | inventaire des exports | Permission séparée et approbation avec motif pour exports sensibles sélectionnées le 29/10/2026 ; catégories et destinataires à inventorier |
 | SEC-006 | Conservation, archivage, suppression et demandes d’accès | direction | politique applicable validée | Validation par la direction avec avis juridique, administratif et informatique sélectionnée le 29/10/2026 ; durées et procédures à fournir |
 | DOC-001 | Modèles, mentions, langues, signatures et paginations | propriétaires des documents | modèles anonymisés | Ouvert |
-| DOC-002 | Publication, retrait de diffusion, rectification et authenticité | direction | procédure validée | Ouvert |
+| DOC-002 | Publication, retrait de diffusion, rectification et authenticité | direction | procédure validée | Circuit pédagogique/administratif et circuit distinct de rectification proposés le 29/10/2026 ; retrait, authenticité et signataires à confirmer |
 | OPS-001 | Volumes, postes, sites, connectivité et pics d’utilisation | direction/administrateur | mesures de l’établissement pilote | Ouvert |
 | OPS-002 | Disponibilité, sauvegardes et objectifs de reprise adaptés au budget | direction/administrateur | arbitrage documenté | Ouvert |
 | OPS-003 | Canaux externes réellement disponibles et contrats nécessaires | direction/administrateur | fournisseurs et conditions | Ouvert |

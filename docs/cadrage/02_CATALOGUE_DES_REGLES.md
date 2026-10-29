@@ -80,18 +80,18 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 | `academic.rounding.mode` | énumération | établissement | arrondi arithmétique du prototype ; troncature candidate à confirmer pour le bulletin 5e HP | pédagogie |
 | `academic.rounding.stage` | énumération | niveau, programme | à définir : ligne, matière, période ou résultat final | pédagogie |
 | `academic.rank.tie_policy` | énumération | niveau | rang de compétition `1, 1, 3` dans le prototype | pédagogie |
-| `academic.rank.incomplete_policy` | énumération | niveau | aucun rang définitif pour un dossier incomplet | pédagogie |
+| `academic.rank.incomplete_policy` | énumération | niveau | rang provisoire après les complets proposé le 29/10/2026, exclu du classement officiel ; numérotation à valider | pédagogie |
 | `academic.appreciation.scale` | liste structurée bornée | niveau, programme | seuils Excellent/Très bien/Bien/Passable du prototype | pédagogie |
 | `academic.pass.mark` | décimal dans le barème | niveau, programme | seuil unique configurable, valeur initiale `10/20` | direction |
 | `academic.pass.eliminatory_rules` | liste structurée | niveau, programme | absent du prototype ; à fournir si applicable | direction |
 | `academic.pass.compensation_policy` | énumération + paramètres fixes | niveau, programme | absent du prototype | direction |
 | `academic.pass.resit_policy` | liste structurée | niveau, programme | absent du prototype | direction |
-| `academic.year.aggregation` | énumération + poids bornés | niveau, programme | absent du prototype | direction |
+| `academic.year.aggregation` | énumération + poids bornés | niveau, programme | structure séparée des poids versionnés proposée le 29/10/2026 ; aucune valeur par défaut, validation par l’autorité compétente requise | direction |
 | `academic.year.decision_policy` | liste structurée | niveau, programme | absent du prototype | direction |
 | `academic.council.override_policy` | énumération | établissement | dérogation à autoriser ou interdire, avec motif et approbation | direction |
-| `academic.publication.incomplete_policy` | énumération | niveau | blocage de toute la classe dans le prototype, à confirmer | direction |
-| `academic.publication.correction_policy` | énumération | établissement | correction par nouvelle version et procédure autorisée | direction |
-| `academic.publication.family_visibility` | énumération | niveau | résultats publiés seulement ; contenu exact à préciser | direction |
+| `academic.publication.incomplete_policy` | énumération | niveau | bulletin provisoire ou relevé incomplet proposé le 29/10/2026 ; aucune note ni décision annuelle inventée | direction |
+| `academic.publication.correction_policy` | énumération | établissement | circuit distinct avec validation pédagogique, autorisation administrative et nouvelle version proposé le 29/10/2026 | direction |
+| `academic.publication.family_visibility` | énumération | niveau | résultats publiés et document provisoire/incomplet explicitement marqué proposés le 29/10/2026 ; modèle à préciser | direction |
 
 ### Contraintes minimales attendues de l’API
 
@@ -100,6 +100,8 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 - dénominateur nul interdit et traité par une règle explicite ;
 - bornes des appréciations ordonnées, sans chevauchement ni trou non intentionnel ;
 - poids d’agrégation compatibles avec les périodes réellement définies ;
+- une pondération annuelle obligatoire absente produit `non calculable`, jamais un poids égal ou un pourcentage implicite ;
+- un document provisoire/incomplet et son rang provisoire sont explicitement séparés des résultats officiels et de la décision annuelle ;
 - chaque branche utilise un schéma explicite ; une branche sans examen ne doit ni exiger ni recevoir une note d’examen ;
 - totaux de semestre, T.G., totaux généraux et maxima généraux réconciliés avant publication, sans correction silencieuse des écarts ;
 - aucune règle de compensation ne doit produire une note ou une décision hors domaine ;
@@ -188,7 +190,7 @@ Les valeurs de cette section restent volontairement sans proposition chiffrée. 
 | --- | --- | --- | --- | --- |
 | `document.template.versioning` | énumération | type de document | modèle versionné et figé sur publication | direction |
 | `document.required_fields` | liste structurée | type de document | inventaire à partir des modèles officiels | propriétaire du document |
-| `document.publication.workflow` | liste structurée | type de document | préparateur, vérificateur et signataire | direction |
+| `document.publication.workflow` | liste structurée | type de document | validation pédagogique puis autorisation administrative proposées pour les résultats ; préparateur, signataire et délégations à confirmer | direction |
 | `document.language` | énumération | type de document | français et autres langues à confirmer | direction |
 | `document.authenticity.mode` | énumération | type de document | identifiant/QR éventuel sans donnée publique sensible | direction |
 | `document.rectification_policy` | énumération | type de document | nouvelle version, mentions et diffusion | direction |

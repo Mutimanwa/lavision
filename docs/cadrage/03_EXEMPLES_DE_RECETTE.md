@@ -15,7 +15,7 @@ Ces exemples utilisent uniquement des personnes et des montants fictifs. Les ré
 | Moyenne | somme des `notes × coefficients` / somme des coefficients des matières notées | comportement du prototype |
 | Affichage | deux décimales | à valider |
 | Seuil de réussite | 10/20 | valeur actuelle, à valider |
-| Dossier incomplet | pas de rang ni de décision Admis/Ajourné | comportement du prototype |
+| Dossier incomplet | pas de rang officiel ni de décision Admis/Ajourné | comportement du prototype ; rang provisoire séparé proposé le 29/10/2026 |
 
 ### Entrées communes
 
@@ -51,7 +51,7 @@ Moyenne provisoire = 106 / 9 = 11,777… → 11,78
 | A | complet | 12,20 | Admis |
 | B | complet | 12,20 | Admis |
 | C | complet | 10,00 | Admis, seuil atteint exactement |
-| D | incomplet | 11,78 provisoire ou masquée | Incomplet |
+| D | incomplet | 11,78 provisoire | Incomplet ; document provisoire/incomplet proposé |
 
 ### Décisions à obtenir
 
@@ -59,6 +59,8 @@ Moyenne provisoire = 106 / 9 = 11,777… → 11,78
 - Une absence de note peut-elle être remplacée par zéro, une dispense ou une récupération ? Dans quels cas ?
 - Le seuil est-il franchi lorsque la moyenne est exactement égale ?
 - Une classe entière est-elle bloquée par D, ou seulement sa publication individuelle ?
+
+**Réponses du 29/10/2026 :** la moyenne provisoire est affichée sans transformer les notes manquantes en zéro. La diffusion d’un bulletin provisoire ou d’un relevé incomplet est proposée, sans décision annuelle définitive. Le rang provisoire est séparé du classement officiel ; les rattrapages et le modèle exact du document restent à confirmer.
 
 **Résultat attendu validé par :** à compléter
 **Date et éventuelles corrections :** à compléter
@@ -95,7 +97,7 @@ Supposons trois moyennes périodiques déjà calculées sans nouvel arrondi inte
 - traitement d’une période incomplète ou d’une arrivée en cours d’année ;
 - liens éventuels avec compensation, assiduité ou conseil de classe.
 
-**Réponse du 29/10/2026 :** le résultat annuel combine les périodes et un examen annuel distinct. Les poids et un exemple chiffré restent à définir ; les politiques ci-dessus ne sont pas retenues comme formule annuelle complète.
+**Réponse du 29/10/2026 :** le résultat annuel combine les périodes et un examen annuel distinct. La structure du calcul est séparée de ses paramètres de pondération : ceux-ci seront versionnés et configurés après validation par l’autorité scolaire compétente en RDC. Aucune valeur par défaut n’est retenue ; les politiques ci-dessus ne sont pas des formules annuelles complètes.
 
 ## 4. Arrondis et frontières
 
@@ -313,7 +315,71 @@ Affichage au pair à une décimale = 64,2 %
 
 **Validateur métier, date et décision :** à compléter
 
-## 14. Fiche d’acceptation d’un exemple
+## 14. Cas ACA-PROP-002 — publication incomplète et rang provisoire
+
+**Statut :** cas structurel fictif préparé le 29/10/2026 ; modèle de document et numérotation du rang provisoire à faire valider.
+
+| Dossier | État des notes | Document diffusable proposé | Classement |
+| --- | --- | --- | --- |
+| Élève A | complet | bulletin de la période après circuit de publication | rang officiel |
+| Élève B | complet | bulletin de la période après circuit de publication | rang officiel |
+| Élève C | une note obligatoire manquante | bulletin provisoire **ou** relevé incomplet, avec mention visible | rang provisoire après les dossiers complets, exclu du classement officiel |
+
+**Résultats attendus :**
+
+- la note manquante reste `non saisie` ou `absente` selon les faits ; elle ne devient jamais zéro par défaut ;
+- la moyenne provisoire utilise uniquement les cours notés et signale les éléments manquants ;
+- le document porte un statut `provisoire` ou `incomplet`, sans décision annuelle définitive ;
+- le rang provisoire est présenté après les dossiers complets et n’est pas mélangé au classement officiel ;
+- la complétion des notes déclenche une nouvelle évaluation du dossier et, si déjà diffusé, le circuit distinct de rectification ;
+- les versions précédemment diffusées restent traçables.
+
+**Points encore ouverts :** choix ou coexistence des deux modèles, mentions et signatures, numérotation exacte du rang provisoire, destinataires et notification.
+
+**Validateur métier, date et décision :** à compléter
+
+## 15. Cas ACA-PROP-003 — circuits de publication et de rectification
+
+**Statut :** circuit proposé le 29/10/2026 ; fonctions nommées et délégations à faire valider par la Direction.
+
+### Publication initiale
+
+```text
+Préparation du dossier
+  → validation pédagogique
+  → autorisation administrative
+  → publication contrôlée
+  → diffusion et journal d’audit
+```
+
+### Rectification après publication
+
+```text
+Demande motivée de rectification
+  → validation pédagogique de la correction
+  → autorisation administrative de la rectification
+  → nouvelle version publiée, sans réécriture de l’ancienne
+  → diffusion corrective et journal d’audit
+```
+
+Les deux circuits sont distincts. Chaque étape enregistre l’auteur, la date, la version, le motif et le résultat du contrôle. L’identité des approbateurs, les délégations, l’éventuelle impossibilité d’auto-approbation et les notifications restent à définir ; elles ne sont pas déduites automatiquement de ce schéma.
+
+## 16. Cas ACA-PROP-004 — pondération annuelle non configurée
+
+**Statut :** cas de blocage explicite préparé le 29/10/2026.
+
+**Entrées :** des résultats de périodes et un examen annuel existent, mais la version applicable ne contient pas encore les poids validés.
+
+**Résultat attendu :**
+
+```text
+Résultat annuel officiel : non calculable — pondération validée manquante
+Décision annuelle        : non disponible
+```
+
+Le moteur peut exposer la structure du calcul et les paramètres requis, mais il ne doit appliquer ni poids égaux, ni répartition `50/50`, ni valeur du prototype par défaut. Après publication d’une configuration complète par l’autorité compétente, un exemple chiffré sera recalculé et accepté avant de devenir une fixture de réussite.
+
+## 17. Fiche d’acceptation d’un exemple
 
 | Champ | À compléter |
 | --- | --- |

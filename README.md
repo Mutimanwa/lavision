@@ -7,11 +7,12 @@ Le dépôt est un monorepo **Next.js / NestJS / PostgreSQL**. Il contient le pro
 ## État actuel
 
 - **Web et desktop :** prototype fonctionnel local avec Next.js, TypeScript, Tailwind CSS et Tauri. Les données de démonstration restent dans `localStorage` jusqu’au raccordement prévu en M2.
-- **API :** socle NestJS/Fastify versionné sous `/api/v1`, contrats Zod/OpenAPI, erreurs normalisées, endpoints techniques et noyau d’authentification #6.
-- **Base :** PostgreSQL/Prisma, migrations du socle et de l’authentification, seed fictif pour organisations, sites, utilisateurs et appartenances.
-- **CI :** tests unitaires et d’intégration PostgreSQL, typecheck, lint, builds Web/API et installateurs Windows.
+- **API :** socle NestJS/Fastify versionné sous `/api/v1`, contrats Zod/OpenAPI, authentification/MFA, RBAC à portées, référentiels #8 et moteur technique #39.
+- **Base et worker :** PostgreSQL/Prisma, migrations contrôlées, seed fictif, Redis et worker technique supervisé, sans job métier officiel.
+- **Exploitation :** images Web/API/worker/migration, Compose local et staging, logs JSON, métriques protégées et exercice de rollback.
+- **CI :** tests unitaires et d’intégration PostgreSQL, typecheck, lint, builds Web/API/worker, installateurs Windows et smoke staging avec rollback.
 
-> **Limites :** le frontend n’est pas encore raccordé à l’API et le RBAC métier/audit complet reste en #7. Aucune donnée réelle, règle officielle ou infrastructure de production n’est livrée. Le moteur académique officiel et la finance/paie restent dans leurs issues dédiées. Le sélecteur de rôle du frontend est uniquement un aperçu UX.
+> **Limites :** le frontend n’est pas encore raccordé à l’API et les validations métier/UI de #8 et #39 restent ouvertes. Aucune donnée réelle, règle officielle, alerte externe ou infrastructure de production n’est livrée. Le moteur académique officiel et la finance/paie restent dans leurs issues dédiées. Le sélecteur de rôle du frontend est uniquement un aperçu UX.
 
 ## Structure du monorepo
 
@@ -23,18 +24,20 @@ apps/
 │   ├── src/features/          # pages, hooks, services et données métier
 │   ├── src/lib/               # types et calculs purs du prototype
 │   └── out/                   # export statique généré, non versionné
-└── api/                       # API NestJS/Fastify
-    ├── prisma/                # schéma, migrations et seed fictif
-    ├── src/modules/           # système, infrastructure et authentification #6
-    ├── src/database/          # client PostgreSQL/Prisma partagé
-    ├── test/integration/      # tests sur PostgreSQL réel
-    └── openapi/openapi.json   # contrat OpenAPI 3.1 généré
+├── api/                       # API NestJS/Fastify
+│   ├── prisma/                # schéma, migrations et seed fictif
+│   ├── src/modules/           # système, auth, RBAC, école et règles
+│   ├── src/database/          # client PostgreSQL/Prisma partagé
+│   ├── test/integration/      # tests sur PostgreSQL réel
+│   └── openapi/openapi.json   # contrat OpenAPI 3.1 généré
+└── worker/                    # processus technique Redis/PostgreSQL supervisé
 packages/
 ├── contracts/                 # schémas Zod, erreurs, permissions, OpenAPI
 └── testing/                   # fixtures entièrement fictives
 scripts/                       # serveur statique et initialisation locale
 src-tauri/                     # shell Windows/Rust
-compose.yml                    # PostgreSQL local jetable
+compose.yml                    # stack local Web/API/worker/PostgreSQL/Redis
+deploy/                        # staging, Nginx, Prometheus et alertes initiales
 legacy/                        # prototype PHP/HTML initial, référence seulement
 docs/                          # cadrage, architecture et guides
 ```
@@ -81,6 +84,16 @@ Pour arrêter les conteneurs : `docker compose down`. Le volume local peut être
 
 Le guide complet, les commandes manuelles et les limites sont dans [`docs/API.md`](docs/API.md).
 
+## Démarrer le stack Docker complet
+
+```bash
+docker compose up --build --wait
+```
+
+Le Web est servi sur `http://localhost:8080` et appelle l’API via le proxy relatif `/api`. PostgreSQL, Redis, l’API, le worker, le Web et la migration one-shot sont orchestrés ensemble. Le worker est un socle supervisé sans traitement métier officiel.
+
+Les commandes staging, les secrets, le rollback et le diagnostic sont documentés dans [`docs/RUNBOOK_EXPLOITATION.md`](docs/RUNBOOK_EXPLOITATION.md).
+
 ## Vérifications et builds
 
 ```bash
@@ -89,8 +102,10 @@ npm run test:integration # nécessite PostgreSQL migré et DATABASE_URL
 npm run typecheck        # tous les workspaces
 npm run lint
 npm run openapi:check    # vérifie que le document versionné est à jour
-npm run build            # build API + export statique Web
+npm run build            # build API + worker + export statique Web
 npm run build:web        # frontend seul, notamment pour Tauri/Docker
+npm run test:deployment  # transitions de déploiement et règles de rollback
+npm run check:secrets    # motifs de secrets à haute confiance dans Git
 ```
 
 L’export Web est généré dans `apps/web/out/`. Les clients Prisma, builds et artefacts ne sont pas versionnés ; la migration SQL et le document OpenAPI le sont.
@@ -103,7 +118,7 @@ Ces écrans ne constituent pas une preuve de calcul officiel. Les sections, opti
 
 ## Docker Web
 
-Le `Dockerfile` racine construit uniquement le frontend statique et le sert avec Nginx :
+La cible Docker par défaut construit le frontend statique et le sert avec Nginx ; les autres cibles couvrent l’API, le worker et les migrations :
 
 ```bash
 docker build -t lavision:0.1.0 .
@@ -132,6 +147,7 @@ Tauri utilise le build Web de `apps/web/out/` et produit les installateurs NSIS/
 - [Dossier de cadrage métier M0](docs/cadrage/README.md)
 - [Revue de sortie M0 et périmètre #5](docs/cadrage/13_REVUE_DE_SORTIE_M0.md)
 - [Interfaces par rôle et activation progressive](docs/cadrage/11_INTERFACES_PAR_ROLE_ET_ACTIVATION.md)
-- [Déploiement Web](docs/DEPLOIEMENT.md)
+- [Déploiement et environnements](docs/DEPLOIEMENT.md)
+- [Runbook local, staging, rollback et diagnostic](docs/RUNBOOK_EXPLOITATION.md)
 - [Application desktop Tauri](docs/DESKTOP.md)
 - [Feuille de route production](docs/ROADMAP.md)

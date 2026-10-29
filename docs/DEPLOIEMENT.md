@@ -1,76 +1,83 @@
-# Déploiement Web et limites du socle
+# Déploiement, environnements et limites
+
+Le socle #9 distingue le prototype local, la CI, le staging jetable et une future production. Le runbook opérationnel détaillé est dans [`RUNBOOK_EXPLOITATION.md`](RUNBOOK_EXPLOITATION.md). Aucun hébergeur, domaine, secret ou déploiement de production n’est supposé.
 
 ## 1. Vérifications avant livraison
 
 ```bash
 npm ci
 npm test
+npm run test:deployment
+npm run check:secrets
 npm run typecheck
 npm run lint
 npm run openapi:check
 npm run build
 ```
 
-Le build complet produit l’API compilée dans `apps/api/dist/` et le frontend statique dans `apps/web/out/`. Ces dossiers ne sont pas versionnés.
-
-Les tests PostgreSQL nécessitent en plus une base jetable migrée :
+Les tests PostgreSQL nécessitent une base jetable migrée et `DATABASE_URL` :
 
 ```bash
 npm run test:integration
 ```
 
-## 2. Hébergement du frontend statique
+La CI exécute en plus la validation Compose, le démarrage d’un staging jetable, les healthchecks, un rollback applicatif compatible et le refus d’un rollback après une migration SQL temporaire. Elle bloque toute régression de tests, lint, typecheck, build, migration ou recette de déploiement.
 
-Publier le contenu de `apps/web/out/` sur un serveur statique :
+## 2. Stack Docker local
 
-- Netlify ou plateforme équivalente : build racine `npm run build:web`, publication `apps/web/out` ;
-- Vercel : configurer explicitement le projet pour le workspace `apps/web` et son export statique ;
-- serveur mutualisé : téléverser le contenu de `apps/web/out/` dans le document root ;
-- stockage objet : activer l’hébergement statique et configurer `404.html` comme document d’erreur.
+Le `Dockerfile` racine expose quatre cibles :
 
-Les routes sont exportées avec un slash final (`/eleves/`, `/notes/`, etc.). Le serveur doit servir le fichier `index.html` présent dans chaque dossier de route.
+- `web` : export Next.js servi par Nginx avec proxy `/api` vers l’API ;
+- `api` : runtime NestJS/Prisma sans client de développement ni migration automatique ;
+- `worker` : processus technique supervisé, avec healthchecks et métriques ;
+- `migrate` : image one-shot contenant Prisma pour `migrate deploy`.
 
-## 3. Docker Web
-
-Le `Dockerfile` racine installe les workspaces, construit uniquement le frontend puis le sert avec Nginx :
+Démarrer le stack complet :
 
 ```bash
-docker build -t lavision:0.1.0 .
-docker run --rm -p 8080:80 --name lavision lavision:0.1.0
+npm ci
+docker compose up --build --wait
 ```
 
-L’application est disponible sur `http://localhost:8080`. Pour un déploiement public, placer le conteneur derrière le reverse proxy de la plateforme et activer HTTPS.
+Le Web est disponible sur `http://localhost:8080`, l’API sur `http://localhost:3001`. PostgreSQL et Redis utilisent des volumes locaux explicitement supprimables. Le worker n’enregistre pas encore de job métier ; il fournit le point d’ancrage supervisé pour les futures files BullMQ/outbox.
 
-Ce Dockerfile ne contient pas l’API NestJS. Une image API et sa stratégie de migration contrôlée seront traitées avec les environnements de l’issue #9.
+## 3. Staging reproductible
 
-## 4. GitHub Actions
+`deploy/compose.staging.yml` ne contient aucune instruction `build` : le déploiement utilise des images taguées de façon immutable. PostgreSQL et Redis ne sont pas publiés sur l’hôte, les logs Docker sont bornés et seuls le Web et ses appels API sont exposés par le port configuré.
 
-Le workflow `.github/workflows/ci.yml` :
+```bash
+cp deploy/staging.env.example .env.staging
+# Renseigner les secrets hors Git, puis :
+node --env-file=.env.staging scripts/deploy-staging.mjs plan
+node --env-file=.env.staging scripts/deploy-staging.mjs deploy
+```
 
-1. démarre un service PostgreSQL 16 jetable ;
-2. applique les migrations du socle et de l’authentification puis le seed fictif via la procédure d’initialisation documentée ;
-3. exécute les tests unitaires et PostgreSQL, dont les parcours #6, OpenAPI, le typecheck et le lint ;
-4. construit l’API et le frontend, puis conserve `apps/web/out/` comme artefact temporaire ;
-5. compile les installateurs Windows après la réussite de ces contrôles.
+Le script sépare migration et démarrage, vérifie les trois services et conserve un état sans secret dans `.lavision/staging-state.json`. Les mots de passe, clés et tokens ne sont jamais écrits dans les fichiers de déploiement.
 
-Il ne déploie vers aucun hébergement et ne contient aucun secret de production.
+## 4. Rollback et diagnostic
 
-## 5. Aperçu de développement
+Le rollback conserve les images précédentes et exige une confirmation explicite. Il est autorisé automatiquement uniquement lorsque l’empreinte des migrations est identique entre les deux versions ; aucune migration `down` n’est inventée.
 
-Dans Arena, le serveur Web est lié à `0.0.0.0:3000`, ce qui permet au proxy d’aperçu d’y accéder. L’API écoute sur `0.0.0.0:3001`. Aucun code navigateur ne doit appeler `localhost` pour atteindre un second service du sandbox ; le raccordement M2 utilisera des URL adaptées à l’environnement et au reverse proxy.
+```bash
+ROLLBACK_CONFIRM=YES node --env-file=.env.staging scripts/deploy-staging.mjs rollback
+```
 
-## 6. Limites actuelles
+Les endpoints de santé, les logs JSON corrélés et les métriques Prometheus protégées sont décrits dans le runbook. Les règles initiales couvrent l’API, le worker, Redis/PostgreSQL observés par le worker et les erreurs 5xx. Alertmanager et le suivi d’erreurs externe restent à choisir et tester.
 
-Un hébergement statique publie le **prototype local**. Chaque visiteur dispose de son propre jeu de données dans son navigateur. L’API contient le noyau d’authentification #6, mais le frontend ne lui est pas encore raccordé et aucune route métier n’est ouverte.
+## 5. Hébergement statique et desktop
 
-Avant une mise en production avec des données réelles :
+L’export `apps/web/out/` peut toujours être publié séparément pour la démonstration statique. Cette variante utilise les données locales du navigateur et ne déploie pas l’API ni les fonctions multiutilisateurs.
 
-1. livrer le RBAC/audit complet de #7 et raccorder les repositories frontend à l’API authentifiée ;
-2. appliquer les exigences ADR-006 au client Tauri (navigateur système, PKCE, rotation et coffre OS) ;
-3. choisir l’hébergement, les domaines, les RPO/RTO et la politique de sauvegarde ;
-4. activer HTTPS, les en-têtes de sécurité, la supervision et les alertes ;
-5. tester la restauration sur un environnement vierge ;
-6. faire valider les règles académiques locales et la confidentialité ;
-7. réaliser les tests de charge et l’audit de sécurité.
+Pour le desktop, Tauri consomme le même export et la CI produit les installateurs Windows comme artefacts temporaires. Aucun exécutable n’est versionné.
 
-Aucun nom de domaine, fournisseur cloud ou secret de production n’est supposé dans ce dépôt.
+## 6. Limites avant production
+
+Le frontend n’est pas encore raccordé à l’API authentifiée et les calculs officiels restent soumis aux validations métier de #39. Le staging de la CI est jetable et ne contient aucune donnée réelle.
+
+Avant une exploitation réelle, il faut encore :
+
+1. choisir l’hébergement, les domaines, le registre et les RPO/RTO ;
+2. gérer les secrets dans un coffre externe et tester leur rotation ;
+3. terminer TLS, la supervision externe, les alertes et le suivi d’erreurs ;
+4. définir et tester les sauvegardes chiffrées et la restauration PostgreSQL/objet sur environnement vierge ;
+5. raccorder le frontend, valider les règles locales et réaliser les tests de charge et de sécurité.

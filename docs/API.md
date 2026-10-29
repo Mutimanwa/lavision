@@ -13,9 +13,10 @@ Le workspace `apps/api` contient le monolithe modulaire NestJS/Fastify avec :
 - limitation progressive des tentatives et événements de sécurité minimisés ;
 - noyau #7 : catalogue des 13 rôles, refus par défaut, portées, relations et ressources enregistrées ;
 - gestion technique des rôles/permissions et journal d’audit append-only ;
-- tests unitaires et tests PostgreSQL exécutés en CI.
+- tests unitaires et tests PostgreSQL exécutés en CI ;
+- logs HTTP structurés avec `requestId` et métriques Prometheus protégées par un token technique.
 
-**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; moteur de règles académiques #39, calculs officiels, raccordement frontend/Tauri et déploiement de production. Les API #8 sont livrées séparément des écrans d’administration, dont le raccordement reste à faire sans réécrire la démonstration existante.
+**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; calculs officiels et stratégies métier restantes de #39, raccordement frontend/Tauri et déploiement de production. Les API #8 sont livrées séparément des écrans d’administration, dont le raccordement reste à faire sans réécrire la démonstration existante.
 
 ## 2. Démarrage vierge en une commande
 
@@ -52,6 +53,9 @@ npm run dev:api
 | `DATABASE_URL` | connexion PostgreSQL obligatoire |
 | `PORT` | port HTTP, `3001` dans l’exemple |
 | `APP_VERSION` | version technique retournée par `/version` |
+| `APP_ENV` | contexte technique `local`, `ci` ou `staging` |
+| `LOG_LEVEL` | `debug`, `info`, `warn`, `error` ou `silent` |
+| `METRICS_TOKEN` | secret technique exigé par `/metrics`, indépendant des sessions |
 | `TRUST_PROXY` | à activer uniquement avec une chaîne de reverse proxies maîtrisée |
 | `AUTH_ENCRYPTION_KEY` | 32 octets en base64 pour AES-256-GCM et les hashes pseudonymisés ; obligatoire |
 | `AUTH_COOKIE_SECURE` | `true` en production ; `false` uniquement pour le HTTP local |
@@ -63,7 +67,7 @@ La clé de chiffrement doit être générée et stockée par le coffre de secret
 
 ## 4. Endpoints techniques et d’authentification
 
-Endpoints publics techniques : `GET /api/v1/health/live`, `GET /api/v1/health/ready`, `GET /api/v1/version` et `GET /api/v1/openapi.json`.
+Endpoints publics techniques : `GET /api/v1/health/live`, `GET /api/v1/health/ready`, `GET /api/v1/version` et `GET /api/v1/openapi.json`. `GET /api/v1/metrics` est un endpoint technique protégé : sans `METRICS_TOKEN` configuré il répond `404`, et sans en-tête `Authorization: Bearer …` ou `x-metrics-token` valide il répond `403`.
 
 | Méthode et chemin | Objet |
 | --- | --- |
@@ -84,7 +88,7 @@ Endpoints publics techniques : `GET /api/v1/health/live`, `GET /api/v1/health/re
 | `POST /api/v1/auth/admin/users/:id/disable` | désactivation et révocation immédiate |
 | `POST /api/v1/auth/admin/users/:id/sessions/revoke` | révocation administrative des sessions |
 
-Les routes d’administration ci-dessus sont limitées à `technical_admin` dans l’organisation indiquée et exigent une session MFA vérifiée. Elles ne constituent pas la matrice de permissions métier de #7.
+Les routes d’administration ci-dessus sont limitées à `technical_admin` dans l’organisation indiquée et exigent une session MFA vérifiée. Elles complètent la matrice de permissions métier et les portées de #7, sans donner un accès implicite aux domaines métier.
 
 ### Cookies, CSRF et sessions
 

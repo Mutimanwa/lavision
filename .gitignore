@@ -18,6 +18,8 @@ coverage/
 .env
 .env.*
 !.env.example
+.env.staging
+.lavision/
 
 # Rust / Tauri
 src-tauri/target/

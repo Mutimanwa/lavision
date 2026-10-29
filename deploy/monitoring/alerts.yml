@@ -1,0 +1,38 @@
+groups:
+  - name: lavision-initial
+    rules:
+      - alert: LavisionApiDown
+        expr: up{job="lavision-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "L’API lavision ne répond plus aux scrapes"
+          runbook: "docs/RUNBOOK_EXPLOITATION.md#diagnostic"
+
+      - alert: LavisionWorkerDown
+        expr: up{job="lavision-worker"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Le worker lavision ne répond plus aux scrapes"
+          runbook: "docs/RUNBOOK_EXPLOITATION.md#diagnostic"
+
+      - alert: LavisionWorkerDependencyDown
+        expr: lavision_worker_dependency_up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Une dépendance Redis/PostgreSQL du worker est indisponible"
+          runbook: "docs/RUNBOOK_EXPLOITATION.md#diagnostic"
+
+      - alert: LavisionHighServerErrorRate
+        expr: sum(rate(lavision_http_requests_total{status=~"5.."}[5m])) / clamp_min(sum(rate(lavision_http_requests_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Le taux de réponses HTTP 5xx dépasse 5 %"
+          runbook: "docs/RUNBOOK_EXPLOITATION.md#diagnostic"

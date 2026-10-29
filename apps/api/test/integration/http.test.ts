@@ -9,10 +9,13 @@ import { AppModule } from "../../src/app.module.js";
 import { configureApp } from "../../src/app.setup.js";
 
 let app: NestFastifyApplication;
+let previousMetricsToken: string | undefined;
 
 describe("HTTP et PostgreSQL", () => {
   beforeAll(async () => {
     process.env.AUTH_ENCRYPTION_KEY ??= Buffer.alloc(32, 7).toString("base64");
+    previousMetricsToken = process.env.METRICS_TOKEN;
+    process.env.METRICS_TOKEN = "integration-metrics-token";
     app = await NestFactory.create<NestFastifyApplication>(
       AppModule,
       new FastifyAdapter({ genReqId: () => randomUUID() }),
@@ -25,6 +28,8 @@ describe("HTTP et PostgreSQL", () => {
 
   afterAll(async () => {
     await app.close();
+    if (previousMetricsToken === undefined) delete process.env.METRICS_TOKEN;
+    else process.env.METRICS_TOKEN = previousMetricsToken;
   });
 
   it("confirme le readiness avec une vraie requête PostgreSQL", async () => {
@@ -63,5 +68,22 @@ describe("HTTP et PostgreSQL", () => {
       code: "NOT_FOUND",
       requestId: missing.headers["x-request-id"],
     });
+  });
+
+  it("protège les métriques et expose seulement des séries techniques", async () => {
+    const fastify = app.getHttpAdapter().getInstance();
+    const denied = await fastify.inject({ method: "GET", url: "/api/v1/metrics" });
+    expect(denied.statusCode).toBe(403);
+    const response = await fastify.inject({
+      method: "GET",
+      url: "/api/v1/metrics",
+      headers: { authorization: "Bearer integration-metrics-token" },
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/plain");
+    expect(response.body).toContain("lavision_up 1");
+    expect(response.body).toContain("lavision_http_requests_total");
+    expect(response.body).not.toContain("integration-metrics-token");
+    expect(response.body).not.toContain("requestId");
   });
 });

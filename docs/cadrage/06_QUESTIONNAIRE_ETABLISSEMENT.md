@@ -1,6 +1,6 @@
 # Questionnaire de l’établissement pilote
 
-**Version :** 0.7 — 29 octobre 2026
+**Version :** 0.8 — 29 octobre 2026
 **Statut :** à renseigner avant de figer les règles de calcul
 **Références :** issues #2 et #39
 
@@ -122,10 +122,10 @@ La [base officielle RDC](07_BASE_OFFICIELLE_RDC.md) répond déjà à plusieurs 
 | Q-DEC-06 | Le rang de compétition `1, 1, 3` s’applique-t-il aux trimestres et à l’année ? | 29/10/2026 : rang de compétition sélectionné comme règle de départ ; application à chaque période et à l’année à faire valider. |
 | Q-DEC-07 | Les ex æquo sont-ils déterminés avant ou après arrondi de la moyenne ? | 29/10/2026 : avant arrondi, sur la précision interne ; deux affichages identiques peuvent donc ne pas être ex æquo. |
 | Q-DEC-08 | Les élèves incomplets apparaissent-ils dans le classement et, si oui, à quel endroit ? | 29/10/2026 : rang provisoire après les dossiers complets sélectionné, séparé du classement officiel ; numérotation exacte à valider sur exemple. |
-| Q-DEC-09 | Quelles décisions officielles existent : passage, redoublement, ajournement, exclusion, orientation ou autres ? | |
-| Q-DEC-10 | La décision est-elle entièrement calculée ou le conseil peut-il la modifier ? Avec quel motif et quelle approbation ? | 29/10/2026 : circuit général à confirmer ; pour ACA-PROP-001, orientation vers la délibération sans décision automatique sélectionnée. |
-| Q-DEC-11 | L’assiduité ou la conduite influence-t-elle la décision académique ? Selon quelle règle ? | |
-| Q-DEC-12 | Comment gérer un élève arrivé ou parti en cours d’année dans les moyennes et le classement ? | |
+| Q-DEC-09 | Quelles décisions officielles existent : passage, redoublement, ajournement, exclusion, orientation ou autres ? | 29/10/2026 : passage et redoublement sélectionnés comme décisions finales candidates ; ajournement comme état avant délibération ; textes par niveau et section à vérifier. |
+| Q-DEC-10 | La décision est-elle entièrement calculée ou le conseil peut-il la modifier ? Avec quel motif et quelle approbation ? | 29/10/2026 : résultat académique calculé, décision administrative et validation officielle séparés ; dérogation du conseil non tranchée et textes applicables à vérifier. |
+| Q-DEC-11 | L’assiduité ou la conduite influence-t-elle la décision académique ? Selon quelle règle ? | 29/10/2026 : effet configurable par programme sélectionné, avec règles bornées et datées ; aucun seuil ni effet par défaut retenu. |
+| Q-DEC-12 | Comment gérer un élève arrivé ou parti en cours d’année dans les moyennes et le classement ? | 29/10/2026 : calcul sur les seules périodes présentes sélectionné ; périodes non suivies non inventées et résultat annuel officiel soumis à une règle minimale de présence validée ; normalisation des poids à préciser. |
 | Q-DEC-13 | Qui peut rouvrir une période ou une proclamation publiée et selon quelle procédure ? | 29/10/2026 : circuit distinct de rectification avec validation pédagogique, autorisation administrative et traçabilité intégrale proposé ; personnes et délégations à définir. |
 | Q-DEC-14 | Une rectification produit-elle une nouvelle version du document et comment les destinataires sont-ils informés ? | 29/10/2026 : nouvelle version et diffusion corrective proposées, sans réécriture de l’ancienne ; canal et destinataires des notifications à définir. |
 | Q-DEC-15 | Quelles règles s’appliquent à la première délibération, au repêchage et à la deuxième délibération prévus dans le calendrier secondaire ? | |

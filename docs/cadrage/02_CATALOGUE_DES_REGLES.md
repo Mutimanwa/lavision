@@ -87,8 +87,11 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 | `academic.pass.compensation_policy` | énumération + paramètres fixes | niveau, programme | absent du prototype | direction |
 | `academic.pass.resit_policy` | liste structurée | niveau, programme | absent du prototype | direction |
 | `academic.year.aggregation` | énumération + poids bornés | niveau, programme | structure séparée des poids versionnés proposée le 29/10/2026 ; aucune valeur par défaut, validation par l’autorité compétente requise | direction |
-| `academic.year.decision_policy` | liste structurée | niveau, programme | absent du prototype | direction |
-| `academic.council.override_policy` | énumération | établissement | dérogation à autoriser ou interdire, avec motif et approbation | direction |
+| `academic.year.decision_policy` | liste structurée | niveau, section, programme | passage et redoublement proposés comme décisions finales, ajournement comme état avant délibération ; textes applicables à vérifier | direction |
+| `academic.year.midyear_policy` | énumération + règles bornées | niveau, programme | calcul sur les seules périodes présentes proposé le 29/10/2026 ; éligibilité annuelle à valider | scolarité/direction |
+| `academic.decision.attendance_policy` | liste structurée bornée | niveau, programme | effet configurable proposé le 29/10/2026, sans règle ni seuil par défaut | direction |
+| `academic.decision.conduct_policy` | liste structurée bornée | niveau, programme | effet configurable proposé le 29/10/2026, sans règle ni seuil par défaut | direction |
+| `academic.council.override_policy` | énumération | établissement | dérogation non tranchée ; résultat calculé, décision administrative et validation officielle doivent rester distincts | direction |
 | `academic.publication.incomplete_policy` | énumération | niveau | bulletin provisoire ou relevé incomplet proposé le 29/10/2026 ; aucune note ni décision annuelle inventée | direction |
 | `academic.publication.correction_policy` | énumération | établissement | circuit distinct avec validation pédagogique, autorisation administrative et nouvelle version proposé le 29/10/2026 | direction |
 | `academic.publication.family_visibility` | énumération | niveau | résultats publiés et document provisoire/incomplet explicitement marqué proposés le 29/10/2026 ; modèle à préciser | direction |
@@ -105,6 +108,9 @@ Ces principes ont été explicitement retenus pour lavision et ne sont pas remis
 - chaque branche utilise un schéma explicite ; une branche sans examen ne doit ni exiger ni recevoir une note d’examen ;
 - totaux de semestre, T.G., totaux généraux et maxima généraux réconciliés avant publication, sans correction silencieuse des écarts ;
 - aucune règle de compensation ne doit produire une note ou une décision hors domaine ;
+- résultat académique calculé, décision administrative et validation officielle sont distincts ; aucun libellé officiel n’est appliqué sans référence vérifiée pour le niveau et la section ;
+- une période antérieure à l’inscription n’est pas une note nulle ; le résultat annuel officiel exige une règle d’éligibilité validée ;
+- assiduité et conduite ne modifient un résultat que par une règle bornée, publiée et applicable au programme ;
 - le résultat simulé doit être reproductible avec la même version et les mêmes entrées.
 
 ## 5. Assiduité et vie scolaire

@@ -379,7 +379,39 @@ Décision annuelle        : non disponible
 
 Le moteur peut exposer la structure du calcul et les paramètres requis, mais il ne doit appliquer ni poids égaux, ni répartition `50/50`, ni valeur du prototype par défaut. Après publication d’une configuration complète par l’autorité compétente, un exemple chiffré sera recalculé et accepté avant de devenir une fixture de réussite.
 
-## 17. Fiche d’acceptation d’un exemple
+## 17. Cas ACA-PROP-005 — résultat, décision et validation officielle
+
+**Statut :** cas structurel préparé le 29/10/2026 ; les libellés officiels restent soumis aux textes applicables au niveau et à la section.
+
+| Couche | Contenu attendu | Ce qui est interdit |
+| --- | --- | --- |
+| Résultat académique calculé | moyennes, cours sous seuil, complétude et indicateurs de délibération | présenter ce résultat comme une décision officielle |
+| Décision administrative | état et décision choisis par le processus autorisé, avec motif et version | écraser ou falsifier le résultat calculé |
+| Validation officielle | publication après le circuit pédagogique et administratif applicable | considérer une moyenne comme une validation officielle |
+
+Dans la proposition du 29/10/2026, **Passage** et **Redoublement** sont les deux décisions annuelles finales candidates. **Ajournement** représente un état avant délibération, pas une décision annuelle finale. Ce catalogue n’est pas activé comme vérité officielle sans vérification des textes du niveau et de la section concernés.
+
+La possibilité d’une dérogation du conseil reste ouverte. Si elle est autorisée plus tard, le résultat calculé initial, la décision administrative, le motif, les validations et la version publiée devront rester des objets distincts et traçables.
+
+## 18. Cas ACA-PROP-006 — arrivée en cours d’année
+
+**Statut :** cas structurel fictif préparé le 29/10/2026 ; règle minimale de présence à faire valider.
+
+**Entrées :** un élève rejoint la classe après la première période. Les périodes réellement suivies et l’examen annuel ont des résultats. Les poids annuels sont configurés, mais la règle d’éligibilité liée à la présence minimale n’est pas encore validée.
+
+**Résultats attendus :**
+
+- la période antérieure à l’inscription est `non applicable`, jamais zéro ni note manquante à rattraper ;
+- les bulletins des périodes présentes restent calculables et publiables selon leur propre circuit ;
+- le calcul annuel provisoire n’utilise que les périodes présentes et les poids applicables ;
+- le résultat annuel officiel et le rang annuel restent indisponibles tant que l’éligibilité n’est pas validée ;
+- une fois la règle d’éligibilité publiée, le moteur applique cette version sans inventer de seuil ni recalculer les périodes non suivies.
+
+La normalisation des poids sur les périodes présentes et le traitement d’un départ puis retour restent à valider sur un exemple chiffré.
+
+**Validateur métier, date et décision :** à compléter
+
+## 19. Fiche d’acceptation d’un exemple
 
 | Champ | À compléter |
 | --- | --- |

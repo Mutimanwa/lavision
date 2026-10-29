@@ -149,7 +149,7 @@ Chaque mutation crée, dans la même transaction, une révision avant/après ave
 
 ### Catalogue et validation
 
-`GET /api/v1/rules/catalog?organizationId=...` expose les définitions typées, leurs domaines, portées autorisées, caractère obligatoire et bornes. `POST /api/v1/rules/validate` valide une valeur sans la persister. Les décimales sont normalisées en chaînes pour éviter une conversion binaire silencieuse ; formules, scripts, objets non prévus et valeurs hors bornes sont refusés. Le catalogue initial ne contient aucune valeur par défaut et reste à enrichir pour couvrir exhaustivement les listes structurées du cadrage.
+`GET /api/v1/rules/catalog?organizationId=...` expose les définitions typées, leurs domaines, portées autorisées, caractère obligatoire et bornes. Le catalogue v2 couvre les paramètres variables du cadrage, sans valeur par défaut. `POST /api/v1/rules/validate` valide une valeur sans la persister. Les décimales sont normalisées en chaînes pour éviter une conversion binaire silencieuse ; formules, scripts, objets non prévus et valeurs hors bornes sont refusés. Le type `structured` accepte uniquement des listes/objets JSON bornés pour conserver les paramètres encore incertains ; il ne vaut pas validation du schéma métier ni autorisation de calcul officiel. Les sections, options, programmes, périodes et jours non ouvrés restent des référentiels séparés, et les invariants de sécurité ne sont pas configurables.
 
 La permission générique du guard ne suffit jamais : le service vérifie aussi la permission du domaine (`rules.academic.*`, `rules.finance.*`, etc.). Les erreurs de commandes #39 peuvent contenir des `issues` `{ path, code, message }` dans le Problem Details.
 

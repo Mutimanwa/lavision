@@ -5,7 +5,7 @@
 
 ## 1. Ce qui est vérifiable dans l’API
 
-- catalogue fermé de définitions typées et validation sans évaluation de code ;
+- catalogue fermé v2 de 99 définitions typées et validation sans évaluation de code, y compris structures JSON bornées ;
 - ensembles par organisation/domaine, avec `scopeOrder` explicite et ressources de portée contrôlées ;
 - brouillons, duplication, différences, dates d’effet et statuts de workflow ;
 - résolution déterministe avec provenance, héritage, manquants et conflits ;
@@ -28,7 +28,8 @@ Les fixtures utilisent uniquement des organisations, programmes et valeurs ficti
 7. deux adaptations différentes de même portée/date signalées comme ambiguës ;
 8. l’impossibilité de modifier une version publiée par HTTP ou SQL, y compris son `archivedAt` sans transition ;
 9. une simulation complète mais hors portée qui ne permet pas la publication de la candidate ;
-10. un snapshot qui conserve le maximum de sa version après publication d’une version future.
+10. un snapshot qui conserve le maximum de sa version après publication d’une version future ;
+11. une grille d’appréciation structurée acceptée comme donnée bornée et une formule textuelle refusée.
 
 Un scénario distinct publie aussi `0–20` dans un premier établissement fictif et `0–120` dans un second, vérifie les deux résolutions et refuse la lecture croisée de leurs ensembles.
 
@@ -36,7 +37,7 @@ Le run CI PostgreSQL associé au commit courant constitue la preuve d’intégra
 
 ## 3. Limites explicites avant recette métier
 
-- Le catalogue initial ne couvre pas encore toutes les listes structurées, tables de décision et règles fiscales/paie du cahier des charges.
+- Le catalogue v2 recense les paramètres variables documentés ; les structures génériques n’ont pas encore toutes leur schéma de champs, leurs contraintes métier ou leurs exemples validés.
 - La simulation actuelle compare des configurations résolues et leur cohérence ; elle ne produit pas encore de bulletin, de moyenne, de facture ou de paie officielle.
 - Les stratégies de calcul prédéfinies et leurs exemples métier doivent être ajoutés seulement après validation des questions `RUL`, `ACA`, `FIN` et `PAY`.
 - Les entités sections/options/programmes sont des types de ressources RBAC disponibles pour leurs futurs services ; les écrans et la composition pédagogique détaillée ne sont pas livrés par ce socle.

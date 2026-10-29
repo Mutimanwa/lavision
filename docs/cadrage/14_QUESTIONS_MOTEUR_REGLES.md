@@ -3,7 +3,7 @@
 **Référence :** issue #39 — étape préalable aux simulations et aux calculs métier
 **Statut :** checklist de validation, sans valeur par défaut implicite
 
-Cette liste ne demande pas à l’établissement de deviner une valeur inconnue. Chaque réponse doit être associée à un propriétaire, une source et, pour un calcul, un exemple fictif ou anonymisé. Tant qu’une réponse obligatoire manque, la règle reste `à configurer` et le résultat officiel concerné est bloqué.
+Cette liste ne demande pas à l’établissement de deviner une valeur inconnue. Chaque réponse doit être associée à un propriétaire, une source et, pour un calcul, un exemple fictif ou anonymisé. Conformément à DEC-013, toute information absente ou incertaine est conservée comme paramètre configurable : la question reste ouverte pour la validation métier, mais ne justifie ni une constante cachée ni une valeur par défaut. Tant qu’une réponse obligatoire manque, la règle reste `à configurer` et le résultat officiel concerné est bloqué.
 
 ## 1. Résolution et cycle de publication
 

@@ -20,6 +20,7 @@
     "deploy:staging:rollback": "node scripts/deploy-staging.mjs rollback",
     "test:deployment": "node --test scripts/deployment-state.test.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
+    "check:rules": "node scripts/check-rule-catalog.mjs",
     "build": "npm run build:api && npm run build:worker && npm run build:web",
     "build:web": "npm run build --workspace @lavision/web",
     "build:api": "npm run build:packages && npm run prisma:generate && npm run build --workspace @lavision/api",

@@ -106,6 +106,7 @@ npm run build            # build API + worker + export statique Web
 npm run build:web        # frontend seul, notamment pour Tauri/Docker
 npm run test:deployment  # transitions de déploiement et règles de rollback
 npm run check:secrets    # motifs de secrets à haute confiance dans Git
+npm run check:rules      # couverture du catalogue configurable, sans valeur par défaut
 ```
 
 L’export Web est généré dans `apps/web/out/`. Les clients Prisma, builds et artefacts ne sont pas versionnés ; la migration SQL et le document OpenAPI le sont.

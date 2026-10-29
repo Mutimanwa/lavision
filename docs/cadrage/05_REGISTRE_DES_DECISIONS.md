@@ -1,6 +1,6 @@
 # Registre des décisions de cadrage
 
-**Version :** 0.11 — 29 octobre 2026
+**Version :** 0.12 — 30 octobre 2026
 **Statut :** registre actif pendant M0
 
 ## 1. Règle de tenue du registre
@@ -27,6 +27,7 @@ Ces entrées reprennent les orientations explicitement confirmées pour le proje
 | DEC-010 | La configuration suit quatre étapes : préparation, validation pédagogique, approbation et publication. Référentiels scolaires et règles académiques sont distincts et peuvent avoir des validateurs différents. | Validé — réponse produit du 29/10/2026 | permissions et circuits séparés ; aucune étape ne saute les contrôles ni ne modifie une version publiée |
 | DEC-011 | Les huit ADR sont acceptés pour l’implémentation M1 et le démarrage de #5. | Validé — réponse produit du 29/10/2026 | revues tech lead/sécurité/DevOps et preuves de mise en œuvre toujours requises ; hébergement, RPO/RTO et production non validés |
 | DEC-012 | La base des 13 rôles, les portées, le refus par défaut, l’administration technique limitée et les scénarios SEC-01 à SEC-20 servent de fondation à M1. | Validé — réponse produit du 29/10/2026 | habilitations nominatives, médical, conservation et validation des propriétaires restent à compléter ; aucune habilitation effective n’est créée par cette décision |
+| DEC-013 | Toute information absente, incertaine ou non validée est traitée comme un paramètre configurable, sans valeur officielle inventée ni repli silencieux. | Validé — demande produit du 30/10/2026 | le paramètre reste « à configurer » jusqu’à saisie et validation ; les invariants de sécurité, d’audit et d’immuabilité ne sont pas désactivables ; les calculs officiels restent bloquants si leurs prérequis manquent |
 
 ## 3. Décisions académiques ouvertes
 

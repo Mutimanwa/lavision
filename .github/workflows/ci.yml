@@ -50,8 +50,8 @@ jobs:
       - name: Unit and contract tests
         run: npm test
 
-      - name: Deployment state and secret policy tests
-        run: npm run test:deployment && npm run check:secrets
+      - name: Deployment state, secret policy and configuration coverage tests
+        run: npm run test:deployment && npm run check:secrets && npm run check:rules
 
       - name: PostgreSQL integration tests
         run: npm run test:integration

@@ -7464,7 +7464,8 @@
               "decimal",
               "enum",
               "currency",
-              "date"
+              "date",
+              "structured"
             ]
           },
           "required": {
@@ -7503,6 +7504,13 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "structure": {
+                    "type": "string",
+                    "enum": [
+                      "array",
+                      "object"
+                    ]
                   }
                 },
                 "additionalProperties": false
@@ -7599,7 +7607,8 @@
                     "decimal",
                     "enum",
                     "currency",
-                    "date"
+                    "date",
+                    "structured"
                   ]
                 },
                 "required": {
@@ -7638,6 +7647,13 @@
                           "items": {
                             "type": "string"
                           }
+                        },
+                        "structure": {
+                          "type": "string",
+                          "enum": [
+                            "array",
+                            "object"
+                          ]
                         }
                       },
                       "additionalProperties": false

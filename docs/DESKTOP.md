@@ -2,15 +2,15 @@
 
 ## Pourquoi Tauri ?
 
-**Tauri** est le framework Rust recherché. Il embarque le frontend Next.js dans la WebView du système et fournit un shell natif léger. La même base de code sert donc le web et le desktop.
+Tauri embarque le frontend Next.js dans la WebView du système et fournit un shell natif léger. La même base `apps/web` sert le Web et le desktop, sans duplication des interfaces.
 
 ## Prérequis sur Windows
 
 - Windows 10 ou 11 ;
-- Node.js 22.12+ et npm ;
+- Node.js 22.18+ et npm ;
 - Rust 1.90+ installé avec `rustup` ;
 - Microsoft C++ Build Tools ;
-- WebView2 Runtime, normalement déjà présent sur Windows à jour.
+- WebView2 Runtime, normalement présent sur Windows à jour.
 
 Vérifier l’environnement :
 
@@ -28,7 +28,7 @@ npm ci
 npm run tauri dev
 ```
 
-Tauri lance `npm run dev`, puis ouvre la fenêtre native sur `http://localhost:3000`.
+Tauri exécute `npm run dev:web`, puis ouvre la fenêtre native sur `http://localhost:3000`. PostgreSQL n’est pas nécessaire pour le prototype local actuel.
 
 ## Produire l’exécutable Windows
 
@@ -39,7 +39,7 @@ npm ci
 npm run tauri build
 ```
 
-Tauri exécute d’abord `npm run build`, intègre `out/`, compile Rust et produit notamment :
+Tauri exécute `npm run build:web`, intègre `apps/web/out/`, compile Rust et produit notamment :
 
 ```text
 src-tauri/target/release/lavision.exe
@@ -47,22 +47,22 @@ src-tauri/target/release/bundle/nsis/lavision_0.1.0_x64-setup.exe
 src-tauri/target/release/bundle/msi/lavision_0.1.0_x64_en-US.msi
 ```
 
-Les noms exacts peuvent varier selon la langue et l’architecture du bundle. L’installateur **NSIS** est le `.exe` à privilégier pour une distribution simple.
+Les noms exacts varient selon la langue et l’architecture. L’installateur **NSIS** est le `.exe` à privilégier pour une distribution simple. Le build desktop ne compile pas inutilement l’API.
 
 ## Build Windows dans GitHub Actions
 
 Le job **Windows Desktop** du workflow `.github/workflows/ci.yml` est disponible :
 
-- automatiquement après la réussite de la CI web, sur les pushes et Pull Requests ;
-- manuellement via **Actions → Web CI → Run workflow** une fois le workflow présent sur la branche principale.
+- automatiquement après la réussite de tous les contrôles, dont PostgreSQL, sur les pushes et Pull Requests ;
+- manuellement via **Actions → lavision CI → Run workflow** lorsque le workflow est présent sur la branche principale.
 
 Les bundles NSIS et MSI sont conservés comme artefacts de workflow. Aucun binaire `.exe` n’est stocké dans Git.
 
 ## Données desktop
 
-Dans cette version, les données sont stockées dans la WebView locale. Elles ne sont donc pas automatiquement copiées entre deux ordinateurs. Utiliser **Paramètres → Télécharger une sauvegarde** pour exporter un fichier JSON.
+Dans le prototype actuel, les données restent dans la WebView locale et ne sont pas copiées entre ordinateurs. **Paramètres → Télécharger une sauvegarde** permet d’exporter le JSON local.
 
-Pour un vrai mode desktop hors ligne multiutilisateur ou poste par poste, l’étape suivante est une couche SQLite pilotée par des commandes Rust, avec migrations et sauvegardes planifiées.
+La cible M1 validée est **online-first** : le client se connectera à l’API en HTTPS, sans accès direct à PostgreSQL, Redis ou S3. Le raccordement du frontend est prévu en M2 après l’authentification et les autorisations. Tout mode hors ligne robuste fera l’objet d’une conception et d’une validation séparées ; il n’est pas simulé par #5.
 
 ## Avant diffusion aux utilisateurs
 
@@ -70,7 +70,7 @@ Pour un vrai mode desktop hors ligne multiutilisateur ou poste par poste, l’é
 - vérifier l’impression et l’export PDF dans WebView2 ;
 - signer l’exécutable avec un certificat de signature de code ;
 - définir la politique de mise à jour ;
-- tester la restauration d’une sauvegarde ;
-- ajouter les règles de confidentialité de l’établissement.
+- tester la restauration des sauvegardes ;
+- faire valider les règles de confidentialité et les habilitations de l’établissement.
 
-> Le sandbox Linux utilisé pour cette itération ne contient pas Rust ni WebKit. Le frontend et la configuration Tauri ont été validés, mais le binaire Windows doit être compilé sur Windows ou par le workflow fourni.
+> Le sandbox Linux ne contient pas Rust ni WebKit. Le frontend et la configuration Tauri sont vérifiés localement ; le binaire Windows est compilé par le workflow GitHub Actions.

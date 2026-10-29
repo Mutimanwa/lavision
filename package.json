@@ -3,34 +3,42 @@
   "version": "0.1.0",
   "private": true,
   "description": "lavision — gestion scolaire de l'inscription à la proclamation",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev -H 0.0.0.0",
-    "build": "next build",
+    "dev": "npm run dev:web",
+    "dev:web": "npm run dev --workspace @lavision/web",
+    "dev:api": "npm run build:packages && npm run prisma:generate && npm run dev --workspace @lavision/api",
+    "dev:api:local": "npm run setup:local && npm run dev:api",
+    "setup:local": "node scripts/setup-local.mjs",
+    "build": "npm run build:api && npm run build:web",
+    "build:web": "npm run build --workspace @lavision/web",
+    "build:api": "npm run build:packages && npm run prisma:generate && npm run build --workspace @lavision/api",
+    "build:packages": "npm run build --workspace @lavision/contracts && npm run build --workspace @lavision/testing",
     "start": "node scripts/serve-static.mjs",
+    "start:api": "npm run start --workspace @lavision/api",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "npm run build:packages && npm run prisma:generate && npm run test --workspaces --if-present",
+    "test:watch": "npm run test:watch --workspace @lavision/web",
+    "test:integration": "npm run build:packages && npm run prisma:generate && npm run test:integration --workspace @lavision/api",
+    "typecheck": "npm run build:packages && npm run prisma:generate && npm run typecheck --workspaces --if-present",
+    "prisma:generate": "npm run prisma:generate --workspace @lavision/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace @lavision/api",
+    "prisma:seed": "npm run prisma:seed --workspace @lavision/api",
+    "openapi": "npm run build:packages && npm run openapi --workspace @lavision/api",
+    "openapi:check": "npm run build:packages && npm run openapi:check --workspace @lavision/api",
     "tauri": "tauri"
   },
   "engines": {
-    "node": ">=22.12.0"
-  },
-  "dependencies": {
-    "@fontsource-variable/dm-sans": "5.3.0",
-    "lucide-react": "1.62.0",
-    "next": "16.4.3",
-    "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "node": ">=22.18.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.3.3",
     "@tauri-apps/cli": "2.12.4",
     "@types/node": "26.6.5",
-    "@types/react": "19.3.0",
-    "@types/react-dom": "19.3.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.4.3",
-    "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "vitest": "5.0.5"
   },

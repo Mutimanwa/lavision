@@ -152,3 +152,9 @@ Tauri embarque le dossier `out/` dans une WebView native. Rust fournit le shell 
 - production : Tauri charge les fichiers statiques intégrés ;
 - données : stockage local de la WebView dans le prototype ;
 - cible future : adapter le repository local à SQLite via des commandes Rust si un mode hors ligne robuste est requis.
+
+## Cible de production — ADR proposés
+
+La cible M1 est un **monolithe modulaire NestJS**, avec PostgreSQL/Prisma, contrats OpenAPI, stockage S3 privé, worker Redis/BullMQ et clients web/Tauri authentifiés. Le schéma des flux, les frontières de domaines, les menaces et la stratégie de retour arrière sont regroupés dans le [dossier des ADR](adr/README.md).
+
+Ces documents sont datés du 29 octobre 2026 et restent **proposés** jusqu’à validation par le tech lead et le représentant métier. Ils ne décrivent pas une infrastructure déjà déployée. La cible de monorepo `apps/` et `packages/` sera appliquée progressivement en M1, sans déplacer le frontend pendant le cadrage M0.

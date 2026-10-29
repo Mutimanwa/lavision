@@ -140,6 +140,7 @@ Les artefacts sont générés sous `src-tauri/target/release/bundle/` (NSIS `.ex
 - [Base officielle RDC pour le cadrage académique](docs/cadrage/07_BASE_OFFICIELLE_RDC.md)
 - [Audit du projet initial](docs/AUDIT.md)
 - [Architecture et modèle métier](docs/ARCHITECTURE.md)
+- [ADR de l’architecture cible](docs/adr/README.md) — API, base, fichiers, worker, authentification et déploiement proposés
 - [Déploiement web](docs/DEPLOIEMENT.md)
 - [Application desktop Tauri](docs/DESKTOP.md)
 - [Feuille de route production](docs/ROADMAP.md)

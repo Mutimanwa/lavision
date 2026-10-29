@@ -9,6 +9,7 @@ export function createTestPrismaClient(): PrismaClient {
 
 export async function resetCoreDatabase(prisma: PrismaClient): Promise<void> {
   await prisma.$executeRaw`TRUNCATE TABLE "audit_events"`;
+  await prisma.$executeRaw`TRUNCATE TABLE "rule_revisions", "rule_simulations", "document_rule_snapshots", "rule_values", "rule_bindings", "rule_set_versions", "rule_sets" CASCADE`;
   await prisma.authEvent.deleteMany();
   await prisma.authRateBucket.deleteMany();
   await prisma.authSession.deleteMany();

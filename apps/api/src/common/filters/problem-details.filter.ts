@@ -65,6 +65,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
     const code = this.getExceptionCode(exception) ?? fallback.code;
     const requestId = request.id;
 
+    const issues = this.getExceptionIssues(exception);
     const problem: ProblemDetails = {
       type: "about:blank",
       title: fallback.title,
@@ -73,6 +74,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
       code: errorCodeSchema.parse(code),
       instance: request.url.startsWith("/") ? request.url : "/",
       requestId,
+      ...(issues ? { issues } : {}),
     };
 
     void reply
@@ -80,6 +82,22 @@ export class ProblemDetailsFilter implements ExceptionFilter {
       .header("content-type", "application/problem+json; charset=utf-8")
       .header("x-request-id", requestId)
       .send(problem);
+  }
+
+  private getExceptionIssues(exception: unknown): ProblemDetails["issues"] {
+    if (!(exception instanceof HttpException)) return undefined;
+    const response = exception.getResponse();
+    if (typeof response !== "object" || response === null || !("issues" in response)) {
+      return undefined;
+    }
+    if (!Array.isArray(response.issues)) return undefined;
+    const issues = response.issues.flatMap((issue) => {
+      if (typeof issue !== "object" || issue === null) return [];
+      if (!("path" in issue) || !("code" in issue) || !("message" in issue)) return [];
+      if (typeof issue.path !== "string" || typeof issue.code !== "string" || typeof issue.message !== "string") return [];
+      return [{ path: issue.path.slice(0, 160), code: issue.code.slice(0, 80), message: issue.message.slice(0, 500) }];
+    });
+    return issues.length > 0 ? issues : undefined;
   }
 
   private getExceptionCode(exception: unknown): string | undefined {

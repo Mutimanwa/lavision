@@ -22,6 +22,8 @@ export const RULE_SCOPES = [
   "site",
   "school_year",
   "level",
+  "section",
+  "option",
   "program",
   "class",
   "subject",
@@ -377,8 +379,346 @@ export const ruleValidationResponseSchema = z
   })
   .strict();
 
+export const RULE_VERSION_STATUSES = [
+  "DRAFT",
+  "IN_REVIEW",
+  "VALIDATED",
+  "APPROVED",
+  "PUBLISHED",
+  "SCHEDULED",
+  "ARCHIVED",
+] as const;
+export const RULE_SIMULATION_STATUSES = ["PASSED", "FAILED"] as const;
+export const RULE_DOCUMENT_TYPES = ["bulletin", "proclamation", "invoice", "payslip", "other"] as const;
+export const ruleVersionStatusSchema = z.enum(RULE_VERSION_STATUSES);
+export const ruleSimulationStatusSchema = z.enum(RULE_SIMULATION_STATUSES);
+export const ruleDocumentTypeSchema = z.enum(RULE_DOCUMENT_TYPES);
+
+export const ruleScopeOrderSchema = z
+  .array(ruleScopeSchema)
+  .min(1)
+  .max(RULE_SCOPES.length)
+  .superRefine((order, context) => {
+    if (order[0] !== "organization") {
+      context.addIssue({ code: "custom", message: "La portée organization doit ouvrir l’ordre d’héritage." });
+    }
+    if (new Set(order).size !== order.length) {
+      context.addIssue({ code: "custom", message: "Chaque portée ne peut apparaître qu’une fois." });
+    }
+  });
+
+export const ruleSetCreateInputSchema = z
+  .object({
+    organizationId: z.uuid(),
+    domain: ruleDomainSchema,
+    code: z.string().trim().regex(/^[A-Za-z][A-Za-z0-9_-]{0,63}$/),
+    name: z.string().trim().min(1).max(160),
+    purpose: z.string().trim().min(1).max(500),
+    scopeOrder: ruleScopeOrderSchema,
+    definitionKeys: z.array(z.string().min(1).max(160)).min(1).max(100),
+  })
+  .strict()
+  .superRefine((input, context) => {
+    if (new Set(input.definitionKeys).size !== input.definitionKeys.length) {
+      context.addIssue({ code: "custom", path: ["definitionKeys"], message: "Les définitions doivent être uniques." });
+    }
+  });
+export const ruleSetListQuerySchema = z
+  .object({
+    organizationId: z.uuid(),
+    domain: ruleDomainSchema,
+    includeArchived: z.enum(["true", "false"]).optional(),
+  })
+  .strict();
+export const ruleOrganizationQuerySchema = z
+  .object({ organizationId: z.uuid() })
+  .strict();
+export const ruleRevisionsQuerySchema = z
+  .object({ organizationId: z.uuid(), limit: z.coerce.number().int().min(1).max(100).default(50) })
+  .strict();
+
+export const ruleValueInputSchema = z
+  .object({
+    key: z.string().min(1).max(160),
+    value: z.unknown().optional(),
+    notApplicable: z.boolean().default(false),
+    reason: z.string().trim().min(1).max(500).optional(),
+  })
+  .strict()
+  .superRefine((input, context) => {
+    if (input.notApplicable && !input.reason) {
+      context.addIssue({ code: "custom", path: ["reason"], message: "Le non-applicable exige un motif." });
+    }
+    if (input.notApplicable && input.value !== undefined) {
+      context.addIssue({ code: "custom", path: ["value"], message: "Ne fournissez pas de valeur avec notApplicable." });
+    }
+    if (!input.notApplicable && input.value === undefined) {
+      context.addIssue({ code: "custom", path: ["value"], message: "Une valeur ou un non-applicable motivé est requis." });
+    }
+  });
+export const ruleBindingInputSchema = z
+  .object({ scopeType: ruleScopeSchema, scopeId: z.uuid() })
+  .strict();
+export const ruleVersionCreateInputSchema = z
+  .object({
+    organizationId: z.uuid(),
+    effectiveFrom: z.iso.date(),
+    effectiveTo: z.iso.date().optional(),
+    timezone: z.string().trim().min(1).max(64),
+    source: z.string().trim().min(1).max(500),
+    reason: z.string().trim().min(1).max(500),
+    values: z.array(ruleValueInputSchema).max(200).default([]),
+    bindings: z.array(ruleBindingInputSchema).min(1).max(20),
+  })
+  .strict();
+export const ruleVersionUpdateInputSchema = z
+  .object({
+    organizationId: z.uuid(),
+    effectiveFrom: z.iso.date().optional(),
+    effectiveTo: z.iso.date().nullable().optional(),
+    timezone: z.string().trim().min(1).max(64).optional(),
+    source: z.string().trim().min(1).max(500).optional(),
+    reason: z.string().trim().min(1).max(500).optional(),
+    values: z.array(ruleValueInputSchema).max(200).optional(),
+    bindings: z.array(ruleBindingInputSchema).min(1).max(20).optional(),
+  })
+  .strict()
+  .superRefine((input, context) => {
+    if (Object.keys(input).every((key) => key === "organizationId")) {
+      context.addIssue({ code: "custom", message: "Au moins une modification est requise." });
+    }
+  });
+export const ruleVersionActionInputSchema = z
+  .object({ organizationId: z.uuid(), reason: z.string().trim().min(1).max(500) })
+  .strict();
+export const ruleVersionDuplicateInputSchema = z
+  .object({
+    organizationId: z.uuid(),
+    targetSetId: z.uuid().optional(),
+    effectiveFrom: z.iso.date(),
+    effectiveTo: z.iso.date().optional(),
+    timezone: z.string().trim().min(1).max(64),
+    source: z.string().trim().min(1).max(500),
+    reason: z.string().trim().min(1).max(500),
+  })
+  .strict();
+
+export const ruleResolutionScopeSchema = z
+  .object({
+    siteId: z.uuid().optional(),
+    schoolYearId: z.uuid().optional(),
+    levelId: z.uuid().optional(),
+    sectionId: z.uuid().optional(),
+    optionId: z.uuid().optional(),
+    programId: z.uuid().optional(),
+    classId: z.uuid().optional(),
+    subjectId: z.uuid().optional(),
+  })
+  .strict();
+export const ruleResolveInputSchema = z
+  .object({
+    organizationId: z.uuid(),
+    ruleSetId: z.uuid(),
+    asOf: z.iso.date(),
+    scope: ruleResolutionScopeSchema,
+  })
+  .strict();
+export const ruleSimulationCaseSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    kind: z.enum(["normal", "boundary", "incomplete"]).optional(),
+    asOf: z.iso.date(),
+    scope: ruleResolutionScopeSchema,
+    input: z.unknown().optional(),
+  })
+  .strict();
+export const ruleSimulationInputSchema = z
+  .object({
+    organizationId: z.uuid(),
+    comparisonVersionId: z.uuid().optional(),
+    cases: z.array(ruleSimulationCaseSchema).min(1).max(20),
+  })
+  .strict()
+  .superRefine((input, context) => {
+    if (new Set(input.cases.map((entry) => entry.name)).size !== input.cases.length) {
+      context.addIssue({ code: "custom", path: ["cases"], message: "Les noms de cas doivent être uniques." });
+    }
+  });
+export const ruleSnapshotInputSchema = z
+  .object({
+    organizationId: z.uuid(),
+    documentType: ruleDocumentTypeSchema,
+    documentId: z.uuid(),
+    ruleSetVersionId: z.uuid(),
+    asOf: z.iso.date(),
+    scope: ruleResolutionScopeSchema,
+  })
+  .strict();
+
+export const ruleSetResponseSchema = z
+  .object({
+    id: z.uuid(),
+    organizationId: z.uuid(),
+    domain: ruleDomainSchema,
+    code: z.string(),
+    name: z.string(),
+    purpose: z.string(),
+    scopeOrder: z.array(ruleScopeSchema),
+    definitionKeys: z.array(z.string()),
+    createdById: z.uuid(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
+    archivedAt: z.iso.datetime().nullable(),
+  })
+  .strict();
+export const ruleValueResponseSchema = z
+  .object({
+    key: z.string(),
+    value: z.unknown().nullable(),
+    notApplicable: z.boolean(),
+    reason: z.string().nullable(),
+  })
+  .strict();
+export const ruleBindingResponseSchema = ruleBindingInputSchema;
+export const ruleVersionResponseSchema = z
+  .object({
+    id: z.uuid(),
+    ruleSetId: z.uuid(),
+    version: z.number().int(),
+    status: ruleVersionStatusSchema,
+    effectiveFrom: z.iso.date(),
+    effectiveTo: z.iso.date().nullable(),
+    effectiveTimezone: z.string(),
+    source: z.string(),
+    reason: z.string(),
+    contentHash: z.string().nullable(),
+    createdById: z.uuid(),
+    reviewedById: z.uuid().nullable(),
+    approvedById: z.uuid().nullable(),
+    publishedById: z.uuid().nullable(),
+    publicationSimulationId: z.uuid().nullable(),
+    submittedAt: z.iso.datetime().nullable(),
+    reviewedAt: z.iso.datetime().nullable(),
+    approvedAt: z.iso.datetime().nullable(),
+    publishedAt: z.iso.datetime().nullable(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
+    archivedAt: z.iso.datetime().nullable(),
+    values: z.array(ruleValueResponseSchema),
+    bindings: z.array(ruleBindingResponseSchema),
+  })
+  .strict();
+export const ruleSetsResponseSchema = z
+  .object({ sets: z.array(ruleSetResponseSchema) })
+  .strict();
+export const ruleSetDetailResponseSchema = z
+  .object({ set: ruleSetResponseSchema, versions: z.array(ruleVersionResponseSchema) })
+  .strict();
+
+export const ruleResolutionSourceSchema = z
+  .object({
+    versionId: z.uuid(),
+    version: z.number().int(),
+    scopeType: ruleScopeSchema,
+    scopeId: z.uuid(),
+    inherited: z.boolean(),
+  })
+  .strict();
+export const ruleResolvedValueSchema = z
+  .object({
+    key: z.string(),
+    value: z.unknown().nullable(),
+    notApplicable: z.boolean(),
+    reason: z.string().nullable(),
+    source: ruleResolutionSourceSchema,
+  })
+  .strict();
+export const ruleResolutionIssueSchema = z
+  .object({ key: z.string(), code: z.string(), message: z.string() })
+  .strict();
+export const ruleResolutionResponseSchema = z
+  .object({
+    ruleSetId: z.uuid(),
+    asOf: z.iso.date(),
+    status: z.enum(["RESOLVED", "INCOMPLETE", "CONFLICT"]),
+    values: z.array(ruleResolvedValueSchema),
+    missing: z.array(ruleResolutionIssueSchema),
+    unconfigured: z.array(z.string()),
+    conflicts: z.array(ruleResolutionIssueSchema),
+    warnings: z.array(z.string()),
+  })
+  .strict();
+export const ruleSimulationResponseSchema = z
+  .object({
+    id: z.uuid(),
+    ruleSetVersionId: z.uuid(),
+    status: ruleSimulationStatusSchema,
+    inputHash: z.string(),
+    contentHash: z.string(),
+    report: z.unknown(),
+    createdById: z.uuid(),
+    createdAt: z.iso.datetime(),
+  })
+  .strict();
+export const ruleSnapshotResponseSchema = z
+  .object({
+    id: z.uuid(),
+    organizationId: z.uuid(),
+    documentType: ruleDocumentTypeSchema,
+    documentId: z.uuid(),
+    ruleSetVersionId: z.uuid(),
+    resolved: z.unknown(),
+    contentHash: z.string(),
+    createdById: z.uuid(),
+    createdAt: z.iso.datetime(),
+  })
+  .strict();
+export const ruleDiffResponseSchema = z
+  .object({
+    fromVersionId: z.uuid(),
+    toVersionId: z.uuid(),
+    changes: z.array(
+      z.object({
+        key: z.string(),
+        change: z.enum(["added", "removed", "changed", "unchanged"]),
+        before: z.unknown().nullable(),
+        after: z.unknown().nullable(),
+      }).strict(),
+    ),
+    bindingsChanged: z.boolean(),
+    effectChanged: z.boolean(),
+  })
+  .strict();
+export const ruleRevisionResponseSchema = z
+  .object({
+    id: z.uuid(),
+    action: z.string(),
+    reason: z.string().nullable(),
+    actorUserId: z.uuid(),
+    requestId: z.uuid(),
+    before: z.unknown().nullable(),
+    after: z.unknown().nullable(),
+    createdAt: z.iso.datetime(),
+  })
+  .strict();
+export const ruleRevisionsResponseSchema = z
+  .object({ revisions: z.array(ruleRevisionResponseSchema) })
+  .strict();
+
 export type RuleDefinitionResponse = z.infer<typeof ruleDefinitionSchema>;
 export type RuleCatalogQuery = z.infer<typeof ruleCatalogQuerySchema>;
 export type RuleValidationInput = z.infer<typeof ruleValidationInputSchema>;
 export type RuleValidationIssue = z.infer<typeof ruleValidationIssueSchema>;
 export type RuleValidationResponse = z.infer<typeof ruleValidationResponseSchema>;
+export type RuleSetCreateInput = z.infer<typeof ruleSetCreateInputSchema>;
+export type RuleSetListQuery = z.infer<typeof ruleSetListQuerySchema>;
+export type RuleValueInput = z.infer<typeof ruleValueInputSchema>;
+export type RuleBindingInput = z.infer<typeof ruleBindingInputSchema>;
+export type RuleVersionCreateInput = z.infer<typeof ruleVersionCreateInputSchema>;
+export type RuleVersionUpdateInput = z.infer<typeof ruleVersionUpdateInputSchema>;
+export type RuleVersionActionInput = z.infer<typeof ruleVersionActionInputSchema>;
+export type RuleVersionDuplicateInput = z.infer<typeof ruleVersionDuplicateInputSchema>;
+export type RuleResolutionScope = z.infer<typeof ruleResolutionScopeSchema>;
+export type RuleResolveInput = z.infer<typeof ruleResolveInputSchema>;
+export type RuleSimulationInput = z.infer<typeof ruleSimulationInputSchema>;
+export type RuleSnapshotInput = z.infer<typeof ruleSnapshotInputSchema>;

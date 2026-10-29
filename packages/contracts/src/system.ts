@@ -76,6 +76,9 @@ export const problemDetailsSchema = z
     code: errorCodeSchema,
     instance: z.string().startsWith("/"),
     requestId: z.uuid(),
+    issues: z.array(
+      z.object({ path: z.string(), code: z.string(), message: z.string() }).strict(),
+    ).optional(),
   })
   .strict();
 

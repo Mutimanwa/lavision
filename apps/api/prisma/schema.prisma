@@ -64,6 +64,9 @@ enum AccessResourceType {
   NON_WORKING_DAY @map("non_working_day")
   CLASS        @map("class")
   SUBJECT      @map("subject")
+  SECTION      @map("section")
+  OPTION       @map("option")
+  PROGRAM      @map("program")
   STUDENT      @map("student")
   EMPLOYEE     @map("employee")
   NOTE         @map("note")
@@ -95,6 +98,21 @@ enum SchoolYearStatus {
   CLOSED
 }
 
+enum RuleVersionStatus {
+  DRAFT
+  IN_REVIEW
+  VALIDATED
+  APPROVED
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+enum RuleSimulationStatus {
+  PASSED
+  FAILED
+}
+
 model Organization {
   id          String                   @id @default(uuid()) @db.Uuid
   code        String                   @unique @db.VarChar(32)
@@ -108,6 +126,7 @@ model Organization {
   levels      AcademicLevel[]
   rooms       Room[]
   schoolYears SchoolYear[]
+  ruleSets    RuleSet[]
 
   @@map("organizations")
 }
@@ -461,4 +480,139 @@ model AuthRateBucket {
 
   @@unique([action, keyHash])
   @@map("auth_rate_buckets")
+}
+
+model RuleSet {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  domain         String           @db.VarChar(32)
+  code           String           @db.VarChar(64)
+  name           String           @db.VarChar(160)
+  purpose        String           @db.VarChar(500)
+  scopeOrder     Json             @db.JsonB
+  definitionKeys Json             @db.JsonB
+  nextVersion    Int              @default(1)
+  createdById    String           @db.Uuid
+  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?        @db.Timestamptz(6)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  versions       RuleSetVersion[]
+
+  @@unique([organizationId, domain, code])
+  @@index([organizationId, domain, archivedAt])
+  @@map("rule_sets")
+}
+
+model RuleSetVersion {
+  id                      String              @id @default(uuid()) @db.Uuid
+  ruleSetId               String              @db.Uuid
+  version                 Int
+  status                  RuleVersionStatus   @default(DRAFT)
+  effectiveFrom           DateTime            @db.Date
+  effectiveTo             DateTime?           @db.Date
+  effectiveTimezone       String              @db.VarChar(64)
+  source                  String              @db.VarChar(500)
+  reason                  String              @db.VarChar(500)
+  contentHash             String?             @db.Char(64)
+  createdById             String              @db.Uuid
+  reviewedById            String?             @db.Uuid
+  approvedById            String?             @db.Uuid
+  publishedById           String?             @db.Uuid
+  publicationSimulationId String?             @db.Uuid
+  submittedAt             DateTime?           @db.Timestamptz(6)
+  reviewedAt              DateTime?           @db.Timestamptz(6)
+  approvedAt              DateTime?           @db.Timestamptz(6)
+  publishedAt             DateTime?           @db.Timestamptz(6)
+  createdAt               DateTime            @default(now()) @db.Timestamptz(6)
+  updatedAt               DateTime            @updatedAt @db.Timestamptz(6)
+  archivedAt              DateTime?           @db.Timestamptz(6)
+  ruleSet                 RuleSet             @relation(fields: [ruleSetId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  values                  RuleValue[]
+  bindings                RuleBinding[]
+  simulations             RuleSimulation[]
+  snapshots               DocumentRuleSnapshot[]
+  revisions               RuleRevision[]
+
+  @@unique([ruleSetId, version])
+  @@index([ruleSetId, status, effectiveFrom, effectiveTo])
+  @@map("rule_set_versions")
+}
+
+model RuleValue {
+  id                String         @id @default(uuid()) @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  definitionKey     String         @db.VarChar(160)
+  value             Json?          @db.JsonB
+  notApplicable     Boolean        @default(false)
+  reason            String?        @db.VarChar(500)
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([ruleSetVersionId, definitionKey])
+  @@index([definitionKey])
+  @@map("rule_values")
+}
+
+model RuleBinding {
+  id                String         @id @default(uuid()) @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  scopeType         String         @db.VarChar(32)
+  scopeId           String         @db.Uuid
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([ruleSetVersionId, scopeType, scopeId])
+  @@index([scopeType, scopeId])
+  @@map("rule_bindings")
+}
+
+model RuleSimulation {
+  id                String              @id @default(uuid()) @db.Uuid
+  organizationId    String              @db.Uuid
+  ruleSetVersionId  String              @db.Uuid
+  status            RuleSimulationStatus
+  input             Json                @db.JsonB
+  report            Json                @db.JsonB
+  inputHash         String              @db.Char(64)
+  contentHash       String              @db.Char(64)
+  createdById       String              @db.Uuid
+  createdAt         DateTime            @default(now()) @db.Timestamptz(6)
+  ruleSetVersion    RuleSetVersion      @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([ruleSetVersionId, createdAt])
+  @@index([organizationId, createdAt])
+  @@map("rule_simulations")
+}
+
+model DocumentRuleSnapshot {
+  id                String         @id @default(uuid()) @db.Uuid
+  organizationId    String         @db.Uuid
+  documentType      String         @db.VarChar(32)
+  documentId        String         @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  resolved          Json           @db.JsonB
+  contentHash       String         @db.Char(64)
+  createdById       String         @db.Uuid
+  createdAt         DateTime       @default(now()) @db.Timestamptz(6)
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([documentType, documentId, ruleSetVersionId])
+  @@index([organizationId, documentType, documentId])
+  @@map("document_rule_snapshots")
+}
+
+model RuleRevision {
+  id                String         @id @default(uuid()) @db.Uuid
+  organizationId    String         @db.Uuid
+  ruleSetVersionId  String         @db.Uuid
+  action            String         @db.VarChar(64)
+  reason            String?        @db.VarChar(500)
+  actorUserId       String         @db.Uuid
+  requestId         String         @db.Uuid
+  before            Json?          @db.JsonB
+  after             Json?          @db.JsonB
+  createdAt         DateTime       @default(now()) @db.Timestamptz(6)
+  ruleSetVersion    RuleSetVersion @relation(fields: [ruleSetVersionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([organizationId, ruleSetVersionId, createdAt])
+  @@map("rule_revisions")
 }

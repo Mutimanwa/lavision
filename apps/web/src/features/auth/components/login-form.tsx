@@ -41,7 +41,7 @@ export function LoginForm() {
     setPassword("");
     setChallenge(null);
     setSetup(null);
-    router.push(returnTo);
+    router.replace(returnTo);
   }
 
   async function startSetup(challengeToken: string) {

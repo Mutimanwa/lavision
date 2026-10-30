@@ -6,7 +6,7 @@ Le dépôt est un monorepo **Next.js / NestJS / PostgreSQL**. Il contient le pro
 
 ## État actuel
 
-- **Web et desktop :** prototype Next.js, TypeScript, Tailwind CSS et Tauri. Les modules de démonstration restent locaux ; **Paramètres → Configuration scolaire** dispose désormais d’un premier parcours API authentifié pour le catalogue et les brouillons de règles.
+- **Web et desktop :** prototype Next.js, TypeScript, Tailwind CSS et Tauri. Les modules de démonstration restent locaux ; la route **Connexion** utilise les cookies API, la MFA TOTP et les codes de récupération, et **Paramètres → Configuration scolaire** dispose d’un premier parcours API authentifié pour le catalogue et les brouillons de règles.
 - **API :** socle NestJS/Fastify versionné sous `/api/v1`, contrats Zod/OpenAPI, authentification/MFA, RBAC à portées, référentiels #8 et moteur technique #39.
 - **Base et worker :** PostgreSQL/Prisma, migrations contrôlées, seed fictif, Redis et worker technique supervisé, sans job métier officiel.
 - **Exploitation :** images Web/API/worker/migration, Compose local et staging, logs JSON, métriques protégées et exercice de rollback.
@@ -20,6 +20,7 @@ Le dépôt est un monorepo **Next.js / NestJS / PostgreSQL**. Il contient le pro
 apps/
 ├── web/                       # frontend Next.js et features existantes
 │   ├── src/app/(school)/      # route groups, URL publiques inchangées
+│   ├── src/app/(auth)/        # connexion Web et parcours MFA
 │   ├── src/components/        # composants réutilisables partagés
 │   ├── src/features/          # pages, hooks, services et données métier
 │   ├── src/lib/               # types et calculs purs du prototype
@@ -78,7 +79,7 @@ Endpoints disponibles sur `http://localhost:3001` :
 | `GET /api/v1/version` | nom et versions du service/API |
 | `GET /api/v1/openapi.json` | document OpenAPI 3.1 |
 
-Les routes `/api/v1/auth/*` couvrent désormais invitation, sessions, récupération et MFA. Elles sont décrites avec leurs critères de sécurité dans [`docs/API.md`](docs/API.md). Le premier raccordement frontend utilise la session existante, sans la simuler : sélection de l’établissement, catalogue, validation d’une valeur et création d’un brouillon de règle.
+Les routes `/api/v1/auth/*` couvrent désormais invitation, sessions, récupération et MFA. Elles sont décrites avec leurs critères de sécurité dans [`docs/API.md`](docs/API.md). Le parcours Web `/connexion` consomme la connexion, le challenge MFA, l’enrôlement TOTP et la récupération sans exposer de jeton de session au JavaScript ni utiliser le stockage local ; le parcours de configuration utilise ensuite la session réelle pour sélectionner l’établissement, consulter le catalogue, valider une valeur et créer un brouillon de règle.
 
 Pour arrêter les conteneurs : `docker compose down`. Le volume local peut être supprimé explicitement avec `docker compose down -v` si toutes les données locales jetables peuvent être perdues.
 

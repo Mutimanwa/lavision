@@ -17,6 +17,7 @@ import {
   FileBarChart,
   GraduationCap,
   LayoutDashboard,
+  LogIn,
   Menu,
   NotebookPen,
   Search,
@@ -385,6 +386,7 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
       </div>
       <div className="user-popup-school"><strong>{state.settings.schoolName}</strong><small>{workspace.scopeLabel}</small></div>
       <nav className="user-popup-links" aria-label="Liens du compte">
+        <Link href="/connexion/" onClick={() => setOpen(false)}><LogIn size={16} /> Connexion API sécurisée</Link>
         <Link href="/modules/" onClick={() => setOpen(false)}><Blocks size={16} /> Modules et activation</Link>
         {quickLinks.map((module) => {
           const Icon = MODULE_ICONS[module.id] ?? Blocks;
@@ -418,6 +420,7 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const isAuthRoute = pathname === "/connexion" || pathname === "/connexion/";
   const { state, hydrated } = useSchool();
   const { role, workspace } = useWorkspace();
   const { modules } = useModules();
@@ -441,6 +444,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
+
+  if (isAuthRoute) return <>{children}</>;
 
   const moduleLinks = (
     <>

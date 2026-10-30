@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
+import Link from "next/link";
 import type { RuleDefinitionResponse, RuleDomain, RuleValidationResponse } from "@lavision/contracts";
 import { ApiError } from "@/lib/api-client";
 import { useRuleConfiguration } from "../hooks/use-rule-configuration";
@@ -199,6 +200,7 @@ export function RuleConfigurationManager() {
           <strong>Session API requise.</strong>
           <p>Connectez-vous avec le compte de l’établissement pour consulter ou préparer une configuration. Aucun compte de démonstration n’est utilisé ici.</p>
           <div className="button-row">
+            <Link className="button button-primary" href="/connexion/?next=%2Fparametres%2F">Se connecter à l’API</Link>
             <button className="button button-secondary" type="button" onClick={() => void reloadSession()}>Revérifier la session</button>
           </div>
         </div>

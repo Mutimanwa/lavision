@@ -2798,6 +2798,147 @@
   }
 }
 
+@layer components {
+  .auth-screen {
+    @apply flex min-h-screen items-center justify-center px-5 py-10;
+    background: radial-gradient(circle at 10% 0%, #e6f2ec 0, transparent 42%), #f5f8f6;
+  }
+
+  .auth-card {
+    @apply w-full max-w-[500px] rounded-[20px] border bg-white p-7 shadow-xl;
+    border-color: #e0e9e4;
+  }
+
+  .auth-brand-row {
+    @apply mb-9 flex items-center justify-between gap-3;
+  }
+
+  .auth-brand {
+    @apply inline-flex items-center gap-2 text-[20px] font-bold tracking-[-0.8px];
+    color: var(--brand-dark);
+  }
+
+  .auth-brand-mark {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-[14px] font-bold lowercase text-white;
+    background: var(--brand);
+  }
+
+  .auth-secure-label {
+    @apply inline-flex items-center gap-1.5 text-[10px] font-medium text-slate-400;
+  }
+
+  .auth-heading {
+    @apply mb-6;
+  }
+
+  .auth-heading h1 {
+    @apply mb-2 mt-2 text-[28px] font-bold leading-tight tracking-[-1px] text-slate-900;
+  }
+
+  .auth-heading > p:last-child {
+    @apply mb-0 text-[12px] leading-relaxed text-slate-500;
+  }
+
+  .auth-form {
+    @apply flex flex-col gap-4;
+  }
+
+  .auth-form .form-field > span {
+    @apply text-[11px] font-semibold text-slate-700;
+  }
+
+  .auth-submit {
+    @apply mt-1 w-full;
+  }
+
+  .auth-notice {
+    @apply mt-6 flex items-start gap-2.5 rounded-[10px] bg-slate-50 p-3 text-slate-500;
+  }
+
+  .auth-notice > svg {
+    @apply mt-0.5 shrink-0;
+    color: var(--brand);
+  }
+
+  .auth-notice p {
+    @apply m-0 text-[10px] leading-relaxed;
+  }
+
+  .auth-back,
+  .auth-secondary-action {
+    @apply mb-5 inline-flex items-center gap-2 border-0 bg-transparent p-0 text-[11px] font-semibold;
+    color: var(--brand);
+  }
+
+  .auth-secondary-action {
+    @apply mb-0 mt-4;
+  }
+
+  .auth-enrollment {
+    @apply mb-5 rounded-[10px] border p-3;
+    border-color: #dce8e1;
+    background: #f6faf8;
+  }
+
+  .auth-loading {
+    @apply m-0 inline-flex items-center gap-2 text-[11px] text-slate-500;
+  }
+
+  .auth-secret {
+    @apply flex flex-col gap-2;
+  }
+
+  .auth-secret > span {
+    @apply text-[10px] font-semibold text-slate-600;
+  }
+
+  .auth-secret code {
+    @apply break-all rounded-[7px] border bg-white px-3 py-2 text-center text-[16px] font-bold tracking-[2px];
+    border-color: #cfe0d6;
+    color: var(--brand-dark);
+  }
+
+  .auth-uri {
+    @apply mt-3 text-[10px] text-slate-500;
+  }
+
+  .auth-uri code {
+    @apply mt-2 block break-all rounded-[6px] bg-white p-2 text-[9px] leading-relaxed;
+  }
+
+  .auth-code-input {
+    @apply text-center text-[22px] font-bold tracking-[8px];
+  }
+
+  .recovery-code-list {
+    @apply mb-5 grid grid-cols-2 gap-2 rounded-[10px] bg-slate-50 p-4;
+    list-style: none;
+  }
+
+  .recovery-code-list code {
+    @apply text-[12px] font-semibold tracking-[1px] text-slate-700;
+  }
+
+  .auth-confirmation {
+    @apply mb-5 flex items-start gap-2 text-[11px] leading-relaxed text-slate-600;
+  }
+
+  .auth-confirmation input {
+    @apply mt-0.5 min-h-0 w-4 shrink-0;
+    accent-color: var(--brand);
+  }
+
+  .auth-footer {
+    @apply mb-0 mt-7 border-t pt-4 text-center text-[10px] leading-relaxed text-slate-400;
+    border-color: var(--line);
+  }
+
+  .auth-footer a {
+    @apply ml-1 font-semibold;
+    color: var(--brand);
+  }
+}
+
 @media (max-width: 900px) {
   .rule-config-context,
   .rule-config-layout {

@@ -2,7 +2,7 @@
 
 ## 1. Vue d’ensemble
 
-lavision distingue désormais le **prototype fonctionnel local** du **socle serveur M1**. Le déplacement du frontend dans le monorepo ne change ni ses routes, ni ses features, ni sa persistance actuelle. Le raccordement des repositories à l’API interviendra en M2 avec l’authentification et les autorisations.
+lavision distingue désormais le **prototype fonctionnel local** du **socle serveur M1**. Le déplacement du frontend dans le monorepo ne change ni ses routes métier, ni ses features, ni sa persistance actuelle. La connexion Web et la MFA sont raccordées au socle ; le raccordement des autres repositories à l’API interviendra progressivement avec les autorisations et les parcours métier.
 
 Le parcours fonctionnel existant reste organisé autour d’un modèle académique partagé :
 
@@ -37,7 +37,7 @@ Les dépendances vont des applications vers les packages partagés. Le frontend 
 
 ## 3. Frontend
 
-- **App Router** : routes organisées dans `(school)` et ses sous-groupes `(dashboard)`, `(people)`, `(academic)` et `(configuration)` ; les parenthèses ne modifient pas les URL ;
+- **App Router** : routes métier organisées dans `(school)` et ses sous-groupes `(dashboard)`, `(people)`, `(academic)` et `(configuration)` ; la route `(auth)/connexion` est isolée du shell de démonstration ; les parenthèses ne modifient pas les URL ;
 - **pages `app` minimales** : métadonnées et appel des pages de features, sans duplication de logique métier ;
 - **composants clients** : formulaires et interactions préfixés par `use client` ;
 - **SchoolProvider** : état local partagé et opérations du prototype ;
@@ -54,7 +54,10 @@ apps/web/src/
 │   ├── layout/                   # shell et navigation communs
 │   └── ui/                       # primitives UI et tableau générique
 ├── features/
-│   ├── auth/data/                # catalogue initial des rôles
+│   ├── auth/                     # connexion/MFA Web et catalogue des rôles
+│   │   ├── components/           # formulaire de connexion et récupération
+│   │   ├── services/             # appels API et retour interne sécurisé
+│   │   └── data/                 # aperçu local des rôles, sans habilitation
 │   ├── dashboard/pages/
 │   ├── students/pages/
 │   ├── enrollments/pages/
@@ -83,7 +86,7 @@ features/<feature>/
 └── data/                         # constantes ou données locales
 ```
 
-Les dossiers ne sont créés que lorsqu’ils ont un contenu réel. La feature `auth` contient le catalogue fonctionnel des rôles ; cela ne simule pas une authentification ou un RBAC serveur.
+Les dossiers ne sont créés que lorsqu’ils ont un contenu réel. La feature `auth` contient le parcours Web de connexion/MFA et le catalogue fonctionnel des rôles. Les appels d’authentification utilisent l’API ; le sélecteur de rôle reste un aperçu local et ne simule ni une session ni un RBAC serveur.
 
 Règles de dépendance :
 
@@ -148,7 +151,7 @@ SchoolRepository (interface)
 
 L’API devra valider les entrées, appliquer les permissions et portées, recalculer ou vérifier les décisions sensibles et empêcher qu’un client impose directement une moyenne, un rang ou une publication. L’authentification/MFA (#6) et le RBAC/audit (#7) précèdent ce raccordement métier.
 
-La première tranche est volontairement indépendante du `SchoolProvider` local : `features/configuration` lit la session API, les memberships et le catalogue, puis crée des versions `DRAFT`. Le navigateur ne connaît que `/api/v1` ; Nginx ou le proxy côté serveur de `scripts/serve-static.mjs` fournit la même origine. Le shell Tauri reste soumis à ADR-006 et ne réutilise pas ce client de cookies WebView.
+La première tranche est volontairement indépendante du `SchoolProvider` local : `features/auth` ouvre une session API par cookies avec challenge MFA, puis `features/configuration` lit cette session, les memberships et le catalogue, avant de créer des versions `DRAFT`. Le navigateur ne connaît que `/api/v1` ; Nginx ou le proxy côté serveur de `scripts/serve-static.mjs` fournit la même origine. Le shell Tauri reste soumis à ADR-006 et ne réutilise pas ce client de cookies WebView.
 
 ## 8. Desktop
 

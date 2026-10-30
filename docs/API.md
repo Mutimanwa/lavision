@@ -16,7 +16,7 @@ Le workspace `apps/api` contient le monolithe modulaire NestJS/Fastify avec :
 - tests unitaires et tests PostgreSQL exécutés en CI ;
 - logs HTTP structurés avec `requestId` et métriques Prometheus protégées par un token technique.
 
-**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; calculs officiels et stratégies métier restantes de #39, raccordement frontend/Tauri et déploiement de production. Les API #8 sont livrées séparément des écrans d’administration, dont le raccordement reste à faire sans réécrire la démonstration existante.
+**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; calculs officiels et stratégies métier restantes de #39, raccordement des autres modules frontend/Tauri et déploiement de production. Les API #8 sont livrées séparément des écrans d’administration, dont le raccordement reste à faire sans réécrire la démonstration existante.
 
 ## 2. Démarrage vierge en une commande
 
@@ -152,6 +152,10 @@ Chaque mutation crée, dans la même transaction, une révision avant/après ave
 `GET /api/v1/rules/catalog?organizationId=...` expose les définitions typées, leurs domaines, portées autorisées, caractère obligatoire et bornes. Le catalogue v2 couvre les paramètres variables du cadrage, sans valeur par défaut. `POST /api/v1/rules/validate` valide une valeur sans la persister. Les décimales sont normalisées en chaînes pour éviter une conversion binaire silencieuse ; formules, scripts, objets non prévus et valeurs hors bornes sont refusés. Le type `structured` accepte uniquement des listes/objets JSON bornés pour conserver les paramètres encore incertains ; il ne vaut pas validation du schéma métier ni autorisation de calcul officiel. Les sections, options, programmes, périodes et jours non ouvrés restent des référentiels séparés, et les invariants de sécurité ne sont pas configurables.
 
 La permission générique du guard ne suffit jamais : le service vérifie aussi la permission du domaine (`rules.academic.*`, `rules.finance.*`, etc.). Les erreurs de commandes #39 peuvent contenir des `issues` `{ path, code, message }` dans le Problem Details.
+
+### Parcours frontend de connexion et MFA
+
+La route Web `/connexion` (`app/(auth)/connexion`) appelle `POST /auth/login`, puis selon la réponse `POST /auth/mfa/setup`, `POST /auth/mfa/setup/confirm`, `POST /auth/mfa/verify` ou `POST /auth/mfa/recovery`. Le cookie de session est émis par l’API ; le formulaire ne conserve ni mot de passe, ni challenge, ni codes de récupération dans `localStorage`. Le secret TOTP et les dix codes de récupération sont seulement affichés dans l’état React de l’étape concernée ; la poursuite après l’enrôlement exige une confirmation explicite de leur conservation. Le paramètre de retour `next` est limité à une route interne et ne peut pas devenir une redirection externe. Cette interface ne transforme pas les rôles de démonstration en habilitations : celles-ci restent déterminées par l’API et ses memberships.
 
 ### Premier parcours frontend de configuration
 

@@ -68,7 +68,7 @@ La cible M1 validée est **online-first** : le client se connectera à l’API e
 
 Le shell Tauri ne doit pas recevoir directement les cookies de session ni les jetons durables dans la WebView. Lors du raccordement M2, appliquer ADR-006 : ouvrir le parcours dans le **navigateur système**, utiliser **PKCE**, échanger des jetons courts avec rotation et conserver les secrets dans le **coffre de l’OS**. Aucun jeton durable ne doit être placé dans `localStorage` ou dans un fichier de la WebView. L’API reste la seule autorité pour les sessions, la MFA et la révocation.
 
-En attendant ce pont natif, le parcours **Paramètres → Configuration scolaire** est réservé au Web servi avec son proxy même-origine. Le client détecte le shell Tauri et affiche une indisponibilité explicite, y compris si une URL d’API serait injectée au build : contourner cette protection avec des cookies WebView ne serait pas conforme à ADR-006.
+En attendant ce pont natif, les parcours **Connexion/MFA** et **Paramètres → Configuration scolaire** sont réservés au Web servi avec son proxy même-origine. Le client détecte le shell Tauri et affiche une indisponibilité explicite, y compris si une URL d’API serait injectée au build : contourner cette protection avec des cookies WebView ne serait pas conforme à ADR-006.
 
 ## Avant diffusion aux utilisateurs
 

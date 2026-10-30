@@ -153,6 +153,14 @@ Chaque mutation crée, dans la même transaction, une révision avant/après ave
 
 La permission générique du guard ne suffit jamais : le service vérifie aussi la permission du domaine (`rules.academic.*`, `rules.finance.*`, etc.). Les erreurs de commandes #39 peuvent contenir des `issues` `{ path, code, message }` dans le Problem Details.
 
+### Premier parcours frontend de configuration
+
+L’écran **Paramètres → Configuration scolaire** de `apps/web` utilise le client `src/lib/api-client.ts` et les services de `src/features/configuration`. Il appelle `GET /auth/me`, filtre les établissements réellement présents dans les memberships, puis consulte `GET /rules/catalog`. Une valeur est validée par `POST /rules/validate` avant la préparation ; les décimales restent des chaînes et aucune valeur vide n’est convertie en défaut.
+
+L’enregistrement recherche un `RuleSet` API compatible avec la définition et ses portées, le crée si nécessaire, puis appelle uniquement `POST /rules/sets/:id/versions` avec un binding `organization` explicite et les métadonnées de traçabilité saisies. Un paramètre facultatif peut aussi être enregistré comme `notApplicable` avec son motif, sans envoyer de valeur ; une règle obligatoire ne peut pas utiliser ce choix. Les codes techniques sont déterministes, bornés et ne transportent pas la valeur métier. L’écran n’appelle aucune route de soumission, revue, approbation ou publication. Les portées plus précises (section, option, programme, cours) restent des bindings à configurer dans leur parcours métier ; une valeur de cours n’est jamais déduite de la seule organisation.
+
+Le client utilise exclusivement les URLs relatives `/api/v1` avec `credentials: include` et l’en-tête `x-csrf-token` lu du cookie non HttpOnly. Le proxy Nginx du stack fournit cette même origine ; pour l’export statique servi par `npm start`, `API_PROXY_TARGET` configure le proxy **côté serveur**. Un hébergement de fichiers sans proxy ne peut pas fournir ce parcours authentifié. Le shell Tauri est volontairement refusé par ce client de cookies : ADR-006 exige un futur pont navigateur système/PKCE et coffre OS, pas une URL distante avec des cookies WebView. Les réponses `401`, `403` et les Problem Details sont présentées sans créer de session ou de configuration locale parallèle.
+
 ### Sets, portées et versions
 
 Un `RuleSet` appartient à une organisation et un domaine, déclare ses `definitionKeys` et son `scopeOrder`. Cet ordre est obligatoire et visible : le moteur ne choisit pas silencieusement une priorité métier encore ouverte. Les bindings référencent des ressources RBAC de la même organisation ; les types `section`, `option` et `program` sont disponibles pour les futurs référentiels académiques.

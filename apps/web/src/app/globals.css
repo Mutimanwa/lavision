@@ -2585,6 +2585,244 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@layer components {
+  .notice-info {
+    border-color: #dce8ef;
+    background: #f0f7fa;
+    color: #41677a;
+  }
+
+  .notice-error {
+    border-color: #f0d4d8;
+    background: #fff3f4;
+    color: #9d4652;
+  }
+
+  .rule-config {
+    @apply mt-5 p-5;
+  }
+
+  .rule-config .section-heading {
+    @apply mb-5 flex items-start justify-between gap-4 border-b pb-4;
+    border-color: var(--line);
+  }
+
+  .rule-config .section-heading h2 {
+    @apply m-0 text-[18px] font-bold tracking-[-0.3px];
+  }
+
+  .rule-config .section-heading p {
+    @apply mb-0 mt-1.5 max-w-[720px] text-[11px] leading-relaxed text-slate-500;
+  }
+
+  .rule-config-context {
+    @apply mb-4 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_220px] items-end gap-4;
+  }
+
+  .rule-config .field {
+    @apply flex min-w-0 flex-col gap-1.5;
+  }
+
+  .rule-config .field > span,
+  .rule-config-source legend {
+    @apply text-[11px] font-semibold text-slate-700;
+  }
+
+  .rule-config-session {
+    @apply flex min-w-0 flex-col rounded-[9px] bg-slate-50 px-3 py-2;
+  }
+
+  .rule-config-session .eyebrow {
+    @apply mb-0.5 text-[8px];
+  }
+
+  .rule-config-session strong {
+    @apply truncate text-[11px];
+  }
+
+  .rule-config-session small {
+    @apply mt-0.5 truncate text-[9px] text-slate-500;
+  }
+
+  .rule-config .notice {
+    @apply block;
+  }
+
+  .rule-config .notice p {
+    @apply mb-0 mt-1;
+  }
+
+  .rule-config-note {
+    @apply mb-5;
+  }
+
+  .rule-config-layout {
+    @apply grid grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)] items-start gap-5;
+  }
+
+  .rule-config-catalog {
+    @apply min-w-0 overflow-hidden rounded-[11px] border;
+    border-color: var(--line);
+  }
+
+  .rule-config-catalog-header {
+    @apply flex items-start justify-between gap-3 border-b bg-slate-50/60 px-4 py-3;
+    border-color: var(--line);
+  }
+
+  .rule-config-catalog-header h3 {
+    @apply m-0 text-[14px];
+  }
+
+  .rule-config-catalog-header p {
+    @apply mb-0 mt-1 text-[10px] text-slate-500;
+  }
+
+  .rule-config-search {
+    @apply border-b px-4 py-3;
+    border-color: var(--line);
+  }
+
+  .rule-definition-list {
+    @apply flex max-h-[580px] flex-col overflow-y-auto p-2;
+  }
+
+  .rule-definition-item {
+    @apply flex w-full flex-col gap-1.5 rounded-[8px] border border-transparent bg-transparent px-3 py-3 text-left transition hover:bg-slate-50;
+  }
+
+  .rule-definition-item.is-selected {
+    border-color: #c9e2d7;
+    background: var(--brand-soft);
+  }
+
+  .rule-definition-item-top {
+    @apply flex items-center justify-between gap-2;
+  }
+
+  .rule-definition-item code {
+    @apply max-w-[65%] truncate text-[9px] text-slate-500;
+  }
+
+  .rule-definition-item strong {
+    @apply text-[12px] font-semibold text-slate-800;
+  }
+
+  .rule-definition-item small {
+    @apply text-[9px] leading-relaxed text-slate-500;
+  }
+
+  .rule-config-editor {
+    @apply min-w-0 rounded-[11px] border p-5;
+    border-color: var(--line);
+  }
+
+  .rule-config-editor-heading {
+    @apply mb-3 flex items-start justify-between gap-3;
+  }
+
+  .rule-config-editor-heading h3 {
+    @apply m-0 text-[17px];
+  }
+
+  .rule-config-editor > form > p {
+    @apply text-[11px] leading-relaxed text-slate-500;
+  }
+
+  .rule-config-metadata {
+    @apply mb-5 grid grid-cols-3 gap-3 rounded-[9px] bg-slate-50 p-3;
+  }
+
+  .rule-config-metadata div {
+    @apply min-w-0;
+  }
+
+  .rule-config-metadata dt {
+    @apply mb-1 text-[9px] font-bold uppercase tracking-[0.6px] text-slate-400;
+  }
+
+  .rule-config-metadata dd {
+    @apply m-0 break-words text-[10px] leading-relaxed text-slate-700;
+  }
+
+  .rule-config-metadata code {
+    @apply break-all text-[9px] font-normal;
+  }
+
+  .rule-config-na {
+    @apply mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-slate-600;
+  }
+
+  .rule-config-na input {
+    @apply mt-0.5 h-4 min-h-0 w-4 shrink-0 accent-emerald-700;
+  }
+
+  .rule-config-source {
+    @apply mb-5 mt-5 flex flex-col gap-4 rounded-[9px] border p-4;
+    border-color: var(--line);
+  }
+
+  .rule-config-source legend {
+    @apply px-1;
+  }
+
+  .rule-config-issues {
+    @apply mb-4 list-disc rounded-[9px] border px-7 py-3 text-[11px] leading-relaxed;
+    border-color: #f0d4d8;
+    background: #fff3f4;
+    color: #9d4652;
+  }
+
+  .rule-config-issues code {
+    @apply mr-1 text-[10px];
+  }
+
+  .rule-config .button-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .rule-config .notice .button-row {
+    @apply mt-3;
+  }
+
+  .field-help {
+    @apply mb-0 mt-3 text-[10px] leading-relaxed text-slate-400;
+  }
+
+  .rule-config-state {
+    @apply rounded-[9px] bg-slate-50 px-4 py-5 text-center text-[12px] text-slate-500;
+  }
+
+  .rule-config-empty {
+    @apply px-3 py-5 text-center text-[11px] text-slate-500;
+  }
+}
+
+@media (max-width: 900px) {
+  .rule-config-context,
+  .rule-config-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rule-config-session {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .rule-config {
+    padding: 16px;
+  }
+
+  .rule-config .section-heading {
+    flex-direction: column;
+  }
+
+  .rule-config-metadata {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (min-width: 1280px) {
   .topbar-page-name { display: block; }
   .global-search { margin-left: 22px; }

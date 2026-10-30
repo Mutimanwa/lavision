@@ -6,13 +6,13 @@ Le dépôt est un monorepo **Next.js / NestJS / PostgreSQL**. Il contient le pro
 
 ## État actuel
 
-- **Web et desktop :** prototype fonctionnel local avec Next.js, TypeScript, Tailwind CSS et Tauri. Les données de démonstration restent dans `localStorage` jusqu’au raccordement prévu en M2.
+- **Web et desktop :** prototype Next.js, TypeScript, Tailwind CSS et Tauri. Les modules de démonstration restent locaux ; **Paramètres → Configuration scolaire** dispose désormais d’un premier parcours API authentifié pour le catalogue et les brouillons de règles.
 - **API :** socle NestJS/Fastify versionné sous `/api/v1`, contrats Zod/OpenAPI, authentification/MFA, RBAC à portées, référentiels #8 et moteur technique #39.
 - **Base et worker :** PostgreSQL/Prisma, migrations contrôlées, seed fictif, Redis et worker technique supervisé, sans job métier officiel.
 - **Exploitation :** images Web/API/worker/migration, Compose local et staging, logs JSON, métriques protégées et exercice de rollback.
 - **CI :** tests unitaires et d’intégration PostgreSQL, typecheck, lint, builds Web/API/worker, installateurs Windows et smoke staging avec rollback.
 
-> **Limites :** le frontend n’est pas encore raccordé à l’API et les validations métier/UI de #8 et #39 restent ouvertes. Aucune donnée réelle, règle officielle, alerte externe ou infrastructure de production n’est livrée. Le moteur académique officiel et la finance/paie restent dans leurs issues dédiées. Le sélecteur de rôle du frontend est uniquement un aperçu UX.
+> **Limites :** le raccordement API est progressif : seul le parcours de préparation des règles dans **Paramètres → Configuration scolaire** est couvert à ce stade ; les autres modules conservent leurs données de démonstration locales. Les validations métier/UI détaillées de #8 et #39 restent ouvertes. Aucune donnée réelle, règle officielle, alerte externe ou infrastructure de production n’est livrée. Le moteur académique officiel et la finance/paie restent dans leurs issues dédiées. Le sélecteur de rôle du frontend est uniquement un aperçu UX.
 
 ## Structure du monorepo
 
@@ -78,7 +78,7 @@ Endpoints disponibles sur `http://localhost:3001` :
 | `GET /api/v1/version` | nom et versions du service/API |
 | `GET /api/v1/openapi.json` | document OpenAPI 3.1 |
 
-Les routes `/api/v1/auth/*` couvrent désormais invitation, sessions, récupération et MFA. Elles sont décrites avec leurs critères de sécurité dans [`docs/API.md`](docs/API.md) ; le frontend reste à raccorder.
+Les routes `/api/v1/auth/*` couvrent désormais invitation, sessions, récupération et MFA. Elles sont décrites avec leurs critères de sécurité dans [`docs/API.md`](docs/API.md). Le premier raccordement frontend utilise la session existante, sans la simuler : sélection de l’établissement, catalogue, validation d’une valeur et création d’un brouillon de règle.
 
 Pour arrêter les conteneurs : `docker compose down`. Le volume local peut être supprimé explicitement avec `docker compose down -v` si toutes les données locales jetables peuvent être perdues.
 
@@ -91,6 +91,8 @@ docker compose up --build --wait
 ```
 
 Le Web est servi sur `http://localhost:8080` et appelle l’API via le proxy relatif `/api`. PostgreSQL, Redis, l’API, le worker, le Web et la migration one-shot sont orchestrés ensemble. Le worker est un socle supervisé sans traitement métier officiel.
+
+Dans **Paramètres → Configuration scolaire**, le navigateur lit `GET /api/v1/auth/me`, puis le catalogue et les ensembles de règles de l’établissement choisi. Les mutations envoient le cookie de session et le jeton CSRF ; la source, le motif, la date d’effet et le fuseau sont obligatoires. Le bouton d’enregistrement crée uniquement une version `DRAFT` : il ne soumet, n’approuve ni ne publie aucune règle. Les états sans session, sans habilitation et d’erreur API restent visibles.
 
 Les commandes staging, les secrets, le rollback et le diagnostic sont documentés dans [`docs/RUNBOOK_EXPLOITATION.md`](docs/RUNBOOK_EXPLOITATION.md).
 
@@ -109,7 +111,7 @@ npm run check:secrets    # motifs de secrets à haute confiance dans Git
 npm run check:rules      # couverture du catalogue configurable, sans valeur par défaut
 ```
 
-L’export Web est généré dans `apps/web/out/`. Les clients Prisma, builds et artefacts ne sont pas versionnés ; la migration SQL et le document OpenAPI le sont.
+L’export Web est généré dans `apps/web/out/`. Les clients Prisma, builds et artefacts ne sont pas versionnés ; la migration SQL et le document OpenAPI le sont. Pour servir cet export avec le parcours API hors Docker, `npm start` relaie `/api` côté serveur vers l’API locale du socle ; `API_PROXY_TARGET` permet de choisir une autre API sans mettre d’URL distante dans le navigateur. Un hébergement purement statique sans proxy ne fournit pas ce parcours.
 
 ## Prototype fonctionnel existant
 

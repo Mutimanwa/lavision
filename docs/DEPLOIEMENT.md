@@ -66,13 +66,13 @@ Les endpoints de santé, les logs JSON corrélés et les métriques Prometheus p
 
 ## 5. Hébergement statique et desktop
 
-L’export `apps/web/out/` peut toujours être publié séparément pour la démonstration statique. Cette variante utilise les données locales du navigateur et ne déploie pas l’API ni les fonctions multiutilisateurs.
+L’export `apps/web/out/` peut toujours être publié séparément pour la démonstration statique. Les autres modules utilisent alors les données locales du navigateur. Pour le parcours API de configuration, `npm start` fournit un proxy **côté serveur** vers `API_PROXY_TARGET` (par défaut l’API locale du socle) ; le navigateur ne reçoit que des URLs relatives et aucune session n’est simulée si le proxy est indisponible.
 
-Pour le desktop, Tauri consomme le même export et la CI produit les installateurs Windows comme artefacts temporaires. Aucun exécutable n’est versionné.
+Pour le desktop, Tauri consomme le même export et la CI produit les installateurs Windows comme artefacts temporaires. Aucun exécutable n’est versionné. Le shell statique n’a pas encore de pont API natif sécurisé : l’écran de configuration signale explicitement cette indisponibilité au lieu d’appeler une origine invalide ou de créer une session fictive. Le parcours API est donc à utiliser dans le Web servi avec son proxy tant que ce pont n’est pas livré.
 
 ## 6. Limites avant production
 
-Le frontend n’est pas encore raccordé à l’API authentifiée et les calculs officiels restent soumis aux validations métier de #39. Le staging de la CI est jetable et ne contient aucune donnée réelle.
+Le raccordement frontend est progressif : le parcours de préparation des règles est raccordé dans le Web avec proxy, tandis que les autres modules et le pont API desktop restent à achever. Les calculs officiels restent soumis aux validations métier de #39. Le staging de la CI est jetable et ne contient aucune donnée réelle.
 
 Avant une exploitation réelle, il faut encore :
 
@@ -80,4 +80,4 @@ Avant une exploitation réelle, il faut encore :
 2. gérer les secrets dans un coffre externe et tester leur rotation ;
 3. terminer TLS, la supervision externe, les alertes et le suivi d’erreurs ;
 4. définir et tester les sauvegardes chiffrées et la restauration PostgreSQL/objet sur environnement vierge ;
-5. raccorder le frontend, valider les règles locales et réaliser les tests de charge et de sécurité.
+5. achever le raccordement des modules et du pont API desktop, valider les règles locales et réaliser les tests de charge et de sécurité.

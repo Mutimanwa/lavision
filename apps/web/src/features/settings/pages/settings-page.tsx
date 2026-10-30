@@ -18,6 +18,7 @@ import { Modal, Notice, PageHeader } from "@/components/ui";
 import { InputForm, SelectForm } from "@/components/forms";
 import { downloadJson, isAppState } from "@/lib/utils";
 import { TERMS, type SchoolSettings, type Term } from "@/lib/types";
+import { RuleConfigurationManager } from "@/features/configuration/components/rule-configuration-manager";
 
 export function SettingsManager() {
   const { state, hydrated, updateSettings, importState, resetState } = useSchool();
@@ -98,6 +99,7 @@ export function SettingsManager() {
           <section className="card danger-card"><span><ShieldAlert size={21} /></span><div><h3>Restaurer la démonstration</h3><p>Remplace toutes les données locales par le jeu de démonstration initial.</p><button className="text-link text-danger" type="button" onClick={() => setResetOpen(true)}><RotateCcw size={15} /> Réinitialiser les données</button></div></section>
         </aside>
       </div>
+      <RuleConfigurationManager />
       <Notice tone="warning" title="Important pour une mise en production">Le stockage local convient à la démonstration et au prototype desktop. Une utilisation partagée entre plusieurs postes exige une base centralisée, une authentification serveur, des rôles et des sauvegardes automatiques.</Notice>
 
       <Modal open={resetOpen} onClose={() => setResetOpen(false)} title="Restaurer les données de démonstration ?" description="Cette action remplacera le contenu actuel de ce navigateur." size="small" footer={<><button className="button button-secondary" type="button" onClick={() => setResetOpen(false)}>Annuler</button><button className="button button-danger" type="button" onClick={() => { resetState(); setDirty(false); setResetOpen(false); setMessage("Les données de démonstration ont été restaurées."); }}><RotateCcw size={16} /> Confirmer la réinitialisation</button></>}><Notice tone="warning">Téléchargez d’abord une sauvegarde JSON si vous souhaitez conserver les inscriptions et notes actuelles.</Notice><button className="button button-secondary button-full" type="button" onClick={() => downloadJson(state)}><Download size={16} /> Télécharger avant de réinitialiser</button></Modal>

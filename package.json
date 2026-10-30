@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "npm run dev:web",
-    "dev:web": "npm run dev --workspace @lavision/web",
+    "dev:web": "npm run build --workspace @lavision/contracts && npm run dev --workspace @lavision/web",
     "dev:api": "npm run build:packages && npm run prisma:generate && npm run dev --workspace @lavision/api",
     "dev:worker": "npm run dev --workspace @lavision/worker",
     "dev:api:local": "npm run setup:local && npm run dev:api",
@@ -22,7 +22,7 @@
     "check:secrets": "node scripts/check-secrets.mjs",
     "check:rules": "node scripts/check-rule-catalog.mjs",
     "build": "npm run build:api && npm run build:worker && npm run build:web",
-    "build:web": "npm run build --workspace @lavision/web",
+    "build:web": "npm run build --workspace @lavision/contracts && npm run build --workspace @lavision/web",
     "build:api": "npm run build:packages && npm run prisma:generate && npm run build --workspace @lavision/api",
     "build:worker": "npm run build --workspace @lavision/worker",
     "build:packages": "npm run build --workspace @lavision/contracts && npm run build --workspace @lavision/testing",

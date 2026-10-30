@@ -128,7 +128,7 @@ L’API utilise NestJS avec l’adaptateur Fastify et le préfixe `/api/v1`. Les
 
 Le schéma `apps/api/prisma/schema.prisma` couvre uniquement les agrégats de socle : organisations, sites, utilisateurs et appartenances. Les contraintes PostgreSQL complètent les schémas Zod. La migration SQL et le seed fictif sont versionnés ; le client Prisma est généré.
 
-Le frontend n’est pas encore connecté à ces modules. La procédure de recette et les limites sont détaillées dans [API.md](API.md).
+Le frontend est raccordé progressivement : la feature `configuration` consomme déjà les contrats partagés et les endpoints de règles via un client same-origin, tandis que les autres repositories restent locaux. La procédure de recette et les limites sont détaillées dans [API.md](API.md).
 
 ## 7. Raccordement progressif
 
@@ -147,6 +147,8 @@ SchoolRepository (interface)
 ```
 
 L’API devra valider les entrées, appliquer les permissions et portées, recalculer ou vérifier les décisions sensibles et empêcher qu’un client impose directement une moyenne, un rang ou une publication. L’authentification/MFA (#6) et le RBAC/audit (#7) précèdent ce raccordement métier.
+
+La première tranche est volontairement indépendante du `SchoolProvider` local : `features/configuration` lit la session API, les memberships et le catalogue, puis crée des versions `DRAFT`. Le navigateur ne connaît que `/api/v1` ; Nginx ou le proxy côté serveur de `scripts/serve-static.mjs` fournit la même origine. Le shell Tauri reste soumis à ADR-006 et ne réutilise pas ce client de cookies WebView.
 
 ## 8. Desktop
 

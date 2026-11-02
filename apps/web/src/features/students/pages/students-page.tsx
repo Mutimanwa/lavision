@@ -214,7 +214,7 @@ export function StudentDirectory() {
         <div><span className="mini-stat-icon purple"><UserRound size={19} /></span><p><strong>{state.students.filter((student) => student.gender === "Garçon").length}</strong><small>Garçons inscrits</small></p></div>
       </section>
 
-      <section className="card directory-card">
+      <section className="card directory-card" data-tour="student-directory">
         <SchoolDataTable
           data={paginatedStudents}
           selectionData={filteredStudents}

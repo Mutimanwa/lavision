@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/dm-sans";
+import "driver.js/dist/driver.css";
 import "./globals.css";
 import "./master-layout.css";
 import "./component-library.css";
 import "./workspace.css";
+import "./product-tour.css";
 import { AppShell } from "@/components/layout/app-shell";
 import { SchoolProvider } from "@/features/school/context/school-provider";
 import { WorkspaceProvider } from "@/features/auth/context/workspace-provider";

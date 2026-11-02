@@ -1,120 +1,148 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useWorkspace } from "@/features/auth/hooks/use-workspace";
-import type { RoleId } from "@/features/auth/data/roles";
+import type { GuideStatus } from "../services/onboarding-storage";
 import {
-  loadGuideProgress,
-  saveGuideProgress,
-  type GuideProgressMap,
-  type GuideStatus,
-} from "../services/onboarding-storage";
+  getProductTourId,
+  getProductTourStepCount,
+  type ProductTourId,
+} from "../services/product-tour";
+import {
+  getProductTourStorageKey,
+  loadProductTourProgress,
+  saveProductTourProgress,
+  type ProductTourProgressMap,
+} from "../services/product-tour-storage";
 import { OnboardingContext } from "./onboarding-context";
 
-const STEP_COUNT = 4;
+interface ActiveTour {
+  key: string;
+  tourId: ProductTourId;
+  initialStep: number;
+  session: number;
+}
+
+function boundedStep(step: number, tourId: ProductTourId): number {
+  return Math.max(0, Math.min(getProductTourStepCount(tourId) - 1, Math.floor(step)));
+}
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const { role, hydrated: workspaceHydrated } = useWorkspace();
-  const [progressMap, setProgressMap] = useState<GuideProgressMap>({});
+  const currentTourId = getProductTourId(pathname);
+  const currentKey = currentTourId ? getProductTourStorageKey(role, currentTourId) : null;
+  const [progressMap, setProgressMap] = useState<ProductTourProgressMap>({});
   const [hydrated, setHydrated] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [activeTour, setActiveTour] = useState<ActiveTour | null>(null);
   const [step, setStep] = useState(0);
-  const autoOpenedFor = useRef<RoleId | null>(null);
-  const previousRole = useRef(role);
-  const progress = progressMap[role];
+  const autoOpenedFor = useRef<string | null>(null);
+  const nextSession = useRef(0);
+  const progress = currentKey ? progressMap[currentKey] : undefined;
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      setProgressMap(loadGuideProgress());
+      setProgressMap(loadProductTourProgress());
       setHydrated(true);
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (hydrated) saveGuideProgress(progressMap);
+    if (hydrated) saveProductTourProgress(progressMap);
   }, [hydrated, progressMap]);
 
-  useEffect(() => {
-    if (previousRole.current === role) return;
-    previousRole.current = role;
-    autoOpenedFor.current = null;
-    const timer = window.setTimeout(() => {
-      setOpen(false);
-      setStep(0);
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, [role]);
-
-  useEffect(() => {
-    if (!hydrated || !workspaceHydrated || autoOpenedFor.current === role) return;
-    autoOpenedFor.current = role;
-    if (progressMap[role]) return;
-    const timer = window.setTimeout(() => {
-      setStep(0);
-      setOpen(true);
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, [hydrated, progressMap, role, workspaceHydrated]);
-
-  const record = useCallback((status: GuideStatus, nextStep: number) => {
+  const recordProgress = useCallback((key: string, tourId: ProductTourId, status: GuideStatus, nextStep: number) => {
     setProgressMap((current) => ({
       ...current,
-      [role]: { status, step: Math.max(0, Math.min(STEP_COUNT - 1, nextStep)) },
+      [key]: { status, step: boundedStep(nextStep, tourId) },
     }));
-  }, [role]);
+  }, []);
 
-  const openGuide = useCallback(() => {
-    const nextStep = progress?.status === "in_progress" ? progress.step : 0;
-    setStep(nextStep);
-    setOpen(true);
-  }, [progress]);
+  const startTour = useCallback((restart: boolean) => {
+    if (!currentKey || !currentTourId) return;
+    const resumeStep = !restart && progress?.status === "in_progress"
+      ? boundedStep(progress.step, currentTourId)
+      : 0;
+    nextSession.current += 1;
+    setStep(resumeStep);
+    setActiveTour({
+      key: currentKey,
+      tourId: currentTourId,
+      initialStep: resumeStep,
+      session: nextSession.current,
+    });
+    if (restart) recordProgress(currentKey, currentTourId, "in_progress", 0);
+  }, [currentKey, currentTourId, progress, recordProgress]);
 
-  const dismissGuide = useCallback(() => {
-    record("in_progress", step);
-    setOpen(false);
-  }, [record, step]);
+  const openGuide = useCallback(() => startTour(false), [startTour]);
+  const restartGuide = useCallback(() => startTour(true), [startTour]);
 
-  const skipGuide = useCallback(() => {
-    record("skipped", step);
-    setOpen(false);
-  }, [record, step]);
+  const dismissGuide = useCallback((nextStep?: number) => {
+    if (!activeTour) return;
+    recordProgress(activeTour.key, activeTour.tourId, "in_progress", nextStep ?? step);
+    setActiveTour(null);
+  }, [activeTour, recordProgress, step]);
 
-  const nextStep = useCallback(() => {
-    if (step >= STEP_COUNT - 1) {
-      record("completed", STEP_COUNT - 1);
-      setOpen(false);
-      return;
-    }
-    const next = step + 1;
-    setStep(next);
-    record("in_progress", next);
-  }, [record, step]);
+  const skipGuide = useCallback((nextStep?: number) => {
+    if (!activeTour) return;
+    recordProgress(activeTour.key, activeTour.tourId, "skipped", nextStep ?? step);
+    setActiveTour(null);
+  }, [activeTour, recordProgress, step]);
 
-  const previousStep = useCallback(() => {
-    const previous = Math.max(0, step - 1);
-    setStep(previous);
-    record("in_progress", previous);
-  }, [record, step]);
+  const completeGuide = useCallback((nextStep?: number) => {
+    if (!activeTour) return;
+    recordProgress(activeTour.key, activeTour.tourId, "completed", nextStep ?? step);
+    setActiveTour(null);
+  }, [activeTour, recordProgress, step]);
 
-  const restartGuide = useCallback(() => {
-    setStep(0);
-    record("in_progress", 0);
-    setOpen(true);
-  }, [record]);
+  const reportStep = useCallback((nextStep: number) => {
+    if (!activeTour) return;
+    const bounded = boundedStep(nextStep, activeTour.tourId);
+    setStep(bounded);
+    recordProgress(activeTour.key, activeTour.tourId, "in_progress", bounded);
+  }, [activeTour, recordProgress]);
+
+  // Une navigation manuelle ferme la visite de la page précédente. La dernière
+  // étape connue est conservée, puis la page suivante peut proposer sa propre visite.
+  useEffect(() => {
+    if (!activeTour || activeTour.key === currentKey) return;
+    const timer = window.setTimeout(() => {
+      recordProgress(activeTour.key, activeTour.tourId, "in_progress", step);
+      setActiveTour(null);
+      setStep(0);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [activeTour, currentKey, recordProgress, step]);
+
+  useEffect(() => {
+    if (!hydrated || !workspaceHydrated || !currentKey || !currentTourId || activeTour) return;
+    if (autoOpenedFor.current === currentKey || progress) return;
+    autoOpenedFor.current = currentKey;
+    const timer = window.setTimeout(() => startTour(false), 450);
+    return () => window.clearTimeout(timer);
+  }, [activeTour, currentKey, currentTourId, hydrated, progress, startTour, workspaceHydrated]);
+
+  const stepCount = activeTour
+    ? getProductTourStepCount(activeTour.tourId)
+    : currentTourId ? getProductTourStepCount(currentTourId) : 0;
 
   const value = useMemo(() => ({
-    open,
+    open: activeTour !== null,
     step,
-    stepCount: STEP_COUNT,
+    initialStep: activeTour?.initialStep ?? 0,
+    stepCount,
+    tourId: activeTour?.tourId ?? null,
+    session: activeTour?.session ?? 0,
     progress,
     openGuide,
     dismissGuide,
     skipGuide,
-    nextStep,
-    previousStep,
+    completeGuide,
+    reportStep,
     restartGuide,
-  }), [dismissGuide, nextStep, open, openGuide, previousStep, progress, restartGuide, skipGuide, step]);
+  }), [activeTour, completeGuide, dismissGuide, openGuide, progress, reportStep, restartGuide, skipGuide, step, stepCount]);
 
   return <OnboardingContext.Provider value={value}>{children}</OnboardingContext.Provider>;
 }

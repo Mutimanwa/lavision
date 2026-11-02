@@ -1,101 +1,93 @@
 "use client";
 
-import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  CircleHelp,
-  Eye,
-  ListChecks,
-  MousePointer2,
-  Sparkles,
-} from "lucide-react";
-import { Modal } from "@/components/ui";
-import { useWorkspace } from "@/features/auth/hooks/use-workspace";
-import { useModules } from "@/features/navigation/hooks/use-modules";
-import { getRoleModuleHref } from "@/features/navigation/services/module-state";
+import { useEffect, useRef } from "react";
+import { driver } from "driver.js";
 import { useOnboarding } from "../hooks/use-onboarding";
+import { getProductTourSteps } from "../services/product-tour";
 
 export function OnboardingGuide() {
-  const { role, roleDefinition, workspace } = useWorkspace();
-  const { modules } = useModules();
   const {
     open,
-    step,
-    stepCount,
+    tourId,
+    session,
+    initialStep,
+    reportStep,
     dismissGuide,
     skipGuide,
-    nextStep,
-    previousStep,
+    completeGuide,
   } = useOnboarding();
-  const primaryHref = getRoleModuleHref(modules, role, workspace.primaryAction.href);
-  const primaryActionAvailable = primaryHref === workspace.primaryAction.href;
+  const handlersRef = useRef({ reportStep, dismissGuide, skipGuide, completeGuide });
 
-  const steps = [
-    {
-      title: `Bienvenue dans ${workspace.spaceLabel}`,
-      description: workspace.guideIntroduction,
-      icon: Sparkles,
-    },
-    {
-      title: "Votre navigation suit votre rôle",
-      description: "Les menus présentent vos modules utiles. Un badge « À configurer » indique un vrai prérequis, tandis qu’un module planifié n’est jamais présenté comme disponible.",
-      icon: ListChecks,
-    },
-    {
-      title: "Votre première action",
-      description: primaryActionAvailable
-        ? workspace.firstTask
-        : "L’action habituelle n’est pas disponible dans la configuration actuelle. Consultez le catalogue pour connaître l’état du module et les prérequis avant de reprendre.",
-      icon: MousePointer2,
-    },
-    {
-      title: "Le guide reste disponible",
-      description: "Vous pouvez le reprendre ou le relancer depuis le centre d’aide. Votre progression est enregistrée séparément pour chaque espace de démonstration.",
-      icon: CircleHelp,
-    },
-  ];
-  const current = steps[step];
-  const Icon = current.icon;
+  useEffect(() => {
+    handlersRef.current = { reportStep, dismissGuide, skipGuide, completeGuide };
+  }, [completeGuide, dismissGuide, reportStep, skipGuide]);
 
-  return (
-    <Modal
-      open={open}
-      onClose={dismissGuide}
-      title={current.title}
-      description={`${roleDefinition.label} · Étape ${step + 1} sur ${stepCount}`}
-      size="small"
-      closeOnBackdrop={false}
-      footer={(
-        <div className="onboarding-footer">
-          <button className="button button-ghost" type="button" onClick={skipGuide}>Passer le guide</button>
-          <div>
-            {step > 0 && <button className="button button-secondary" type="button" onClick={previousStep}><ArrowLeft size={16} /> Retour</button>}
-            <button className="button button-primary" type="button" onClick={nextStep}>
-              {step === stepCount - 1 ? <><Check size={16} /> Terminer</> : <>Continuer <ArrowRight size={16} /></>}
-            </button>
-          </div>
-        </div>
-      )}
-    >
-      <div className="onboarding-progress" aria-label={`Progression : étape ${step + 1} sur ${stepCount}`}>
-        {steps.map((item, index) => (
-          <span
-            key={item.title}
-            className={index === step ? "current" : index < step ? "complete" : ""}
-            aria-current={index === step ? "step" : undefined}
-          />
-        ))}
-      </div>
-      <div className="onboarding-illustration" aria-hidden="true"><Icon size={28} /></div>
-      <p className="onboarding-description" aria-live="polite" aria-atomic="true">{current.description}</p>
-      {step === 2 && (
-        <Link className="button button-secondary button-full onboarding-action" href={primaryHref} onClick={dismissGuide}>
-          {primaryActionAvailable ? workspace.primaryAction.label : "Consulter l’état du module"} <ArrowRight size={16} />
-        </Link>
-      )}
-      <div className="onboarding-preview-note"><Eye size={15} /><span>Aperçu d’interface local. Le choix du rôle ne constitue pas une authentification ni une habilitation.</span></div>
-    </Modal>
-  );
+  useEffect(() => {
+    if (!open || !tourId) return;
+
+    let cancelled = false;
+    let skipRequested = false;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const steps = getProductTourSteps(tourId);
+
+    const driverInstance = driver({
+      steps,
+      animate: !reducedMotion,
+      smoothScroll: !reducedMotion,
+      allowClose: true,
+      allowScroll: true,
+      allowKeyboardControl: true,
+      overlayClickBehavior: "none",
+      overlayColor: "#102f28",
+      overlayOpacity: 0.64,
+      disableActiveInteraction: true,
+      skipMissingElement: true,
+      stagePadding: 8,
+      stageRadius: 10,
+      popoverOffset: 12,
+      popoverClass: "lavision-product-tour",
+      showButtons: ["next", "previous", "close"],
+      showProgress: true,
+      progressText: "Étape {{current}} sur {{total}}",
+      nextBtnText: "Suivant",
+      prevBtnText: "Précédent",
+      doneBtnText: "Terminer",
+      closeBtnLabel: "Fermer la visite",
+      onHighlighted: (_element, _step, { index }) => {
+        if (!cancelled && index !== undefined) handlersRef.current.reportStep(index);
+      },
+      onPopoverRender: (popover) => {
+        if (popover.footer.querySelector("[data-product-tour-skip]")) return;
+        const skipButton = document.createElement("button");
+        skipButton.type = "button";
+        skipButton.className = "driver-popover-skip-btn";
+        skipButton.dataset.productTourSkip = "true";
+        skipButton.textContent = "Passer la visite";
+        skipButton.setAttribute("aria-label", "Passer la visite guidée");
+        skipButton.addEventListener("click", () => {
+          skipRequested = true;
+          handlersRef.current.skipGuide(driverInstance.getActiveIndex());
+          driverInstance.destroy();
+        });
+        popover.footer.insertBefore(skipButton, popover.footerButtons);
+      },
+      onDestroyed: (_element, _step, { reason, index }) => {
+        if (cancelled || skipRequested) return;
+        if (reason === "done") handlersRef.current.completeGuide(index);
+        else if (reason !== "replaced") handlersRef.current.dismissGuide(index);
+      },
+    });
+
+    const frame = window.requestAnimationFrame(() => {
+      if (!cancelled) driverInstance.drive(Math.min(initialStep, steps.length - 1));
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+      driverInstance.destroy();
+    };
+  }, [initialStep, open, session, tourId]);
+
+  return null;
 }

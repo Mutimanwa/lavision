@@ -109,7 +109,7 @@ function DirectionDashboard() {
 
       <FirstStepsCard />
 
-      <section className="stats-grid" aria-label="Indicateurs clés">
+      <section className="stats-grid" aria-label="Indicateurs clés" data-tour="dashboard-stats">
         <article className="card stat-card">
           <div className="stat-card-top"><span className="stat-icon stat-icon-green"><UsersRound size={19} /></span><Badge tone="green">{activeStudents.length} actifs</Badge></div>
           <div className="stat-value">{state.students.length}</div>
@@ -161,7 +161,7 @@ function DirectionDashboard() {
           <footer className="chart-caption"><Info size={14} /><span>Moyenne calculée à partir des notes disponibles. Barème de passage : {state.settings.passMark}/20.</span></footer>
         </section>
 
-        <aside className="card pending-card">
+        <aside className="card pending-card" data-tour="dashboard-pending">
           <header className="card-header"><div><p className="eyebrow">À traiter</p><h2>Actions en attente</h2></div></header>
           <div className="pending-list">
             <Link href={moduleHref("/inscriptions/")}>

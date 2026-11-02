@@ -99,7 +99,7 @@ export function ReportCards() {
       </div>
 
       {selectedStudent && report ? (
-        <article className="report-paper" id="bulletin">
+        <article className="report-paper" id="bulletin" data-tour="report-document">
           <header className="report-school-header">
             <div className="report-school-logo"><GraduationCap size={31} /></div>
             <div><p>République du Burundi</p><h2>{state.settings.schoolName}</h2><span>{state.settings.address} · {state.settings.phone}</span></div>

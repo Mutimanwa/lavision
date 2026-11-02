@@ -1,4 +1,4 @@
-/* Espaces par rôle, activation des modules et guide de première utilisation. */
+/* Espaces par rôle, activation des modules et lancement du Product Tour. */
 .workspace-role-preview {
   display: grid;
   gap: 7px;
@@ -479,77 +479,6 @@
   gap: 10px;
 }
 
-.onboarding-progress {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  margin-bottom: 20px;
-}
-
-.onboarding-progress > span {
-  height: 4px;
-  border-radius: 999px;
-  background: #e4eae7;
-}
-
-.onboarding-progress > span.complete,
-.onboarding-progress > span.current {
-  background: var(--brand);
-}
-
-.onboarding-illustration {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  margin-bottom: 16px;
-  border-radius: 16px;
-  background: var(--brand-soft);
-  color: var(--brand);
-}
-
-.onboarding-description {
-  margin-bottom: 18px;
-  color: #53635e;
-  font-size: 13px;
-  line-height: 1.65;
-}
-
-.onboarding-action {
-  margin-bottom: 14px;
-}
-
-.onboarding-preview-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 8px;
-  background: #f4f6f5;
-  color: var(--muted);
-  font-size: 10px;
-  line-height: 1.45;
-}
-
-.onboarding-preview-note svg {
-  flex: 0 0 auto;
-  margin-top: 1px;
-}
-
-.onboarding-footer {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.onboarding-footer > div {
-  display: flex;
-  gap: 8px;
-}
-
 .help-guide-launch {
   display: flex;
   width: 100%;
@@ -649,19 +578,6 @@
     margin-right: 0;
   }
 
-  .onboarding-footer {
-    align-items: stretch;
-    flex-direction: column-reverse;
-  }
-
-  .onboarding-footer > div,
-  .onboarding-footer > div .button {
-    flex: 1;
-  }
-
-  .onboarding-footer > .button {
-    width: 100%;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

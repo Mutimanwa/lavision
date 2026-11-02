@@ -18,7 +18,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useSchool } from "@/features/school/hooks/use-school";
-import { Avatar, Badge, Modal, PageHeader, TableMenu } from "@/components/ui";
+import { Avatar, Badge, Modal, Notice, PageHeader, TableMenu } from "@/components/ui";
 import { SchoolDataTable, type DataTableColumn } from "@/components/ui/data-table";
 import { FilterSelect, FormField, SelectForm } from "@/components/forms";
 import {
@@ -30,6 +30,7 @@ import {
 } from "@/lib/academic";
 import { downloadCsv, formatDate } from "@/lib/utils";
 import type { Student, StudentStatus } from "@/lib/types";
+import { hasSeatForActiveStudent } from "../services/student-validation";
 
 const STUDENTS_PER_PAGE = 6;
 
@@ -44,6 +45,8 @@ export function StudentDirectory() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [localSelectedId, setLocalSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
+  const [editError, setEditError] = useState("");
+  const [message, setMessage] = useState("");
   const [editDraft, setEditDraft] = useState({
     firstName: "",
     lastName: "",
@@ -94,11 +97,26 @@ export function StudentDirectory() {
       status: student.status,
       guardianPhone: student.guardian.phone,
     });
+    setEditError("");
+    setMessage("");
     setEditing(true);
   };
 
   const saveEdit = () => {
-    if (!selectedStudent || !editDraft.firstName.trim() || !editDraft.lastName.trim()) return;
+    if (!selectedStudent) return;
+    const targetClass = state.classes.find((item) => item.id === editDraft.classId);
+    if (!editDraft.firstName.trim() || !editDraft.lastName.trim()) {
+      setEditError("Le prénom et le nom sont obligatoires.");
+      return;
+    }
+    if (!targetClass) {
+      setEditError("Sélectionnez une classe existante.");
+      return;
+    }
+    if (editDraft.status === "Actif" && !hasSeatForActiveStudent(state.students, targetClass.id, targetClass.capacity, selectedStudent.id)) {
+      setEditError(`La classe ${targetClass.name} a atteint sa capacité maximale. Choisissez une autre classe ou un statut inactif.`);
+      return;
+    }
     updateStudent(selectedStudent.id, {
       firstName: editDraft.firstName.trim(),
       lastName: editDraft.lastName.trim(),
@@ -106,7 +124,9 @@ export function StudentDirectory() {
       status: editDraft.status,
       guardian: { ...selectedStudent.guardian, phone: editDraft.guardianPhone.trim() },
     });
+    setEditError("");
     setEditing(false);
+    setMessage(`Le dossier de ${getFullName(selectedStudent)} a été mis à jour.`);
   };
 
   const exportStudents = (rows: Student[] = filteredStudents) => {
@@ -185,6 +205,7 @@ export function StudentDirectory() {
           </>
         }
       />
+      {message && <Notice tone="success" title={message}><button className="text-link" type="button" onClick={() => setMessage("")}>Fermer</button></Notice>}
 
       <section className="mini-stats-grid">
         <div><span className="mini-stat-icon green"><UsersRound size={19} /></span><p><strong>{state.students.filter((student) => student.status === "Actif").length}</strong><small>Élèves actifs</small></p></div>
@@ -281,6 +302,7 @@ export function StudentDirectory() {
         description="Les changements sont immédiatement répercutés sur les autres modules."
         footer={<><button className="button button-secondary" type="button" onClick={() => setEditing(false)}>Annuler</button><button className="button button-primary" type="button" onClick={saveEdit}>Enregistrer les modifications</button></>}
       >
+        {editError && <Notice tone="warning" title="Modification impossible">{editError}</Notice>}
         <div className="form-grid">
           <FormField label="Prénom" htmlFor="edit-firstName" required><input id="edit-firstName" value={editDraft.firstName} onChange={(event) => setEditDraft({ ...editDraft, firstName: event.target.value })} /></FormField>
           <FormField label="Nom" htmlFor="edit-lastName" required><input id="edit-lastName" value={editDraft.lastName} onChange={(event) => setEditDraft({ ...editDraft, lastName: event.target.value })} /></FormField>

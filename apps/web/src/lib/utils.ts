@@ -123,7 +123,7 @@ export function isAppState(value: unknown): value is AppState {
   const validClasses = classes.every((item) =>
     isRecord(item) &&
     hasStrings(item, ["id", "name", "level", "room", "headTeacher"]) &&
-    typeof item.capacity === "number" && Number.isFinite(item.capacity) && item.capacity > 0,
+    typeof item.capacity === "number" && Number.isInteger(item.capacity) && item.capacity > 0,
   );
   const validSubjects = subjects.every((item) =>
     isRecord(item) &&

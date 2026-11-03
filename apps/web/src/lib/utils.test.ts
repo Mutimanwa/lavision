@@ -72,6 +72,14 @@ describe("validation des sauvegardes", () => {
     })).toBe(false);
   });
 
+  it("refuse une capacité de classe fractionnaire", () => {
+    const state = createSeedState();
+    expect(isAppState({
+      ...state,
+      classes: [{ ...state.classes[0], capacity: 12.5 }],
+    })).toBe(false);
+  });
+
   it("refuse une date de dossier qui ne peut pas être affichée", () => {
     const state = createSeedState();
     expect(isAppState({

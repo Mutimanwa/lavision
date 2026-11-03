@@ -11,11 +11,13 @@ export function createId(prefix: string): string {
 export function formatDate(value: string, options?: Intl.DateTimeFormatOptions) {
   if (!value) return "—";
   const normalized = value.length === 10 ? `${value}T12:00:00` : value;
+  const parsed = new Date(normalized);
+  if (!Number.isFinite(parsed.getTime())) return "—";
   return new Intl.DateTimeFormat("fr-FR", options ?? {
     day: "numeric",
     month: "short",
     year: "numeric",
-  }).format(new Date(normalized));
+  }).format(parsed);
 }
 
 export function formatLongDate(value: Date) {
@@ -79,6 +81,15 @@ function hasOptionalStrings(value: Record<string, unknown>, keys: string[]) {
   return keys.every((key) => value[key] === undefined || typeof value[key] === "string");
 }
 
+function hasValidDates(value: Record<string, unknown>, keys: string[]) {
+  return keys.every((key) => {
+    const date = value[key];
+    if (typeof date !== "string" || !date.trim()) return false;
+    const normalized = date.length === 10 ? `${date}T12:00:00` : date;
+    return Number.isFinite(new Date(normalized).getTime());
+  });
+}
+
 export function isAppState(value: unknown): value is AppState {
   if (!isRecord(value) || value.version !== 1 || !isRecord(value.settings)) return false;
 
@@ -105,6 +116,7 @@ export function isAppState(value: unknown): value is AppState {
       ]) &&
       studentStatuses.includes(item.status as string) &&
       genders.includes(item.gender as string) &&
+      hasValidDates(item, ["birthDate", "enrolledAt"]) &&
       hasStrings(item.guardian, ["name", "relationship", "phone", "email"])
     );
   });
@@ -122,16 +134,19 @@ export function isAppState(value: unknown): value is AppState {
     isRecord(item) &&
     hasStrings(item, ["id", "studentId", "subjectId", "term", "updatedAt"]) &&
     terms.includes(item.term as string) &&
+    hasValidDates(item, ["updatedAt"]) &&
     typeof item.value === "number" && Number.isFinite(item.value) && item.value >= 0 && item.value <= 20,
   );
   const validAttendance = attendance.every((item) =>
     isRecord(item) &&
     hasStrings(item, ["id", "studentId", "classId", "date", "status"]) &&
+    hasValidDates(item, ["date"]) &&
     attendanceStatuses.includes(item.status as string),
   );
   const validPublications = publications.every((item) =>
     isRecord(item) &&
     hasStrings(item, ["id", "classId", "term", "publishedAt"]) &&
+    hasValidDates(item, ["publishedAt"]) &&
     terms.includes(item.term as string),
   );
   const validSettings =

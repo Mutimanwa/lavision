@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createSeedState } from "@/features/school/data/seed";
-import { isAppState } from "./utils";
+import { formatDate, isAppState } from "./utils";
 
 describe("validation des sauvegardes", () => {
   it("accepte une sauvegarde lavision valide", () => {
@@ -70,5 +70,17 @@ describe("validation des sauvegardes", () => {
       ...state,
       settings: { ...state.settings, city: null },
     })).toBe(false);
+  });
+
+  it("refuse une date de dossier qui ne peut pas être affichée", () => {
+    const state = createSeedState();
+    expect(isAppState({
+      ...state,
+      students: [{ ...state.students[0], birthDate: "date-invalide" }],
+    })).toBe(false);
+  });
+
+  it("affiche un repli plutôt que de faire échouer le rendu pour une date invalide", () => {
+    expect(formatDate("date-invalide")).toBe("—");
   });
 });

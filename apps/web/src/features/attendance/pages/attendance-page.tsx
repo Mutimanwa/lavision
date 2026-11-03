@@ -68,8 +68,14 @@ export function AttendanceManager() {
       setMessage("");
       return;
     }
+    if (date > toInputDate()) {
+      setError("La date de l’appel ne peut pas être dans le futur.");
+      setMessage("");
+      return;
+    }
     if (marked !== students.length) {
       setError("Renseignez le statut de chaque élève avant d’enregistrer l’appel.");
+      setMessage("");
       return;
     }
     saveAttendance(students.map((student) => ({ studentId: student.id, classId, date, status: currentStatus(student.id)! })));

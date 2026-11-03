@@ -75,6 +75,10 @@ function hasStrings(value: Record<string, unknown>, keys: string[]) {
   return keys.every((key) => typeof value[key] === "string");
 }
 
+function hasOptionalStrings(value: Record<string, unknown>, keys: string[]) {
+  return keys.every((key) => value[key] === undefined || typeof value[key] === "string");
+}
+
 export function isAppState(value: unknown): value is AppState {
   if (!isRecord(value) || value.version !== 1 || !isRecord(value.settings)) return false;
 
@@ -132,6 +136,7 @@ export function isAppState(value: unknown): value is AppState {
   );
   const validSettings =
     hasStrings(value.settings, ["schoolName", "academicYear", "currentTerm", "directionName", "email", "phone", "address"]) &&
+    hasOptionalStrings(value.settings, ["country", "city"]) &&
     terms.includes(value.settings.currentTerm as string) &&
     typeof value.settings.passMark === "number" &&
     Number.isFinite(value.settings.passMark) &&

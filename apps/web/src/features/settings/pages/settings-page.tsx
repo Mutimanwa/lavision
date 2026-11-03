@@ -93,6 +93,8 @@ export function SettingsManager() {
               <InputForm id="schoolPhone" label="Téléphone" type="tel" value={current.phone} onChange={(event) => update("phone", event.target.value)} />
               <InputForm id="schoolEmail" label="Adresse e-mail" type="email" value={current.email} onChange={(event) => update("email", event.target.value)} />
               <InputForm id="schoolAddress" label="Adresse" containerClassName="form-field-full" value={current.address} onChange={(event) => update("address", event.target.value)} />
+              <InputForm id="schoolCountry" label="Pays sur les bulletins" helperText="Mention affichée dans l’en-tête du document." value={current.country ?? ""} onChange={(event) => update("country", event.target.value)} />
+              <InputForm id="schoolCity" label="Ville de signature" helperText="Laisser vide pour ne pas afficher de lieu." value={current.city ?? ""} onChange={(event) => update("city", event.target.value)} />
             </div>
           </section>
           <section className="card settings-section">

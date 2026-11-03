@@ -102,7 +102,7 @@ export function ReportCards() {
         <article className="report-paper" id="bulletin" data-tour="report-document">
           <header className="report-school-header">
             <div className="report-school-logo"><GraduationCap size={31} /></div>
-            <div><p>République du Burundi</p><h2>{state.settings.schoolName}</h2><span>{state.settings.address} · {state.settings.phone}</span></div>
+            <div>{state.settings.country?.trim() && <p>{state.settings.country}</p>}<h2>{state.settings.schoolName}</h2><span>{state.settings.address} · {state.settings.phone}</span></div>
             <div className="report-document-id"><Badge tone={publication ? "green" : "amber"}>{publication ? "Bulletin officiel" : "Bulletin provisoire"}</Badge><small>N° {selectedStudent.matricule}-{term.slice(-1)}</small></div>
           </header>
           <div className="report-title"><p>Année scolaire {state.settings.academicYear}</p><h1>Bulletin de notes</h1><span>{term}</span></div>
@@ -121,7 +121,7 @@ export function ReportCards() {
             <div><h3>Suivi de l’assiduité</h3><p><span>Absences</span><strong>{attendance.filter((record) => record.status === "absent").length}</strong></p><p><span>Retards</span><strong>{attendance.filter((record) => record.status === "retard").length}</strong></p><p><span>Absences excusées</span><strong>{attendance.filter((record) => record.status === "excuse").length}</strong></p></div>
             <div><h3>Appréciation du conseil de classe</h3><p className="council-comment">{report.isComplete ? `${getAppreciation(report.average)}. ${rankedStudent?.outcome === "Admis" ? "Poursuivre les efforts et la régularité dans le travail." : "Un travail soutenu est nécessaire pour atteindre le seuil de réussite."}` : "Le conseil de classe se prononcera après la saisie de toutes les notes."}</p></div>
           </section>
-          <footer className="report-signature"><div><small>Fait à Bujumbura, le {formatDate(new Date().toISOString())}</small><span>Cachet de l’établissement</span></div><div><strong>{state.settings.directionName}</strong><span>La Direction</span></div></footer>
+          <footer className="report-signature"><div><small>{state.settings.city?.trim() ? `Fait à ${state.settings.city}, le ` : "Fait le "}{formatDate(new Date().toISOString())}</small><span>Cachet de l’établissement</span></div><div><strong>{state.settings.directionName}</strong><span>La Direction</span></div></footer>
           <div className="report-authenticity"><ShieldCheck size={14} /> Document généré par lavision · {publication ? `Publié le ${formatDate(publication.publishedAt)}` : "Version de travail non publiée"}</div>
         </article>
       ) : (

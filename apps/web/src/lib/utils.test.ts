@@ -55,4 +55,20 @@ describe("validation des sauvegardes", () => {
       grades: [{ ...state.grades[0], updatedAt: undefined }],
     })).toBe(false);
   });
+
+  it("accepte les anciennes sauvegardes sans localisation du bulletin", () => {
+    const state = createSeedState();
+    const settings: Record<string, unknown> = { ...state.settings };
+    delete settings.country;
+    delete settings.city;
+    expect(isAppState({ ...state, settings })).toBe(true);
+  });
+
+  it("refuse une localisation de bulletin d’un mauvais type", () => {
+    const state = createSeedState();
+    expect(isAppState({
+      ...state,
+      settings: { ...state.settings, city: null },
+    })).toBe(false);
+  });
 });

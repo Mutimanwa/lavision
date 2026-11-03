@@ -182,7 +182,7 @@ function settingsSteps(): DriveStep[] {
     pageStep(".page-actions", "Enregistrer les paramètres", "Le bouton devient actif après une modification. Il enregistre les informations de l’établissement et les paramètres académiques locaux."),
     pageStep(".settings-main", "Configurer l’établissement et les règles", "Les formulaires regroupent les informations affichées sur les documents, la période active et le seuil de réussite. Les règles variables restent configurables plutôt que fixées dans le code.", "top"),
     pageStep(".rule-config", "Préparer les règles avec leur source", "Cette zone API permet de renseigner une valeur, sa date d’effet, sa source et son contexte. L’enregistrement crée un brouillon ; il ne déclenche pas automatiquement la validation ou la publication.", "top"),
-    pageStep(".data-card", "Sauvegarder et restaurer les données", "Téléchargez régulièrement une sauvegarde JSON. La restauration remplace les données locales après sélection d’un fichier lavision valide.", "left"),
+    pageStep(".data-card", "Sauvegarder et restaurer les données", "Téléchargez régulièrement une sauvegarde JSON. Après sélection d’un fichier lavision valide, un résumé s’affiche et la restauration ne remplace les données locales qu’après votre confirmation.", "left"),
     pageStep(".danger-card", "Réinitialiser avec précaution", "Cette action restaure le jeu de démonstration et remplace le travail local. Téléchargez une sauvegarde avant de confirmer si vous souhaitez conserver vos données.", "left"),
   ];
 }

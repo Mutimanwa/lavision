@@ -17,7 +17,7 @@ import { useSchool } from "@/features/school/hooks/use-school";
 import { Modal, Notice, PageHeader } from "@/components/ui";
 import { InputForm, SelectForm } from "@/components/forms";
 import { downloadJson, isAppState } from "@/lib/utils";
-import { TERMS, type SchoolSettings, type Term } from "@/lib/types";
+import { TERMS, type AppState, type SchoolSettings, type Term } from "@/lib/types";
 import { RuleConfigurationManager } from "@/features/configuration/components/rule-configuration-manager";
 
 export function SettingsManager() {
@@ -27,6 +27,7 @@ export function SettingsManager() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
+  const [pendingImport, setPendingImport] = useState<AppState | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const current = dirty ? draft : state.settings;
 
@@ -53,15 +54,25 @@ export function SettingsManager() {
     try {
       const parsed: unknown = JSON.parse(await file.text());
       if (!isAppState(parsed)) throw new Error("invalid");
-      importState(parsed);
-      setDirty(false);
+      setPendingImport(parsed);
       setError("");
-      setMessage("La sauvegarde a été restaurée avec succès.");
+      setMessage("");
     } catch {
+      setMessage("");
       setError("Ce fichier n’est pas une sauvegarde lavision valide.");
     } finally {
       if (fileInput.current) fileInput.current.value = "";
     }
+  };
+
+  const confirmImport = () => {
+    if (!pendingImport) return;
+    importState(pendingImport);
+    setDraft(pendingImport.settings);
+    setPendingImport(null);
+    setDirty(false);
+    setError("");
+    setMessage("La sauvegarde a été restaurée avec succès.");
   };
 
   return (
@@ -102,6 +113,28 @@ export function SettingsManager() {
       <RuleConfigurationManager />
       <Notice tone="warning" title="Important pour une mise en production">Le stockage local convient à la démonstration et au prototype desktop. Une utilisation partagée entre plusieurs postes exige une base centralisée, une authentification serveur, des rôles et des sauvegardes automatiques.</Notice>
 
+      <Modal
+        open={pendingImport !== null}
+        onClose={() => setPendingImport(null)}
+        title="Confirmer la restauration"
+        description="Les données actuelles de cet appareil seront remplacées. Exportez-les d’abord si vous souhaitez les conserver."
+        size="small"
+        footer={<><button className="button button-secondary" type="button" onClick={() => setPendingImport(null)}>Annuler</button><button className="button button-primary" type="button" onClick={confirmImport}>Restaurer cette sauvegarde</button></>}
+      >
+        {pendingImport && (
+          <div>
+            <p>Sauvegarde {pendingImport.settings.academicYear} · {pendingImport.settings.schoolName}</p>
+            <div className="data-summary">
+              <div><strong>{pendingImport.students.length}</strong><small>élèves</small></div>
+              <div><strong>{pendingImport.classes.length}</strong><small>classes</small></div>
+              <div><strong>{pendingImport.grades.length}</strong><small>notes</small></div>
+              <div><strong>{pendingImport.subjects.length}</strong><small>matières</small></div>
+              <div><strong>{pendingImport.attendance.length}</strong><small>présences</small></div>
+              <div><strong>{pendingImport.publications.length}</strong><small>publications</small></div>
+            </div>
+          </div>
+        )}
+      </Modal>
       <Modal open={resetOpen} onClose={() => setResetOpen(false)} title="Restaurer les données de démonstration ?" description="Cette action remplacera le contenu actuel de ce navigateur." size="small" footer={<><button className="button button-secondary" type="button" onClick={() => setResetOpen(false)}>Annuler</button><button className="button button-danger" type="button" onClick={() => { resetState(); setDirty(false); setResetOpen(false); setMessage("Les données de démonstration ont été restaurées."); }}><RotateCcw size={16} /> Confirmer la réinitialisation</button></>}><Notice tone="warning">Téléchargez d’abord une sauvegarde JSON si vous souhaitez conserver les inscriptions et notes actuelles.</Notice><button className="button button-secondary button-full" type="button" onClick={() => downloadJson(state)}><Download size={16} /> Télécharger avant de réinitialiser</button></Modal>
     </>
   );

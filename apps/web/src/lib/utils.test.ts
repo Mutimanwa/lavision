@@ -28,4 +28,31 @@ describe("validation des sauvegardes", () => {
     state.settings.passMark = Number.NaN;
     expect(isAppState(state)).toBe(false);
   });
+
+  it("refuse des coordonnées d’établissement incomplètes", () => {
+    const state = createSeedState();
+    const settings: Record<string, unknown> = { ...state.settings };
+    delete settings.email;
+    expect(isAppState({ ...state, settings })).toBe(false);
+  });
+
+  it("refuse un dossier élève avec un sexe inconnu ou une date de naissance manquante", () => {
+    const state = createSeedState();
+    expect(isAppState({
+      ...state,
+      students: [{ ...state.students[0], gender: "Inconnu" }],
+    })).toBe(false);
+    expect(isAppState({
+      ...state,
+      students: [{ ...state.students[0], birthDate: undefined }],
+    })).toBe(false);
+  });
+
+  it("refuse une note sans horodatage exploitable", () => {
+    const state = createSeedState();
+    expect(isAppState({
+      ...state,
+      grades: [{ ...state.grades[0], updatedAt: undefined }],
+    })).toBe(false);
+  });
 });

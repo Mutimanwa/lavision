@@ -89,19 +89,24 @@ export function isAppState(value: unknown): value is AppState {
   const publications = value.publications as unknown[];
   const terms = ["Trimestre 1", "Trimestre 2", "Trimestre 3"];
   const studentStatuses = ["Actif", "En attente", "Inactif"];
+  const genders = ["Fille", "Garçon"];
   const attendanceStatuses = ["present", "absent", "retard", "excuse"];
 
   const validStudents = students.every((item) => {
     if (!isRecord(item) || !isRecord(item.guardian)) return false;
     return (
-      hasStrings(item, ["id", "matricule", "firstName", "lastName", "classId", "status"]) &&
+      hasStrings(item, [
+        "id", "matricule", "firstName", "lastName", "gender", "birthDate", "birthPlace",
+        "nationality", "address", "classId", "enrolledAt", "status", "previousSchool",
+      ]) &&
       studentStatuses.includes(item.status as string) &&
+      genders.includes(item.gender as string) &&
       hasStrings(item.guardian, ["name", "relationship", "phone", "email"])
     );
   });
   const validClasses = classes.every((item) =>
     isRecord(item) &&
-    hasStrings(item, ["id", "name", "level", "headTeacher"]) &&
+    hasStrings(item, ["id", "name", "level", "room", "headTeacher"]) &&
     typeof item.capacity === "number" && Number.isFinite(item.capacity) && item.capacity > 0,
   );
   const validSubjects = subjects.every((item) =>
@@ -111,7 +116,7 @@ export function isAppState(value: unknown): value is AppState {
   );
   const validGrades = grades.every((item) =>
     isRecord(item) &&
-    hasStrings(item, ["id", "studentId", "subjectId", "term"]) &&
+    hasStrings(item, ["id", "studentId", "subjectId", "term", "updatedAt"]) &&
     terms.includes(item.term as string) &&
     typeof item.value === "number" && Number.isFinite(item.value) && item.value >= 0 && item.value <= 20,
   );
@@ -126,7 +131,7 @@ export function isAppState(value: unknown): value is AppState {
     terms.includes(item.term as string),
   );
   const validSettings =
-    hasStrings(value.settings, ["schoolName", "academicYear", "currentTerm", "directionName"]) &&
+    hasStrings(value.settings, ["schoolName", "academicYear", "currentTerm", "directionName", "email", "phone", "address"]) &&
     terms.includes(value.settings.currentTerm as string) &&
     typeof value.settings.passMark === "number" &&
     Number.isFinite(value.settings.passMark) &&

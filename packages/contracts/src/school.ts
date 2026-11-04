@@ -329,6 +329,14 @@ export const referentialRevisionsResponseSchema = z
   .object({ revisions: z.array(referentialRevisionResponseSchema) })
   .strict();
 
+export type OrganizationResponse = z.infer<typeof organizationResponseSchema>;
+export type SiteResponse = z.infer<typeof siteResponseSchema>;
+export type LevelResponse = z.infer<typeof levelResponseSchema>;
+export type RoomResponse = z.infer<typeof roomResponseSchema>;
+export type SitesResponse = z.infer<typeof sitesResponseSchema>;
+export type LevelsResponse = z.infer<typeof levelsResponseSchema>;
+export type RoomsResponse = z.infer<typeof roomsResponseSchema>;
+
 export type SchoolEntityType = z.infer<typeof schoolEntityTypeSchema>;
 export type SchoolListQuery = z.infer<typeof schoolListQuerySchema>;
 export type SchoolHistoryQuery = z.infer<typeof schoolHistoryQuerySchema>;

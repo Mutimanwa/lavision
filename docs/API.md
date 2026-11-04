@@ -16,7 +16,7 @@ Le workspace `apps/api` contient le monolithe modulaire NestJS/Fastify avec :
 - tests unitaires et tests PostgreSQL exécutés en CI ;
 - logs HTTP structurés avec `requestId` et métriques Prometheus protégées par un token technique.
 
-**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; calculs officiels et stratégies métier restantes de #39, raccordement des autres modules frontend/Tauri et déploiement de production. Les API #8 sont livrées séparément des écrans d’administration, dont le raccordement reste à faire sans réécrire la démonstration existante.
+**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; calculs officiels et stratégies métier restantes de #39, raccordement des autres modules frontend/Tauri et déploiement de production. Les API #8 disposent désormais d’un premier écran de consultation et de modification du nom de l’organisation ; les autres opérations d’administration et les parcours métier restent à raccorder sans réécrire la démonstration existante.
 
 ## 2. Démarrage vierge en une commande
 
@@ -145,6 +145,10 @@ Les codes, numéros de séquence et jours non ouvrés ont des contraintes d’un
 
 Chaque mutation crée, dans la même transaction, une révision avant/après avec acteur, date, `requestId` et motif éventuel, ainsi qu’un événement `AuditService`. `GET /school/history` permet une consultation autorisée et filtrée de ces révisions. Les permissions de préparation des référentiels sont distinctes de celles du calendrier et des règles #39. Le cycle `DRAFT`/`ACTIVE`/`CLOSED` décrit ici l’état opérationnel d’une année ; il ne remplace pas le circuit préparation → validation pédagogique → approbation → publication des référentiels académiques versionnés, dont la composition détaillée des programmes reste un raccordement métier séparé.
 
+### Premier écran frontend des référentiels
+
+L’écran **Paramètres → Référentiels d’établissement** appelle `GET /auth/me`, puis les routes autorisées `GET /school/organization`, `GET /school/sites`, `GET /school/levels` et `GET /school/rooms` pour l’organisation choisie dans les memberships de la session. Il affiche les sites, niveaux et salles actifs sans les mélanger au jeu de démonstration local. Le nom de l’organisation peut être modifié par `PATCH /school/organization/:id` avec le même `organizationId` dans le corps ; le code reste en lecture seule et l’historique est produit par l’API. Les créations, archivages et écrans de calendrier ne sont pas simulés par cette première tranche.
+
 ## 7. Moteur de règles #39
 
 ### Catalogue et validation
@@ -234,6 +238,6 @@ La CI utilise PostgreSQL 16 isolé, `LAVISION_SKIP_DOCKER=true`, une clé de tes
 
 ## 11. Limites d’exploitation
 
-Le frontend n’appelle pas encore cette API : le raccordement Web/Tauri reste prévu en M2. Pour Tauri, ce raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
+Les parcours métier élèves, notes, bulletins et proclamations n’appellent pas encore cette API ; leur raccordement Web reste prévu en M2. Les parcours d’authentification, de configuration des règles et le premier écran des référentiels utilisent déjà le proxy same-origin. Pour Tauri, le raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
 
 Avant toute production : brancher les modules métier sur #7 et les référentiels #8, raccorder les clients et les écrans d’administration, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6, #7, #8 ou #39. Les écrans de configuration et les compositions détaillées sections/options/programmes restent à raccorder ; le catalogue et les stratégies de calcul métier doivent être complétés avant la recette fonctionnelle correspondante.

@@ -586,3 +586,88 @@
     transition: none;
   }
 }
+
+.school-organization-form {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8faf9;
+}
+
+.school-organization-form .button-row {
+  margin-top: 14px;
+}
+
+.school-organization-form .notice {
+  margin-bottom: 0;
+}
+
+.school-referentials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.school-referential-card {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.school-referential-card > header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.school-referential-card h3 {
+  flex: 1;
+  margin: 0;
+  font-size: 13px;
+}
+
+.school-referential-icon {
+  display: inline-flex;
+  color: var(--brand);
+}
+
+.school-referential-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.school-referential-list li {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--line);
+}
+
+.school-referential-list strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.school-referential-list small,
+.school-referential-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .school-referentials-grid {
+    grid-template-columns: 1fr;
+  }
+}

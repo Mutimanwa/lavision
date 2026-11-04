@@ -63,8 +63,19 @@ export function AttendanceManager() {
   };
 
   const save = () => {
+    if (!date) {
+      setError("Sélectionnez une date avant d’enregistrer l’appel.");
+      setMessage("");
+      return;
+    }
+    if (date > toInputDate()) {
+      setError("La date de l’appel ne peut pas être dans le futur.");
+      setMessage("");
+      return;
+    }
     if (marked !== students.length) {
       setError("Renseignez le statut de chaque élève avant d’enregistrer l’appel.");
+      setMessage("");
       return;
     }
     saveAttendance(students.map((student) => ({ studentId: student.id, classId, date, status: currentStatus(student.id)! })));
@@ -81,7 +92,7 @@ export function AttendanceManager() {
       {error && <Notice tone="warning" title="Appel incomplet">{error}</Notice>}
       <div className="attendance-layout">
         <section className="card attendance-card">
-          <div className="attendance-controls"><SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={(value) => { setClassId(value); setMessage(""); setError(""); }} /><label><span>Date de l’appel</span><input type="date" value={date} max={toInputDate()} onChange={(event) => { setDate(event.target.value); setMessage(""); setError(""); }} /></label><button className="button button-soft" type="button" onClick={markAllPresent} disabled={!students.length}><CheckCheck size={17} /> Tous présents</button></div>
+          <div className="attendance-controls"><SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={(value) => { setClassId(value); setMessage(""); setError(""); }} /><label><span>Date de l’appel</span><input type="date" required value={date} max={toInputDate()} onChange={(event) => { setDate(event.target.value); setMessage(""); setError(""); }} /></label><button className="button button-soft" type="button" onClick={markAllPresent} disabled={!students.length}><CheckCheck size={17} /> Tous présents</button></div>
           <div className="attendance-overview"><div><small>Statuts renseignés</small><strong>{marked}<span> / {students.length}</span></strong></div><div><small>Présents</small><strong>{present}</strong></div><div><small>Absents</small><strong>{absent}</strong></div><div><small>Retards</small><strong>{late}</strong></div></div>
           <div className="attendance-list">
             <div className="attendance-list-head"><span>Élève</span><span>Statut de présence</span></div>

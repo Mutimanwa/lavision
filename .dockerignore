@@ -16,3 +16,4 @@ assets
 .env
 .env.*
 !.env.example
+.lavision

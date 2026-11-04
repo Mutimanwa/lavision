@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { randomUUID } from "node:crypto";
-import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
@@ -9,6 +8,7 @@ import {
 import { API_PREFIX } from "@lavision/contracts";
 import { AppModule } from "./app.module.js";
 import { configureApp } from "./app.setup.js";
+import { structuredLog } from "./common/observability.js";
 
 async function bootstrap(): Promise<void> {
   const adapter = new FastifyAdapter({
@@ -30,7 +30,7 @@ async function bootstrap(): Promise<void> {
   }
 
   await app.listen(port, "0.0.0.0");
-  Logger.log(`lavision API disponible sur ${API_PREFIX}`, "Bootstrap");
+  structuredLog("info", "api.started", { apiPrefix: API_PREFIX, port });
 }
 
 void bootstrap();

@@ -12,11 +12,13 @@ La planification opérationnelle est désormais centralisée dans les documents 
 - parcours de démonstration inscription, élèves, classes, notes, bulletins et proclamation ;
 - présences, paramètres, exports CSV et sauvegarde JSON ;
 - moteur académique testé ;
-- export web statique et build desktop Tauri Windows en CI.
+- export web statique et build desktop Tauri Windows en CI ;
+- socle API/PostgreSQL, authentification/MFA, RBAC/audit, référentiels et moteur technique de règles ;
+- images Docker, worker technique, staging jetable, logs/métriques et rollback vérifiés en CI (#9).
 
-Ces acquis restent un prototype local. Ils ne remplacent pas les prérequis de sécurité, de base centralisée et de recette du plan.
+Ces acquis ne constituent pas encore un produit multiutilisateur raccordé ni une validation des calculs officiels. Les preuves et limites sont consignées dans les recettes #39 et #9.
 
-**Prochaine étape :** conduire les ateliers M0 à partir du [dossier de cadrage métier](cadrage/README.md), faire valider les exemples et les permissions, puis finaliser les ADR avant l’initialisation de l’API.
+**Prochaine étape :** raccorder progressivement les repositories du frontend à l’API authentifiée et faire valider les règles métier restantes, sans élargir la v1. Les choix d’hébergement, de sauvegarde et de reprise restent ouverts avant production.
 
 ## Cible par jalons
 

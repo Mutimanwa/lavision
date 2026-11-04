@@ -79,6 +79,9 @@ export interface SchoolSettings {
   email: string;
   phone: string;
   address: string;
+  /** Optional for backwards-compatible local backups created before document localization. */
+  country?: string;
+  city?: string;
 }
 
 export interface AppState {

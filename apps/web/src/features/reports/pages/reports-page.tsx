@@ -26,6 +26,7 @@ import {
 } from "@/lib/academic";
 import { downloadCsv, formatDate } from "@/lib/utils";
 import { TERMS, type Term } from "@/lib/types";
+import { selectReportStudent } from "../services/report-selection";
 
 export function ReportCards() {
   const { state } = useSchool();
@@ -33,15 +34,18 @@ export function ReportCards() {
   const canOpenProclamation = role === "direction" || role === "academic_manager";
   const router = useRouter();
   const searchParams = useSearchParams();
-  const queryStudent = state.students.find((student) => student.id === searchParams.get("eleve"));
+  const requestedStudentId = searchParams.get("eleve");
+  const hasRequestedStudent = requestedStudentId !== null;
+  const queryStudent = state.students.find((student) => student.id === requestedStudentId);
   const [localClassId, setLocalClassId] = useState(state.classes[0]?.id ?? "");
-  const [localStudentId, setLocalStudentId] = useState("");
+  const [localSelection, setLocalSelection] = useState<{ id: string; requestId: string | null }>({ id: "", requestId: null });
   const [term, setTerm] = useState<Term>(state.settings.currentTerm);
+  const localStudentId = localSelection.requestId === requestedStudentId ? localSelection.id : "";
 
   const classId = queryStudent?.classId ?? localClassId;
   const schoolClass = state.classes.find((item) => item.id === classId);
   const classStudents = state.students.filter((student) => student.classId === classId && student.status === "Actif");
-  const selectedStudent = classStudents.find((student) => student.id === (localStudentId || queryStudent?.id)) ?? classStudents[0];
+  const selectedStudent = selectReportStudent(state.students, classId, requestedStudentId, localStudentId, hasRequestedStudent);
   const ranking = getClassRanking(classStudents, term, state.subjects, state.grades, state.settings.passMark);
   const rankedStudent = ranking.find((item) => item.studentId === selectedStudent?.id);
   const report = selectedStudent
@@ -55,8 +59,13 @@ export function ReportCards() {
 
   const changeClass = (nextClass: string) => {
     setLocalClassId(nextClass);
-    setLocalStudentId("");
-    if (queryStudent) router.replace("/bulletins/");
+    setLocalSelection({ id: "", requestId: null });
+    if (hasRequestedStudent) router.replace("/bulletins/");
+  };
+
+  const changeStudent = (nextStudent: string) => {
+    setLocalSelection({ id: nextStudent, requestId: null });
+    if (hasRequestedStudent) router.replace("/bulletins/");
   };
 
   const exportReport = () => {
@@ -82,18 +91,18 @@ export function ReportCards() {
         <PageHeader eyebrow="Évaluations" title="Bulletins scolaires" icon={<GraduationCap size={20} />} description="Consultez un bulletin calculé automatiquement, puis imprimez-le ou enregistrez-le en PDF." actions={<><button className="button button-secondary" type="button" onClick={exportReport} disabled={!selectedStudent}><Download size={17} /> Exporter CSV</button><button className="button button-primary" type="button" onClick={() => window.print()} disabled={!selectedStudent}><Printer size={17} /> Imprimer / PDF</button></>} />
         <section className="card bulletin-toolbar">
           <SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={changeClass} />
-          <SearchSelectForm label="Élève" value={selectedStudent?.id ?? ""} options={classStudents.map((student) => ({ value: student.id, label: getFullName(student), description: student.matricule }))} onChange={setLocalStudentId} searchPlaceholder="Nom ou matricule…" dropdownLabel="Élèves actifs" />
+          <SearchSelectForm label="Élève" value={selectedStudent?.id ?? ""} options={classStudents.map((student) => ({ value: student.id, label: getFullName(student), description: student.matricule }))} onChange={changeStudent} searchPlaceholder="Nom ou matricule…" dropdownLabel="Élèves actifs" />
           <SelectForm label="Période" value={term} options={TERMS.map((item) => ({ value: item, label: item }))} onChange={(value) => setTerm(value as Term)} />
-          <div className="bulletin-navigation"><button className="icon-button" type="button" disabled={currentIndex <= 0} onClick={() => setLocalStudentId(classStudents[currentIndex - 1]?.id ?? "")} aria-label="Élève précédent"><ArrowLeft size={18} /></button><span>{currentIndex + 1} / {classStudents.length}</span><button className="icon-button" type="button" disabled={currentIndex >= classStudents.length - 1} onClick={() => setLocalStudentId(classStudents[currentIndex + 1]?.id ?? "")} aria-label="Élève suivant"><ArrowRight size={18} /></button></div>
+          <div className="bulletin-navigation"><button className="icon-button" type="button" disabled={currentIndex <= 0} onClick={() => changeStudent(classStudents[currentIndex - 1]?.id ?? "")} aria-label="Élève précédent"><ArrowLeft size={18} /></button><span>{currentIndex >= 0 ? currentIndex + 1 : 0} / {classStudents.length}</span><button className="icon-button" type="button" disabled={currentIndex >= classStudents.length - 1} onClick={() => changeStudent(classStudents[currentIndex + 1]?.id ?? "")} aria-label="Élève suivant"><ArrowRight size={18} /></button></div>
         </section>
         {report && !report.isComplete && <Notice tone="warning" title="Bulletin provisoire">{report.totalSubjects - report.gradedCount} matière(s) n’ont pas encore de note. La moyenne affichée utilise uniquement les matières évaluées et aucun rang définitif n’est attribué.</Notice>}
       </div>
 
       {selectedStudent && report ? (
-        <article className="report-paper" id="bulletin">
+        <article className="report-paper" id="bulletin" data-tour="report-document">
           <header className="report-school-header">
             <div className="report-school-logo"><GraduationCap size={31} /></div>
-            <div><p>République du Burundi</p><h2>{state.settings.schoolName}</h2><span>{state.settings.address} · {state.settings.phone}</span></div>
+            <div>{state.settings.country?.trim() && <p>{state.settings.country}</p>}<h2>{state.settings.schoolName}</h2><span>{state.settings.address} · {state.settings.phone}</span></div>
             <div className="report-document-id"><Badge tone={publication ? "green" : "amber"}>{publication ? "Bulletin officiel" : "Bulletin provisoire"}</Badge><small>N° {selectedStudent.matricule}-{term.slice(-1)}</small></div>
           </header>
           <div className="report-title"><p>Année scolaire {state.settings.academicYear}</p><h1>Bulletin de notes</h1><span>{term}</span></div>
@@ -112,11 +121,11 @@ export function ReportCards() {
             <div><h3>Suivi de l’assiduité</h3><p><span>Absences</span><strong>{attendance.filter((record) => record.status === "absent").length}</strong></p><p><span>Retards</span><strong>{attendance.filter((record) => record.status === "retard").length}</strong></p><p><span>Absences excusées</span><strong>{attendance.filter((record) => record.status === "excuse").length}</strong></p></div>
             <div><h3>Appréciation du conseil de classe</h3><p className="council-comment">{report.isComplete ? `${getAppreciation(report.average)}. ${rankedStudent?.outcome === "Admis" ? "Poursuivre les efforts et la régularité dans le travail." : "Un travail soutenu est nécessaire pour atteindre le seuil de réussite."}` : "Le conseil de classe se prononcera après la saisie de toutes les notes."}</p></div>
           </section>
-          <footer className="report-signature"><div><small>Fait à Bujumbura, le {formatDate(new Date().toISOString())}</small><span>Cachet de l’établissement</span></div><div><strong>{state.settings.directionName}</strong><span>La Direction</span></div></footer>
+          <footer className="report-signature"><div><small>{state.settings.city?.trim() ? `Fait à ${state.settings.city}, le ` : "Fait le "}{formatDate(new Date().toISOString())}</small><span>Cachet de l’établissement</span></div><div><strong>{state.settings.directionName}</strong><span>La Direction</span></div></footer>
           <div className="report-authenticity"><ShieldCheck size={14} /> Document généré par lavision · {publication ? `Publié le ${formatDate(publication.publishedAt)}` : "Version de travail non publiée"}</div>
         </article>
       ) : (
-        <div className="card no-print"><EmptyState icon={<GraduationCap size={28} />} title="Aucun bulletin disponible" description="Ajoutez d’abord un élève actif dans cette classe." action={<Link className="button button-primary" href="/inscriptions/">Nouvelle inscription</Link>} /></div>
+        <div className="card no-print"><EmptyState icon={<GraduationCap size={28} />} title={hasRequestedStudent ? "Bulletin indisponible pour ce dossier" : "Aucun bulletin disponible"} description={hasRequestedStudent ? "Le dossier demandé est introuvable, inactif ou ne contient pas d’élève actif dans cette classe. Aucun autre élève n’a été sélectionné à sa place." : "Ajoutez d’abord un élève actif dans cette classe."} action={hasRequestedStudent ? <Link className="button button-secondary" href="/eleves/">Retour au répertoire</Link> : <Link className="button button-primary" href="/inscriptions/">Nouvelle inscription</Link>} /></div>
       )}
       <div className="bulletin-footer-actions no-print"><button className="button button-secondary" type="button" onClick={() => window.print()} disabled={!selectedStudent}><Printer size={17} /> Imprimer ce bulletin</button><Link className="text-link" href={canOpenProclamation ? "/proclamation/" : "/notes/"}>{canOpenProclamation ? "Aller à la proclamation" : "Retour aux notes"} <ArrowRight size={16} /></Link></div>
     </>

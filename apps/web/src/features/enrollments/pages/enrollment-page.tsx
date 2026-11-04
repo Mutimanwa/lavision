@@ -70,6 +70,7 @@ export function EnrollmentForm() {
   const [draft, setDraft] = useState<EnrollmentDraft>(initialDraft);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [enrolledStudent, setEnrolledStudent] = useState<Student | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const update = <Key extends keyof EnrollmentDraft>(key: Key, value: EnrollmentDraft[Key]) => {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -87,6 +88,7 @@ export function EnrollmentForm() {
       if (!draft.firstName.trim()) nextErrors.firstName = "Le prénom est requis.";
       if (!draft.lastName.trim()) nextErrors.lastName = "Le nom est requis.";
       if (!draft.birthDate) nextErrors.birthDate = "La date de naissance est requise.";
+      else if (draft.birthDate > toInputDate()) nextErrors.birthDate = "La date de naissance ne peut pas être dans le futur.";
       if (!draft.birthPlace.trim()) nextErrors.birthPlace = "Le lieu de naissance est requis.";
       if (!draft.nationality.trim()) nextErrors.nationality = "La nationalité est requise.";
     }
@@ -122,6 +124,14 @@ export function EnrollmentForm() {
   };
 
   const submit = () => {
+    if (isSubmitting) return;
+    for (const stepToValidate of [0, 1, 2]) {
+      if (!validateStep(stepToValidate)) {
+        setStep(stepToValidate);
+        return;
+      }
+    }
+    setIsSubmitting(true);
     const input: EnrollmentInput = {
       firstName: draft.firstName.trim(),
       lastName: draft.lastName.trim(),
@@ -142,6 +152,7 @@ export function EnrollmentForm() {
       },
     };
     setEnrolledStudent(addStudent(input));
+    setIsSubmitting(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -150,6 +161,7 @@ export function EnrollmentForm() {
     setErrors({});
     setStep(0);
     setEnrolledStudent(null);
+    setIsSubmitting(false);
   };
 
   if (enrolledStudent) {
@@ -306,7 +318,7 @@ export function EnrollmentForm() {
             <footer className="form-footer">
               {step > 0 ? <button className="button button-secondary" type="button" onClick={() => { setStep((current) => current - 1); setErrors({}); }}><ArrowLeft size={17} /> Précédent</button> : <Link className="button button-ghost" href="/eleves/">Annuler</Link>}
               <span>Étape {step + 1} sur {STEPS.length}</span>
-              <button className="button button-primary" type="submit">{step === 3 ? <><Check size={17} /> Confirmer l’inscription</> : <>Continuer <ArrowRight size={17} /></>}</button>
+              <button className="button button-primary" type="submit" disabled={isSubmitting}>{step === 3 ? <><Check size={17} /> {isSubmitting ? "Enregistrement…" : "Confirmer l’inscription"}</> : <>Continuer <ArrowRight size={17} /></>}</button>
             </footer>
           </form>
         </section>

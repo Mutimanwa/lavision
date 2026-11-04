@@ -352,6 +352,8 @@ export function createSeedState(): AppState {
       email: "direction@lavision.example",
       phone: "+257 22 000 000",
       address: "Rohero, Bujumbura — Burundi",
+      country: "République du Burundi",
+      city: "Bujumbura",
     },
   };
 }

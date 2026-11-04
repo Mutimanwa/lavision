@@ -62,7 +62,7 @@ describe("Catalogue et validation des règles #39", () => {
       headers: sessionHeaders(session),
     });
     expect(response.statusCode).toBe(200);
-    expect(response.json().catalogVersion).toBe(1);
+    expect(response.json().catalogVersion).toBe(2);
     expect(response.json().definitions.length).toBeGreaterThan(10);
     expect(response.json().definitions.every((entry: { domain: string }) => entry.domain === "academic")).toBe(true);
     expect(response.json().definitions.some((entry: { key: string }) => entry.key === "academic.grading.scale_max")).toBe(true);
@@ -89,6 +89,33 @@ describe("Catalogue et validation des règles #39", () => {
     expect(invalid.statusCode).toBe(200);
     expect(invalid.json().valid).toBe(false);
     expect(invalid.json().issues[0].code).toBe("INVALID_DECIMAL");
+  });
+
+  it("accepte une structure de paramètre incertain sans exécuter de contenu", async () => {
+    const organization = await createOrganization(prisma);
+    const session = await actor(organization.id, Role.ACADEMIC_MANAGER);
+    const response = await http().inject({
+      method: "POST",
+      url: "/api/v1/rules/validate",
+      headers: sessionHeaders(session),
+      payload: {
+        organizationId: organization.id,
+        key: "academic.appreciation.scale",
+        value: [{ minimum: "0", label: "À faire valider" }],
+      },
+    });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({ valid: true, issues: [] });
+
+    const invalid = await http().inject({
+      method: "POST",
+      url: "/api/v1/rules/validate",
+      headers: sessionHeaders(session),
+      payload: { organizationId: organization.id, key: "academic.appreciation.scale", value: "=SUM(A1:A2)" },
+    });
+    expect(invalid.statusCode).toBe(200);
+    expect(invalid.json().valid).toBe(false);
+    expect(invalid.json().issues[0].code).toBe("INVALID_STRUCTURE");
   });
 
   it("applique la permission du domaine en plus de la permission de validation", async () => {

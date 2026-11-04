@@ -21,6 +21,14 @@ Cette exigence approfondit le moteur de règles déjà prévu. Elle n’ajoute p
 - une évolution crée une nouvelle version datée, sans réécrire l’historique ;
 - les calculs officiels utilisent uniquement une configuration publiée, complète et applicable à leur contexte.
 
+### Application aux informations absentes ou incertaines — DEC-013
+
+La demande du 30/10/2026 est appliquée sans exception aux règles métier variables : **si nous n’avons pas la donnée ou si nous ne sommes pas sûrs, nous créons un paramètre configurable plutôt qu’une constante**. Le catalogue API v2 recense ces paramètres par domaine, avec leur type, leurs portées et leur caractère obligatoire. Une clé présente dans le catalogue n’a aucune valeur tant qu’un établissement ne l’a pas enregistrée dans une version.
+
+Les listes et objets dont le contenu précis reste à définir utilisent temporairement le type `structured` : JSON borné, sans code exécutable, avec une forme extérieure `array` ou `object`. Cette enveloppe permet de préparer, dater, auditer et simuler la configuration ; elle ne remplace pas le schéma de champs et les contrôles métier qui seront exigés avant le calcul officiel consommateur.
+
+Cette règle ne rend pas configurables les invariants de sécurité, les permissions de l’API, l’immuabilité, l’audit ou l’interdiction des formules arbitraires. Les sections, options, programmes, périodes et jours non ouvrés restent des référentiels versionnés distincts, et non des valeurs JSON dupliquées.
+
 ## 2. Ce qui est configurable et ce qui ne l’est pas
 
 | Catégorie | Traitement |

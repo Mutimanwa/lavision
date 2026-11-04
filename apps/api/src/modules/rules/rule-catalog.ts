@@ -34,6 +34,68 @@ function checkBounds(
   return undefined;
 }
 
+const forbiddenStructuredKeys = new Set(["__proto__", "prototype", "constructor"]);
+
+/**
+ * Les paramètres encore inconnus peuvent être conservés comme données structurées,
+ * jamais comme formule exécutable. Le schéma métier détaillé est ajouté avant le
+ * calcul qui les consomme ; cette validation borne déjà la taille et la profondeur.
+ */
+function validateStructuredValue(
+  definition: RuleDefinition,
+  value: unknown,
+): RuleValueValidationResult {
+  if (definition.constraints?.structure === "array" && !Array.isArray(value)) {
+    return invalid("INVALID_STRUCTURE", "Une liste structurée est requise.");
+  }
+  if (definition.constraints?.structure === "object" && (
+    typeof value !== "object" || value === null || Array.isArray(value)
+  )) {
+    return invalid("INVALID_STRUCTURE", "Un objet structuré est requis.");
+  }
+  if (typeof value !== "object" || value === null) {
+    return invalid("INVALID_STRUCTURE", "Une liste ou un objet structuré est requis.");
+  }
+
+  let nodes = 0;
+  const visit = (entry: unknown, depth: number): string | null => {
+    nodes += 1;
+    if (nodes > 2000) return "La structure contient trop d’éléments.";
+    if (depth > 10) return "La structure est trop profonde.";
+    if (entry === null || typeof entry === "boolean") return null;
+    if (typeof entry === "number") return Number.isFinite(entry) ? null : "Les nombres doivent être finis.";
+    if (typeof entry === "string") return entry.length <= 1000 ? null : "Un texte de la structure est trop long.";
+    if (Array.isArray(entry)) {
+      if (entry.length > 200) return "Une liste contient trop d’éléments.";
+      for (const child of entry) {
+        const error = visit(child, depth + 1);
+        if (error) return error;
+      }
+      return null;
+    }
+    if (typeof entry !== "object") return "Seules des données JSON sont acceptées.";
+    const prototype = Object.getPrototypeOf(entry);
+    if (prototype !== Object.prototype && prototype !== null) return "Les objets natifs ou instances de classe ne sont pas acceptés.";
+    const entries = Object.entries(entry);
+    if (entries.length > 100) return "Un objet contient trop de champs.";
+    for (const [key, child] of entries) {
+      if (forbiddenStructuredKeys.has(key)) return "Une clé de structure dangereuse a été refusée.";
+      if (key.length > 100) return "Une clé de structure est trop longue.";
+      const error = visit(child, depth + 1);
+      if (error) return error;
+    }
+    return null;
+  };
+
+  const error = visit(value, 0);
+  if (error) return invalid("INVALID_STRUCTURE", error);
+  const serialized = JSON.stringify(value);
+  if (!serialized || serialized.length > 65536) {
+    return invalid("STRUCTURE_TOO_LARGE", "La structure dépasse la taille maximale de 64 Ko.");
+  }
+  return { valid: true, normalizedValue: value, issues: [] };
+}
+
 /** Validation fermée : aucune expression, fonction ou code fourni par un client n’est évalué. */
 export function validateRuleValue(
   definition: RuleDefinition,
@@ -94,6 +156,8 @@ export function validateRuleValue(
         ? { valid: true, normalizedValue: value, issues: [] }
         : invalid("INVALID_DATE", "Utilisez une date ISO au format YYYY-MM-DD.");
     }
+    case "structured":
+      return validateStructuredValue(definition, value);
   }
   return invalid("UNSUPPORTED_TYPE", "Ce type de définition n’est pas encore validable.");
 }

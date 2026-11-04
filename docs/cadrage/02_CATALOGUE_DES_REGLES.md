@@ -1,7 +1,7 @@
 # Catalogue des règles configurables à valider
 
-**Statut :** proposition de catalogue pour les ateliers M0
-**Références :** issues #2 et #39
+**Statut :** catalogue métier synchronisé avec le catalogue API v2 ; valeurs encore à faire valider
+**Références :** issues #2 et #39, DEC-007 et DEC-013
 
 ## 1. Convention de lecture
 
@@ -16,7 +16,9 @@ Le fonctionnement détaillé des portées, versions, simulations et snapshots es
 | Point de départ | comportement du prototype ou proposition à discuter |
 | Validation | propriétaire qui doit confirmer la règle |
 
-**Types autorisés :** booléen, entier borné, décimal exact, montant en unité monétaire entière ou décimal exact, énumération, date, durée, liste structurée et objet à schéma fixe. Aucun script ou code utilisateur n’est accepté.
+**Types autorisés :** booléen, entier borné, décimal exact, montant en unité monétaire entière ou décimal exact, énumération, date, durée, liste structurée et objet à schéma fixe. Aucun script ou code utilisateur n’est accepté. Dans l’API, le type `structured` borne les listes/objets encore incertains ; il ne vaut pas schéma métier validé et ne débloque aucun calcul officiel.
+
+**Règle DEC-013 :** une information absente ou incertaine devient un paramètre à configurer, jamais une valeur par défaut dissimulée. La présence d’une clé ne valide ni sa valeur ni son interprétation métier.
 
 **Portées possibles :** établissement, site, année, niveau, programme, classe ou matière lorsque la règle le justifie. Une même clé ne doit pas autoriser des portées sans intérêt métier.
 
@@ -186,12 +188,15 @@ Les valeurs de cette section restent volontairement sans proposition chiffrée. 
 | `hr.leave.negative_balance_policy` | énumération + borne | type de congé | autorisation et approbation | direction |
 | `hr.leave.approval_workflow` | liste structurée | type de congé | approbateurs selon durée et fonction | direction |
 | `payroll.periodicity` | énumération | établissement | période et date de clôture | RH/expert |
+| `payroll.closing_calendar` | objet à schéma fixe | établissement | dates de clôture et de règlement, avec fuseau explicite | RH/expert |
 | `payroll.base.calculation` | énumération | type de contrat | base mensuelle, horaire ou autre réellement utilisée | expert local |
 | `payroll.proration_policy` | énumération + paramètres fixes | type de contrat | entrée, sortie, absence et temps partiel | expert local |
 | `payroll.variable.catalog` | liste structurée | établissement | primes, retenues, avances et justificatifs | RH/expert |
 | `payroll.contribution.catalog` | liste structurée | établissement, date d’effet | cotisations applicables et références officielles | expert local |
 | `payroll.tax.catalog` | liste structurée | établissement, date d’effet | impôts applicables et références officielles | expert local |
 | `payroll.rounding.policy` | énumération + précision | établissement | étape et mode d’arrondi | expert local |
+| `payroll.rounding.precision` | entier borné | établissement | nombre de décimales à l’étape configurée | expert local |
+| `payroll.rounding.stage` | énumération | établissement | ligne, sous-total ou résultat final à confirmer | expert local |
 | `payroll.validation.workflow` | liste structurée | établissement | préparation, contrôle, validation et règlement | direction |
 | `payroll.correction_policy` | énumération | établissement | régularisation sans réécriture du bulletin historique | expert local |
 | `payroll.payment.export_format` | liste structurée | banque/prestataire | format réel du destinataire | finance/expert |
@@ -211,7 +216,19 @@ Les valeurs de cette section restent volontairement sans proposition chiffrée. 
 | `notification.dunning.enabled` | booléen | établissement | canal et contenu à confirmer | finance |
 | `notification.retry_policy` | liste structurée bornée | canal | tentatives et délais techniques à définir | administrateur |
 
-## 9. Fiche de validation d’une règle
+## 9. Correspondance technique et exclusions explicites
+
+Le contrôle `npm run check:rules` compare ce document au catalogue API et échoue si une clé métier n’est ni implémentée ni classée ici. Les exclusions suivantes ne sont pas des oublis :
+
+- `rules.*` : invariants du moteur, de sécurité et d’audit ; ils ne sont pas désactivables par une valeur d’établissement ;
+- `calendar.year.period_structure`, `calendar.year.closure_policy`, `calendar.non_working_days` : cycle et référentiels du calendrier, gérés par les entités et transitions du module scolaire ;
+- `academic.section.catalog`, `academic.option.catalog`, `academic.program.course_catalog` : référentiels identifiés à versionner séparément des valeurs de calcul ; leur raccordement fonctionnel reste une étape distincte, sans valeur de repli dans le moteur ;
+- `finance.payment.cancellation_policy` : contre-opération obligatoire, jamais d’effacement silencieux ;
+- `document.template.versioning`, `document.rectification_policy` : versionnement et nouvelle version obligatoires, sans réécriture de l’historique.
+
+Cette classification pourra être revue par une décision d’architecture explicite. Elle ne doit pas servir à laisser une nouvelle variable métier en dur dans un module.
+
+## 10. Fiche de validation d’une règle
 
 À renseigner pour chaque règle critique ou non triviale :
 

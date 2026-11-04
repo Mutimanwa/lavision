@@ -26,21 +26,44 @@ export function ClassManager() {
   const [classDraft, setClassDraft] = useState({ name: "", level: "6e", room: "", capacity: 35, headTeacher: "" });
   const [subjectDraft, setSubjectDraft] = useState({ name: "", code: "", coefficient: 2 });
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const submitClass = () => {
-    if (!classDraft.name.trim() || !classDraft.headTeacher.trim() || classDraft.capacity < 1) return;
-    addClass({ ...classDraft, name: classDraft.name.trim(), room: classDraft.room.trim() || "À attribuer", headTeacher: classDraft.headTeacher.trim(), capacity: Number(classDraft.capacity) });
+    const name = classDraft.name.trim();
+    const headTeacher = classDraft.headTeacher.trim();
+    const capacity = Number(classDraft.capacity);
+    if (!name || !headTeacher || !Number.isInteger(capacity) || capacity < 1 || capacity > 100) {
+      setError("Renseignez un nom, un professeur principal et une capacité entière comprise entre 1 et 100.");
+      return;
+    }
+    if (state.classes.some((item) => item.name.trim().toLocaleLowerCase("fr") === name.toLocaleLowerCase("fr"))) {
+      setError("Une classe porte déjà ce nom. Choisissez un nom distinct pour éviter les doublons.");
+      return;
+    }
+    addClass({ ...classDraft, name, room: classDraft.room.trim() || "À attribuer", headTeacher, capacity });
     setClassDraft({ name: "", level: "6e", room: "", capacity: 35, headTeacher: "" });
     setClassModal(false);
+    setError("");
     setMessage("La nouvelle classe a été ajoutée.");
   };
 
   const submitSubject = () => {
     if (!canManageAcademicRules) return;
-    if (!subjectDraft.name.trim() || !subjectDraft.code.trim() || subjectDraft.coefficient < 1) return;
-    addSubject({ name: subjectDraft.name.trim(), code: subjectDraft.code.trim().toUpperCase(), coefficient: Number(subjectDraft.coefficient) });
+    const name = subjectDraft.name.trim();
+    const code = subjectDraft.code.trim().toUpperCase();
+    const coefficient = Number(subjectDraft.coefficient);
+    if (!name || !code || !Number.isFinite(coefficient) || coefficient < 1 || coefficient > 20) {
+      setError("Renseignez un nom, un code et un coefficient compris entre 1 et 20.");
+      return;
+    }
+    if (state.subjects.some((item) => item.code.trim().toLocaleLowerCase("fr") === code.toLocaleLowerCase("fr"))) {
+      setError("Ce code de matière existe déjà. Choisissez un code distinct.");
+      return;
+    }
+    addSubject({ name, code, coefficient });
     setSubjectDraft({ name: "", code: "", coefficient: 2 });
     setSubjectModal(false);
+    setError("");
     setMessage("La matière est disponible dans les notes et les bulletins.");
   };
 
@@ -51,7 +74,7 @@ export function ClassManager() {
         title="Classes & matières"
         icon={<BookOpenCheck size={20} />}
         description="Gérez les capacités, les professeurs principaux et les coefficients utilisés dans les bulletins."
-        actions={<button className="button button-primary" type="button" onClick={() => setClassModal(true)}><Plus size={17} /> Nouvelle classe</button>}
+        actions={<button className="button button-primary" type="button" onClick={() => { setError(""); setClassModal(true); }}><Plus size={17} /> Nouvelle classe</button>}
       />
       {message && <Notice tone="success" title={message}><button className="text-link" type="button" onClick={() => setMessage("")}>Fermer</button></Notice>}
 
@@ -72,16 +95,16 @@ export function ClassManager() {
             </article>
           );
         })}
-        <button className="class-add-card" type="button" onClick={() => setClassModal(true)}><span><Plus size={25} /></span><strong>Ouvrir une classe</strong><small>Définir le niveau, la salle et la capacité</small></button>
+        <button className="class-add-card" type="button" onClick={() => { setError(""); setClassModal(true); }}><span><Plus size={25} /></span><strong>Ouvrir une classe</strong><small>Définir le niveau, la salle et la capacité</small></button>
       </section>
 
       <section className="card subjects-card">
-        <header className="card-header"><div><p className="eyebrow">Référentiel pédagogique</p><h2>Matières & coefficients</h2><p>Les modifications de coefficient recalculent immédiatement toutes les moyennes.</p></div>{canManageAcademicRules && <button className="button button-secondary" type="button" onClick={() => setSubjectModal(true)}><Plus size={17} /> Ajouter une matière</button>}</header>
+        <header className="card-header"><div><p className="eyebrow">Référentiel pédagogique</p><h2>Matières & coefficients</h2><p>Les modifications de coefficient recalculent immédiatement toutes les moyennes.</p></div>{canManageAcademicRules && <button className="button button-secondary" type="button" onClick={() => { setError(""); setSubjectModal(true); }}><Plus size={17} /> Ajouter une matière</button>}</header>
         <div className="table-wrap"><table className="data-table"><thead><tr><th>Matière</th><th>Code</th><th>Coefficient</th><th>Poids dans le bulletin</th><th>Utilisation</th></tr></thead><tbody>
           {state.subjects.map((subject) => {
             const coefficientTotal = state.subjects.reduce((sum, item) => sum + item.coefficient, 0);
             const gradeTotal = state.grades.filter((grade) => grade.subjectId === subject.id).length;
-            return <tr key={subject.id}><td><div className="subject-name-cell"><span><BookOpen size={17} /></span><strong>{subject.name}</strong></div></td><td><Badge>{subject.code}</Badge></td><td>{canManageAcademicRules ? <input className="coefficient-input" type="number" min="1" max="20" value={subject.coefficient} onChange={(event) => updateSubject(subject.id, Math.max(1, Math.min(20, Number(event.target.value))))} aria-label={`Coefficient de ${subject.name}`} /> : <strong>{subject.coefficient}</strong>}</td><td><div className="weight-cell"><div className="progress-track"><span style={{ width: `${(subject.coefficient / coefficientTotal) * 100}%` }} /></div><small>{Math.round((subject.coefficient / coefficientTotal) * 100)} %</small></div></td><td>{gradeTotal} note{gradeTotal > 1 ? "s" : ""}</td></tr>;
+            return <tr key={subject.id}><td><div className="subject-name-cell"><span><BookOpen size={17} /></span><strong>{subject.name}</strong></div></td><td><Badge>{subject.code}</Badge></td><td>{canManageAcademicRules ? <input className="coefficient-input" type="number" min="1" max="20" value={subject.coefficient} onChange={(event) => { const coefficient = Number(event.target.value); if (Number.isFinite(coefficient)) updateSubject(subject.id, Math.max(1, Math.min(20, coefficient))); }} aria-label={`Coefficient de ${subject.name}`} /> : <strong>{subject.coefficient}</strong>}</td><td><div className="weight-cell"><div className="progress-track"><span style={{ width: `${(subject.coefficient / coefficientTotal) * 100}%` }} /></div><small>{Math.round((subject.coefficient / coefficientTotal) * 100)} %</small></div></td><td>{gradeTotal} note{gradeTotal > 1 ? "s" : ""}</td></tr>;
           })}
         </tbody><tfoot><tr><td colSpan={2}>Total des coefficients</td><td><strong>{state.subjects.reduce((sum, subject) => sum + subject.coefficient, 0)}</strong></td><td colSpan={2}>Base de calcul des moyennes générales</td></tr></tfoot></table></div>
       </section>
@@ -90,10 +113,12 @@ export function ClassManager() {
       <Notice title="Règle de calcul">La moyenne générale est la somme de chaque note multipliée par son coefficient, divisée par la somme des coefficients des matières notées. La proclamation exige néanmoins un dossier complet.</Notice>
 
       <Modal open={classModal} onClose={() => setClassModal(false)} title="Ouvrir une nouvelle classe" description="Elle sera immédiatement proposée dans les inscriptions." footer={<><button className="button button-secondary" type="button" onClick={() => setClassModal(false)}>Annuler</button><button className="button button-primary" type="button" onClick={submitClass}><Plus size={16} /> Créer la classe</button></>}>
-        <div className="form-grid"><FormField label="Nom de la classe" htmlFor="class-name" required><input id="class-name" value={classDraft.name} onChange={(event) => setClassDraft({ ...classDraft, name: event.target.value })} placeholder="Ex. 3e A" /></FormField><SelectForm id="class-level" label="Niveau" required value={classDraft.level} options={["6e", "5e", "4e", "3e", "2nde", "1ère", "Tle"].map((level) => ({ value: level, label: level }))} onChange={(value) => setClassDraft({ ...classDraft, level: value })} /><FormField label="Salle" htmlFor="class-room"><input id="class-room" value={classDraft.room} onChange={(event) => setClassDraft({ ...classDraft, room: event.target.value })} placeholder="Ex. Salle C02" /></FormField><FormField label="Capacité" htmlFor="class-capacity" required><input id="class-capacity" type="number" min="1" max="100" value={classDraft.capacity} onChange={(event) => setClassDraft({ ...classDraft, capacity: Number(event.target.value) })} /></FormField><FormField label="Professeur principal" htmlFor="class-teacher" required className="form-field-full"><input id="class-teacher" value={classDraft.headTeacher} onChange={(event) => setClassDraft({ ...classDraft, headTeacher: event.target.value })} placeholder="Nom et prénom" /></FormField></div>
+        {error && <Notice tone="warning" title="Action impossible">{error}</Notice>}
+        <div className="form-grid"><FormField label="Nom de la classe" htmlFor="class-name" required><input id="class-name" value={classDraft.name} onChange={(event) => setClassDraft({ ...classDraft, name: event.target.value })} placeholder="Ex. 3e A" /></FormField><SelectForm id="class-level" label="Niveau" required value={classDraft.level} options={["6e", "5e", "4e", "3e", "2nde", "1ère", "Tle"].map((level) => ({ value: level, label: level }))} onChange={(value) => setClassDraft({ ...classDraft, level: value })} /><FormField label="Salle" htmlFor="class-room"><input id="class-room" value={classDraft.room} onChange={(event) => setClassDraft({ ...classDraft, room: event.target.value })} placeholder="Ex. Salle C02" /></FormField><FormField label="Capacité" htmlFor="class-capacity" required><input id="class-capacity" type="number" min="1" max="100" step="1" value={classDraft.capacity} onChange={(event) => setClassDraft({ ...classDraft, capacity: Number(event.target.value) })} /></FormField><FormField label="Professeur principal" htmlFor="class-teacher" required className="form-field-full"><input id="class-teacher" value={classDraft.headTeacher} onChange={(event) => setClassDraft({ ...classDraft, headTeacher: event.target.value })} placeholder="Nom et prénom" /></FormField></div>
       </Modal>
 
       <Modal open={subjectModal} onClose={() => setSubjectModal(false)} title="Ajouter une matière" description="La matière sera intégrée à tous les nouveaux bulletins." footer={<><button className="button button-secondary" type="button" onClick={() => setSubjectModal(false)}>Annuler</button><button className="button button-primary" type="button" onClick={submitSubject}><BookOpenCheck size={16} /> Ajouter la matière</button></>}>
+        {error && <Notice tone="warning" title="Action impossible">{error}</Notice>}
         <div className="form-grid"><FormField label="Nom de la matière" htmlFor="subject-name" required className="form-field-full"><input id="subject-name" value={subjectDraft.name} onChange={(event) => setSubjectDraft({ ...subjectDraft, name: event.target.value })} placeholder="Ex. Informatique" /></FormField><FormField label="Code" htmlFor="subject-code" required><input id="subject-code" value={subjectDraft.code} onChange={(event) => setSubjectDraft({ ...subjectDraft, code: event.target.value })} placeholder="Ex. INFO" maxLength={8} /></FormField><FormField label="Coefficient" htmlFor="subject-coefficient" required><input id="subject-coefficient" type="number" min="1" max="20" value={subjectDraft.coefficient} onChange={(event) => setSubjectDraft({ ...subjectDraft, coefficient: Number(event.target.value) })} /></FormField></div>
       </Modal>
     </>

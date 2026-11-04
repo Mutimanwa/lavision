@@ -17,6 +17,7 @@ import {
   FileBarChart,
   GraduationCap,
   LayoutDashboard,
+  LogIn,
   Menu,
   NotebookPen,
   Search,
@@ -172,7 +173,7 @@ function GlobalSearch() {
   if (!canSearchStudents) return null;
 
   return (
-    <div className="global-search">
+    <div className="global-search" data-tour="global-search">
       <Search size={17} />
       <input
         ref={inputRef}
@@ -318,6 +319,7 @@ function Notifications() {
       <button
         type="button"
         className="icon-button header-circle-button"
+        data-tour="notifications"
         onClick={() => setOpen((current) => !current)}
         aria-label="Ouvrir les notifications"
         aria-haspopup="dialog"
@@ -385,12 +387,13 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
       </div>
       <div className="user-popup-school"><strong>{state.settings.schoolName}</strong><small>{workspace.scopeLabel}</small></div>
       <nav className="user-popup-links" aria-label="Liens du compte">
+        <Link href="/connexion/" onClick={() => setOpen(false)}><LogIn size={16} /> Connexion API sécurisée</Link>
         <Link href="/modules/" onClick={() => setOpen(false)}><Blocks size={16} /> Modules et activation</Link>
         {quickLinks.map((module) => {
           const Icon = MODULE_ICONS[module.id] ?? Blocks;
           return <Link key={module.id} href={module.href ?? "/modules/"} onClick={() => setOpen(false)}><Icon size={16} /> {module.label}</Link>;
         })}
-        <button type="button" onClick={() => { setOpen(false); restartGuide(); }}><Sparkles size={16} /> Relancer le guide</button>
+        <button type="button" onClick={() => { setOpen(false); restartGuide(); }}><Sparkles size={16} /> Relancer la visite guidée</button>
         <button type="button" onClick={() => { setOpen(false); onHelp(); }}><CircleHelp size={16} /> Centre d’aide</button>
       </nav>
       <div className="user-popup-note"><Database size={14} /> Aperçu UX local · aucune habilitation réelle</div>
@@ -402,6 +405,7 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
       <button
         type="button"
         className="user-popup-trigger"
+        data-tour="profile-menu"
         onClick={() => setOpen((current) => !current)}
         aria-label={`Ouvrir le menu du profil ${roleDefinition.label}`}
         aria-haspopup="dialog"
@@ -418,6 +422,7 @@ function UserPopup({ onHelp }: { onHelp: () => void }) {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const isAuthRoute = pathname === "/connexion" || pathname === "/connexion/";
   const { state, hydrated } = useSchool();
   const { role, workspace } = useWorkspace();
   const { modules } = useModules();
@@ -442,6 +447,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
+  if (isAuthRoute) return <>{children}</>;
+
   const moduleLinks = (
     <>
       <Link href="/modules/" className={pathname === "/modules/" ? "active" : ""} onClick={mobileOpen ? () => setMobileOpen(false) : undefined}>
@@ -457,7 +464,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app-layout">
-      <aside className="sidebar">
+      <aside className="sidebar" data-tour="main-navigation">
         <NavigationSections />
         <div className="sidebar-bottom">{moduleLinks}</div>
       </aside>
@@ -481,7 +488,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="app-main">
         <header className="topbar">
           <div className="topbar-left">
-            <button className="icon-button mobile-menu" type="button" onClick={() => setMobileOpen(true)} aria-label="Ouvrir le menu">
+            <button className="icon-button mobile-menu" type="button" data-tour="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Ouvrir le menu">
               <Menu size={20} />
             </button>
             <Link className="topbar-brand" href="/" aria-label="Accueil lavision"><Logo /></Link>
@@ -509,9 +516,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
 
       <Modal open={helpOpen} onClose={() => setHelpOpen(false)} title="Centre d’aide lavision" description={`${workspace.spaceLabel} · ${state.settings.academicYear}`} size="medium">
-        <div className="help-intro"><span><Sparkles size={24} /></span><div><h3>Un guide adapté à votre espace</h3><p>{workspace.guideIntroduction}</p></div></div>
+        <div className="help-intro"><span><Sparkles size={24} /></span><div><h3>Une visite adaptée à votre espace</h3><p>{workspace.guideIntroduction}</p></div></div>
         <button className="help-guide-launch" type="button" onClick={() => { setHelpOpen(false); restartGuide(); }}>
-          <Sparkles size={20} /><span><strong>Relancer le guide de prise en main</strong><small>Revoir la navigation, les modules et la première action du rôle.</small></span>
+          <Sparkles size={20} /><span><strong>Lancer la visite interactive de cette page</strong><small>Surligner les menus, les boutons et les zones de travail, étape par étape.</small></span>
         </button>
         <div className="help-grid">
           {helpLinks.filter((item) => canOpen(item.id)).map((item) => {

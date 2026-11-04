@@ -45,4 +45,24 @@ describe("catalogue fermé et validation des valeurs #39", () => {
     expect(validateRuleValue(definition("finance.currency.code"), "bif").valid).toBe(false);
     expect(validateRuleValue(definition("academic.rounding.mode"), null).valid).toBe(false);
   });
+
+  it("expose les paramètres incertains sans valeur par défaut et borne les structures", () => {
+    const appreciation = definition("academic.appreciation.scale");
+    expect(appreciation.required).toBe(true);
+    expect(validateRuleValue(appreciation, undefined).issues[0]?.code).toBe("REQUIRED");
+    expect(validateRuleValue(appreciation, [{ minimum: "0", label: "À configurer" }]).valid).toBe(true);
+    expect(validateRuleValue(appreciation, { minimum: "0" }).valid).toBe(false);
+    expect(validateRuleValue(appreciation, JSON.parse('[{"__proto__":"polluted"}]')).valid).toBe(false);
+    expect(validateRuleValue(definition("payroll.tax.catalog"), []).valid).toBe(true);
+    expect(validateRuleValue(definition("payroll.tax.catalog"), "10%").valid).toBe(false);
+  });
+
+  it("couvre les paramètres structurés avec une forme extérieure explicite", () => {
+    const structured = RULE_DEFINITIONS.filter((entry) => entry.type === "structured");
+    expect(structured.length).toBeGreaterThan(20);
+    expect(structured.every((entry) => entry.constraints?.structure === "array" || entry.constraints?.structure === "object")).toBe(true);
+    expect(RULE_DEFINITIONS.some((entry) => entry.key === "academic.year.aggregation")).toBe(true);
+    expect(RULE_DEFINITIONS.some((entry) => entry.key === "finance.tariff.applicability")).toBe(true);
+    expect(RULE_DEFINITIONS.some((entry) => entry.key === "hr.leave.accrual_policy")).toBe(true);
+  });
 });

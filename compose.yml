@@ -1,19 +1,139 @@
+name: lavision-local
+
+x-api-environment: &api-environment
+  NODE_ENV: production
+  APP_ENV: local
+  APP_VERSION: ${APP_VERSION:-0.1.0}
+  DATABASE_URL: ${DATABASE_URL:-postgresql://lavision:lavision_local@postgres:5432/lavision_local?schema=public}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+  PORT: 3001
+  WORKER_PORT: 3002
+  AUTH_ENCRYPTION_KEY: ${AUTH_ENCRYPTION_KEY:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+  AUTH_COOKIE_SECURE: ${AUTH_COOKIE_SECURE:-false}
+  AUTH_WEB_BASE_URL: ${AUTH_WEB_BASE_URL:-http://localhost:8080}
+  SMTP_URL: ${SMTP_URL:-smtp://localhost:1025}
+  AUTH_MAIL_FROM: ${AUTH_MAIL_FROM:-lavision <no-reply@localhost>}
+  METRICS_TOKEN: ${METRICS_TOKEN:-local-metrics-token}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  TRUST_PROXY: ${TRUST_PROXY:-false}
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
 services:
   postgres:
     image: postgres:16.4-alpine
     environment:
-      POSTGRES_USER: lavision
-      POSTGRES_PASSWORD: lavision_local
-      POSTGRES_DB: lavision_local
+      POSTGRES_USER: ${POSTGRES_USER:-lavision}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lavision_local}
+      POSTGRES_DB: ${POSTGRES_DB:-lavision_local}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lavision -d lavision_local"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 3s
       retries: 20
     volumes:
       - lavision-postgres-local:/var/lib/postgresql/data
+    logging: *logging
+
+  redis:
+    image: redis:7.2-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - lavision-redis-local:/data
+    logging: *logging
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+    image: lavision-migrate:${IMAGE_TAG:-local}
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://lavision:lavision_local@postgres:5432/lavision_local?schema=public}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *logging
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    image: lavision-api:${IMAGE_TAG:-local}
+    environment: *api-environment
+    ports:
+      - "${API_PORT:-3001}:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3001/api/v1/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    init: true
+    logging: *logging
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    image: lavision-worker:${IMAGE_TAG:-local}
+    environment: *api-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3002/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    init: true
+    logging: *logging
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    image: lavision-web:${IMAGE_TAG:-local}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging: *logging
 
 volumes:
   lavision-postgres-local:
+  lavision-redis-local:

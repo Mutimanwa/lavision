@@ -7,7 +7,7 @@ import {
 
 describe("contrats du catalogue de règles #39", () => {
   it("expose un catalogue typé et borné, sans schéma de formule libre", () => {
-    expect(RULE_DEFINITIONS.length).toBeGreaterThan(20);
+    expect(RULE_DEFINITIONS.length).toBeGreaterThan(90);
     expect(RULE_DEFINITIONS.some((entry) => entry.key === "academic.grading.scale_max")).toBe(true);
     expect(RULE_DEFINITIONS.every((entry) => entry.scopes.length > 0)).toBe(true);
     expect(

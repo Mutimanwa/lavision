@@ -13,9 +13,10 @@ Le workspace `apps/api` contient le monolithe modulaire NestJS/Fastify avec :
 - limitation progressive des tentatives et événements de sécurité minimisés ;
 - noyau #7 : catalogue des 13 rôles, refus par défaut, portées, relations et ressources enregistrées ;
 - gestion technique des rôles/permissions et journal d’audit append-only ;
-- tests unitaires et tests PostgreSQL exécutés en CI.
+- tests unitaires et tests PostgreSQL exécutés en CI ;
+- logs HTTP structurés avec `requestId` et métriques Prometheus protégées par un token technique.
 
-**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; moteur de règles académiques #39, calculs officiels, raccordement frontend/Tauri et déploiement de production. Les API #8 sont livrées séparément des écrans d’administration, dont le raccordement reste à faire sans réécrire la démonstration existante.
+**Non inclus :** endpoints et tables des notes, élèves, paiements, paie et proclamations ; calculs officiels et stratégies métier restantes de #39, raccordement des autres modules frontend/Tauri et déploiement de production. Les API #8 disposent désormais d’un premier écran de consultation et de modification du nom de l’organisation ; les autres opérations d’administration et les parcours métier restent à raccorder sans réécrire la démonstration existante.
 
 ## 2. Démarrage vierge en une commande
 
@@ -52,6 +53,9 @@ npm run dev:api
 | `DATABASE_URL` | connexion PostgreSQL obligatoire |
 | `PORT` | port HTTP, `3001` dans l’exemple |
 | `APP_VERSION` | version technique retournée par `/version` |
+| `APP_ENV` | contexte technique `local`, `ci` ou `staging` |
+| `LOG_LEVEL` | `debug`, `info`, `warn`, `error` ou `silent` |
+| `METRICS_TOKEN` | secret technique exigé par `/metrics`, indépendant des sessions |
 | `TRUST_PROXY` | à activer uniquement avec une chaîne de reverse proxies maîtrisée |
 | `AUTH_ENCRYPTION_KEY` | 32 octets en base64 pour AES-256-GCM et les hashes pseudonymisés ; obligatoire |
 | `AUTH_COOKIE_SECURE` | `true` en production ; `false` uniquement pour le HTTP local |
@@ -63,7 +67,7 @@ La clé de chiffrement doit être générée et stockée par le coffre de secret
 
 ## 4. Endpoints techniques et d’authentification
 
-Endpoints publics techniques : `GET /api/v1/health/live`, `GET /api/v1/health/ready`, `GET /api/v1/version` et `GET /api/v1/openapi.json`.
+Endpoints publics techniques : `GET /api/v1/health/live`, `GET /api/v1/health/ready`, `GET /api/v1/version` et `GET /api/v1/openapi.json`. `GET /api/v1/metrics` est un endpoint technique protégé : sans `METRICS_TOKEN` configuré il répond `404`, et sans en-tête `Authorization: Bearer …` ou `x-metrics-token` valide il répond `403`.
 
 | Méthode et chemin | Objet |
 | --- | --- |
@@ -84,7 +88,7 @@ Endpoints publics techniques : `GET /api/v1/health/live`, `GET /api/v1/health/re
 | `POST /api/v1/auth/admin/users/:id/disable` | désactivation et révocation immédiate |
 | `POST /api/v1/auth/admin/users/:id/sessions/revoke` | révocation administrative des sessions |
 
-Les routes d’administration ci-dessus sont limitées à `technical_admin` dans l’organisation indiquée et exigent une session MFA vérifiée. Elles ne constituent pas la matrice de permissions métier de #7.
+Les routes d’administration ci-dessus sont limitées à `technical_admin` dans l’organisation indiquée et exigent une session MFA vérifiée. Elles complètent la matrice de permissions métier et les portées de #7, sans donner un accès implicite aux domaines métier.
 
 ### Cookies, CSRF et sessions
 
@@ -141,13 +145,29 @@ Les codes, numéros de séquence et jours non ouvrés ont des contraintes d’un
 
 Chaque mutation crée, dans la même transaction, une révision avant/après avec acteur, date, `requestId` et motif éventuel, ainsi qu’un événement `AuditService`. `GET /school/history` permet une consultation autorisée et filtrée de ces révisions. Les permissions de préparation des référentiels sont distinctes de celles du calendrier et des règles #39. Le cycle `DRAFT`/`ACTIVE`/`CLOSED` décrit ici l’état opérationnel d’une année ; il ne remplace pas le circuit préparation → validation pédagogique → approbation → publication des référentiels académiques versionnés, dont la composition détaillée des programmes reste un raccordement métier séparé.
 
+### Premier écran frontend des référentiels
+
+L’écran **Paramètres → Référentiels d’établissement** appelle `GET /auth/me`, puis les routes autorisées `GET /school/organization`, `GET /school/sites`, `GET /school/levels` et `GET /school/rooms` pour l’organisation choisie dans les memberships de la session. Il affiche les sites, niveaux et salles actifs sans les mélanger au jeu de démonstration local. Le nom de l’organisation peut être modifié par `PATCH /school/organization/:id` avec le même `organizationId` dans le corps ; le code reste en lecture seule et l’historique est produit par l’API. Les créations, archivages et écrans de calendrier ne sont pas simulés par cette première tranche.
+
 ## 7. Moteur de règles #39
 
 ### Catalogue et validation
 
-`GET /api/v1/rules/catalog?organizationId=...` expose les définitions typées, leurs domaines, portées autorisées, caractère obligatoire et bornes. `POST /api/v1/rules/validate` valide une valeur sans la persister. Les décimales sont normalisées en chaînes pour éviter une conversion binaire silencieuse ; formules, scripts, objets non prévus et valeurs hors bornes sont refusés. Le catalogue initial ne contient aucune valeur par défaut et reste à enrichir pour couvrir exhaustivement les listes structurées du cadrage.
+`GET /api/v1/rules/catalog?organizationId=...` expose les définitions typées, leurs domaines, portées autorisées, caractère obligatoire et bornes. Le catalogue v2 couvre les paramètres variables du cadrage, sans valeur par défaut. `POST /api/v1/rules/validate` valide une valeur sans la persister. Les décimales sont normalisées en chaînes pour éviter une conversion binaire silencieuse ; formules, scripts, objets non prévus et valeurs hors bornes sont refusés. Le type `structured` accepte uniquement des listes/objets JSON bornés pour conserver les paramètres encore incertains ; il ne vaut pas validation du schéma métier ni autorisation de calcul officiel. Les sections, options, programmes, périodes et jours non ouvrés restent des référentiels séparés, et les invariants de sécurité ne sont pas configurables.
 
 La permission générique du guard ne suffit jamais : le service vérifie aussi la permission du domaine (`rules.academic.*`, `rules.finance.*`, etc.). Les erreurs de commandes #39 peuvent contenir des `issues` `{ path, code, message }` dans le Problem Details.
+
+### Parcours frontend de connexion et MFA
+
+La route Web `/connexion` (`app/(auth)/connexion`) appelle `POST /auth/login`, puis selon la réponse `POST /auth/mfa/setup`, `POST /auth/mfa/setup/confirm`, `POST /auth/mfa/verify` ou `POST /auth/mfa/recovery`. Le cookie de session est émis par l’API ; le formulaire ne conserve ni mot de passe, ni challenge, ni codes de récupération dans `localStorage`. Le secret TOTP et les dix codes de récupération sont seulement affichés dans l’état React de l’étape concernée ; la poursuite après l’enrôlement exige une confirmation explicite de leur conservation. Le paramètre de retour `next` est limité à une route interne et ne peut pas devenir une redirection externe. Cette interface ne transforme pas les rôles de démonstration en habilitations : celles-ci restent déterminées par l’API et ses memberships.
+
+### Premier parcours frontend de configuration
+
+L’écran **Paramètres → Configuration scolaire** de `apps/web` utilise le client `src/lib/api-client.ts` et les services de `src/features/configuration`. Il appelle `GET /auth/me`, filtre les établissements réellement présents dans les memberships, puis consulte `GET /rules/catalog`. Une valeur est validée par `POST /rules/validate` avant la préparation ; les décimales restent des chaînes et aucune valeur vide n’est convertie en défaut.
+
+L’enregistrement recherche un `RuleSet` API compatible avec la définition et ses portées, le crée si nécessaire, puis appelle uniquement `POST /rules/sets/:id/versions` avec un binding `organization` explicite et les métadonnées de traçabilité saisies. Un paramètre facultatif peut aussi être enregistré comme `notApplicable` avec son motif, sans envoyer de valeur ; une règle obligatoire ne peut pas utiliser ce choix. Les codes techniques sont déterministes, bornés et ne transportent pas la valeur métier. L’écran n’appelle aucune route de soumission, revue, approbation ou publication. Les portées plus précises (section, option, programme, cours) restent des bindings à configurer dans leur parcours métier ; une valeur de cours n’est jamais déduite de la seule organisation.
+
+Le client utilise exclusivement les URLs relatives `/api/v1` avec `credentials: include` et l’en-tête `x-csrf-token` lu du cookie non HttpOnly. Le proxy Nginx du stack fournit cette même origine ; pour l’export statique servi par `npm start`, `API_PROXY_TARGET` configure le proxy **côté serveur**. Un hébergement de fichiers sans proxy ne peut pas fournir ce parcours authentifié. Le shell Tauri est volontairement refusé par ce client de cookies : ADR-006 exige un futur pont navigateur système/PKCE et coffre OS, pas une URL distante avec des cookies WebView. Les réponses `401`, `403` et les Problem Details sont présentées sans créer de session ou de configuration locale parallèle.
 
 ### Sets, portées et versions
 
@@ -218,6 +238,6 @@ La CI utilise PostgreSQL 16 isolé, `LAVISION_SKIP_DOCKER=true`, une clé de tes
 
 ## 11. Limites d’exploitation
 
-Le frontend n’appelle pas encore cette API : le raccordement Web/Tauri reste prévu en M2. Pour Tauri, ce raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
+Les parcours métier élèves, notes, bulletins et proclamations n’appellent pas encore cette API ; leur raccordement Web reste prévu en M2. Les parcours d’authentification, de configuration des règles et le premier écran des référentiels utilisent déjà le proxy same-origin. Pour Tauri, le raccordement devra respecter ADR-006 : navigateur système, PKCE, jetons courts avec rotation et stockage dans le coffre de l’OS, jamais de jeton durable dans `localStorage`.
 
 Avant toute production : brancher les modules métier sur #7 et les référentiels #8, raccorder les clients et les écrans d’administration, choisir l’hébergement et les RPO/RTO, valider la rétention d’audit, configurer les secrets/SMTP/supervision, tester les restaurations et faire valider les règles métier. Aucun calcul officiel, donnée réelle ou déploiement de production n’est introduit par #6, #7, #8 ou #39. Les écrans de configuration et les compositions détaillées sections/options/programmes restent à raccorder ; le catalogue et les stratégies de calcul métier doivent être complétés avant la recette fonctionnelle correspondante.

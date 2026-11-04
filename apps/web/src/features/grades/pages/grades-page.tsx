@@ -17,6 +17,7 @@ import { SelectForm } from "@/components/forms";
 import { formatAverage, getAppreciation, getFullName, round } from "@/lib/academic";
 import { downloadCsv } from "@/lib/utils";
 import { TERMS, type Term } from "@/lib/types";
+import { isValidGradeInput, parseGradeInput } from "../services/grade-input";
 
 export function Gradebook() {
   const { state, saveGrades } = useSchool();
@@ -42,8 +43,8 @@ export function Gradebook() {
     () => students.map((student) => {
       const raw = valueFor(student.id);
       if (raw.trim() === "") return null;
-      const value = Number(raw);
-      return Number.isFinite(value) && value >= 0 && value <= 20 ? value : null;
+      const value = parseGradeInput(raw);
+      return value !== null && value >= 0 && value <= 20 ? value : null;
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [students, drafts, subjectId, term, state.grades],
@@ -52,20 +53,27 @@ export function Gradebook() {
   const average = numericValues.length ? round(numericValues.reduce((sum, value) => sum + value, 0) / numericValues.length) : null;
   const completion = students.length ? Math.round((numericValues.length / students.length) * 100) : 0;
 
+  const changeContext = (update: () => void) => {
+    if (dirty && !window.confirm("Des notes ne sont pas enregistrées. Les abandonner et changer de contexte ?")) return;
+    setDrafts({});
+    setDirty(false);
+    setMessage("");
+    setError("");
+    update();
+  };
+
   const save = () => {
-    const invalid = students.some((student) => {
-      const raw = valueFor(student.id).trim().replace(",", ".");
-      return raw !== "" && (!Number.isFinite(Number(raw)) || Number(raw) < 0 || Number(raw) > 20);
-    });
+    const invalid = students.some((student) => !isValidGradeInput(valueFor(student.id)));
     if (invalid) {
       setError("Chaque note doit être un nombre compris entre 0 et 20.");
       setMessage("");
       return;
     }
     saveGrades(students.map((student) => {
-      const raw = valueFor(student.id).trim().replace(",", ".");
-      return { studentId: student.id, subjectId, term, value: raw === "" ? null : Number(raw) };
+      const raw = valueFor(student.id);
+      return { studentId: student.id, subjectId, term, value: raw.trim() === "" ? null : parseGradeInput(raw) };
     }));
+    setDrafts({});
     setError("");
     setDirty(false);
     setMessage(`Les notes de ${subject?.name ?? "la matière"} ont été enregistrées.`);
@@ -84,9 +92,9 @@ export function Gradebook() {
 
       <section className="card gradebook-selector-card">
         <div className="gradebook-selectors">
-          <SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={(value) => { setClassId(value); setMessage(""); setError(""); setDirty(false); }} />
-          <SelectForm label="Matière" value={subjectId} options={state.subjects.map((item) => ({ value: item.id, label: item.name, description: `Coefficient ${item.coefficient}` }))} onChange={(value) => { setSubjectId(value); setMessage(""); setError(""); setDirty(false); }} />
-          <SelectForm label="Période" value={term} options={TERMS.map((item) => ({ value: item, label: item }))} onChange={(value) => { setTerm(value as Term); setMessage(""); setError(""); setDirty(false); }} />
+          <SelectForm label="Classe" value={classId} options={state.classes.map((item) => ({ value: item.id, label: item.name }))} onChange={(value) => changeContext(() => setClassId(value))} />
+          <SelectForm label="Matière" value={subjectId} options={state.subjects.map((item) => ({ value: item.id, label: item.name, description: `Coefficient ${item.coefficient}` }))} onChange={(value) => changeContext(() => setSubjectId(value))} />
+          <SelectForm label="Période" value={term} options={TERMS.map((item) => ({ value: item, label: item }))} onChange={(value) => changeContext(() => setTerm(value as Term))} />
         </div>
         <div className="gradebook-completion"><div><span>Progression de la saisie</span><strong>{numericValues.length}/{students.length} notes</strong></div><div className="progress-track"><span style={{ width: `${completion}%` }} /></div></div>
       </section>
@@ -101,9 +109,9 @@ export function Gradebook() {
           {students.length ? <div className="table-wrap"><table className="data-table grade-entry-table"><thead><tr><th>#</th><th>Élève</th><th>Note / 20</th><th>Appréciation</th><th>État</th></tr></thead><tbody>
             {students.map((student, index) => {
               const raw = valueFor(student.id);
-              const value = raw.trim() === "" ? null : Number(raw.replace(",", "."));
-              const valid = value === null || (Number.isFinite(value) && value >= 0 && value <= 20);
-              return <tr key={student.id}><td className="row-number">{String(index + 1).padStart(2, "0")}</td><td><div className="student-cell"><Avatar student={student} /><span><strong>{getFullName(student)}</strong><small>{student.matricule}</small></span></div></td><td><div className={`grade-input-wrap ${!valid ? "invalid" : ""}`}><input type="number" inputMode="decimal" min="0" max="20" step="0.25" value={raw} onChange={(event) => { const key = `${student.id}:${subjectId}:${term}`; setDrafts((current) => ({ ...current, [key]: event.target.value })); setDirty(true); setMessage(""); }} aria-label={`Note de ${getFullName(student)}`} placeholder="—" /><span>/20</span></div></td><td><span className={value !== null && value < 10 ? "text-danger" : ""}>{valid && value !== null ? getAppreciation(value) : "—"}</span></td><td>{raw === "" ? <Badge>Non saisie</Badge> : valid ? <Badge tone="green"><Check size={13} /> Saisie</Badge> : <Badge tone="red">Invalide</Badge>}</td></tr>;
+              const value = parseGradeInput(raw);
+              const valid = isValidGradeInput(raw);
+              return <tr key={student.id}><td className="row-number">{String(index + 1).padStart(2, "0")}</td><td><div className="student-cell"><Avatar student={student} /><span><strong>{getFullName(student)}</strong><small>{student.matricule}</small></span></div></td><td><div className={`grade-input-wrap ${!valid ? "invalid" : ""}`}><input type="number" inputMode="decimal" min="0" max="20" step="0.25" value={raw} onChange={(event) => { const key = `${student.id}:${subjectId}:${term}`; setDrafts((current) => ({ ...current, [key]: event.target.value })); setDirty(true); setMessage(""); setError(""); }} aria-label={`Note de ${getFullName(student)}`} placeholder="—" /><span>/20</span></div></td><td><span className={value !== null && value < 10 ? "text-danger" : ""}>{valid && value !== null ? getAppreciation(value) : "—"}</span></td><td>{raw === "" ? <Badge>Non saisie</Badge> : valid ? <Badge tone="green"><Check size={13} /> Saisie</Badge> : <Badge tone="red">Invalide</Badge>}</td></tr>;
             })}
           </tbody></table></div> : <EmptyState icon={<ClipboardList size={28} />} title="Aucun élève actif" description="Cette classe ne contient aucun élève actif pour la période sélectionnée." />}
           <footer className="grade-entry-footer"><span><Info size={15} /> Les cellules vides sont considérées comme des notes non saisies.</span><button className="button button-primary" type="button" onClick={save} disabled={!students.length}><Save size={16} /> Enregistrer</button></footer>
@@ -111,7 +119,7 @@ export function Gradebook() {
 
         <aside className="gradebook-sidebar">
           <section className="card grade-stats-card"><p className="eyebrow">Aperçu de la classe</p><h3>Résultats de la saisie</h3><div className="grade-main-stat"><small>Moyenne de la matière</small><strong>{formatAverage(average)}<span> /20</span></strong></div><div className="grade-stat-row"><span><TrendingUp size={17} />Note maximale</span><strong>{numericValues.length ? Math.max(...numericValues).toString().replace(".", ",") : "—"}</strong></div><div className="grade-stat-row"><span><TrendingDown size={17} />Note minimale</span><strong>{numericValues.length ? Math.min(...numericValues).toString().replace(".", ",") : "—"}</strong></div><div className="grade-stat-row"><span><CheckCircle2 size={17} />Notes ≥ 10</span><strong>{numericValues.filter((value) => value >= 10).length}/{numericValues.length}</strong></div></section>
-          <section className="card subject-shortcuts"><p className="eyebrow">Accès rapide</p><h3>Autres matières</h3>{state.subjects.map((item) => <button type="button" className={item.id === subjectId ? "active" : ""} key={item.id} onClick={() => { setSubjectId(item.id); setDirty(false); setMessage(""); }}><span>{item.code}</span><strong>{item.name}</strong><small>Coef. {item.coefficient}</small></button>)}</section>
+          <section className="card subject-shortcuts"><p className="eyebrow">Accès rapide</p><h3>Autres matières</h3>{state.subjects.map((item) => <button type="button" className={item.id === subjectId ? "active" : ""} key={item.id} onClick={() => changeContext(() => setSubjectId(item.id))}><span>{item.code}</span><strong>{item.name}</strong><small>Coef. {item.coefficient}</small></button>)}</section>
         </aside>
       </div>
     </>
